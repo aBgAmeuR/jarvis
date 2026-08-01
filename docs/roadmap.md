@@ -6,7 +6,7 @@ See [context.md](context.md) for the full product vision and V1 definition of do
 
 ## Now — V1
 
-- [ ] Daemon + CLI over Unix socket
+- [x] Daemon + CLI over Unix socket (v0.1)
 - [ ] Global task queue (one task at a time), SQLite persistence
 - [ ] Declarative service actions (`update`, `health` / `status`)
 - [ ] SSH plugin executing declared commands
