@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,28 +17,50 @@ type Service struct {
 	Name string `yaml:"name"`
 }
 
-func ReadConfig(filePath string) (*Config, error) {
-	log.Println("read_config")
-
-	serviceFiles, err := filepath.Glob(filepath.Join(filePath, "services", "*.yaml"))
+func Load(configDir string) (*Config, error) {
+	pattern := filepath.Join(configDir, "services", "*.yaml")
+	paths, err := filepath.Glob(pattern)
 	if err != nil {
 		return nil, fmt.Errorf("find service config files: %w", err)
 	}
 
-	config := Config{Services: make([]Service, 0, len(serviceFiles))}
-	for _, serviceFile := range serviceFiles {
-		contents, err := os.ReadFile(serviceFile)
+	cfg := &Config{Services: make([]Service, 0, len(paths))}
+	for _, path := range paths {
+		svc, err := loadServiceFile(path)
 		if err != nil {
-			return nil, fmt.Errorf("read service config %q: %w", serviceFile, err)
+			return nil, err
 		}
-
-		var service Service
-		if err := yaml.Unmarshal(contents, &service); err != nil {
-			return nil, fmt.Errorf("parse service config %q: %w", serviceFile, err)
-		}
-
-		config.Services = append(config.Services, service)
+		cfg.Services = append(cfg.Services, svc)
 	}
 
-	return &config, nil
+	sort.Slice(cfg.Services, func(i, j int) bool {
+		return cfg.Services[i].Name < cfg.Services[j].Name
+	})
+
+	return cfg, nil
+}
+
+func loadServiceFile(path string) (Service, error) {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		return Service{}, fmt.Errorf("read service config %q: %w", path, err)
+	}
+
+	var svc Service
+	if err := yaml.Unmarshal(contents, &svc); err != nil {
+		return Service{}, fmt.Errorf("parse service config %q: %w", path, err)
+	}
+
+	if err := svc.validate(); err != nil {
+		return Service{}, fmt.Errorf("invalid service config %q: %w", path, err)
+	}
+
+	return svc, nil
+}
+
+func (s Service) validate() error {
+	if s.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	return nil
 }
