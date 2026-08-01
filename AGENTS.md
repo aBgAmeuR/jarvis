@@ -12,7 +12,7 @@ Read `docs/context.md`, `docs/requirements.md`. Prefer V1 scope; do not pull in 
 - No cleartext secrets — `provider` + `ref` only.
 - Core must not hardcode Docker/LXC/Proxmox; declare actions in YAML, execute via plugins.
 - One global task at a time in V1; no auto-retry.
-- Keep changes small; match existing layout (`cmd/`, `internal/`, `config/`, `docs/`).
+- Keep changes small; match existing layout.
 
 ## Docs
 
