@@ -60,16 +60,6 @@ func (s *Server) handleConnection(conn net.Conn) {
 	switch req.Op {
 	case protocol.OpValidate:
 		s.validate(conn)
-	case protocol.OpListServices:
-		resp := s.listServices()
-		if resp.Error != "" {
-			log.Printf("op=%s error: %s", req.Op, resp.Error)
-		} else {
-			log.Printf("op=%s ok", req.Op)
-		}
-		if err := json.NewEncoder(conn).Encode(resp); err != nil {
-			log.Printf("encode response: %v", err)
-		}
 	default:
 		resp := protocol.Response{Error: fmt.Sprintf("unsupported operation %q", req.Op)}
 		log.Printf("op=%s error: %s", req.Op, resp.Error)
@@ -77,10 +67,6 @@ func (s *Server) handleConnection(conn net.Conn) {
 			log.Printf("encode response: %v", err)
 		}
 	}
-}
-
-func (s *Server) listServices() protocol.Response {
-	return protocol.Response{Services: []protocol.ServiceInfo{}}
 }
 
 func joinErrors(errs []error) string {

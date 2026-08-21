@@ -2,7 +2,7 @@
 
 ## Code now
 
-v0.2: Unix socket, `jarvis service ls` via per-host SSH and service YAML. Replace it with the v0.5 commands.
+Unix socket plus `jarvis validate`. Replace the remaining gaps with the v0.5 `proxmox` / `docker` commands.
 
 ## v0.5 (build this)
 
@@ -12,7 +12,7 @@ v0.2: Unix socket, `jarvis service ls` via per-host SSH and service YAML. Replac
 - [ ] `jarvis docker ls|start|stop` via `pct exec 102` (container grain; `STATE` + `HEALTH`)
 - [ ] Error if CT 102 is down
 - [x] Example config: `examples/config/`
-- [ ] Drop `jarvis service ls` once the commands above work
+- [x] Drop `jarvis service ls`
 
 ## After
 

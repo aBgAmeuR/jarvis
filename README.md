@@ -6,8 +6,6 @@ CLI and daemon for Proxmox LXC and Docker containers on [this homelab](docs/home
 
 **v0.5 (docs):** `proxmox` / `docker` `ls|start|stop` still to build. You SSH to LXC 106 and talk to `jarvisd` on a Unix socket.
 
-**Legacy:** `jarvis service ls`.
-
 ## Quick start
 
 ```bash
