@@ -4,63 +4,90 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Services []Service
+	Proxmox Proxmox `yaml:"proxmox"`
+	Jarvis  Jarvis  `yaml:"jarvis"`
+	Docker  Docker  `yaml:"docker"`
 }
 
-type Service struct {
-	Name string `yaml:"name"`
+type Proxmox struct {
+	Address     string      `yaml:"address"`
+	User        string      `yaml:"user"`
+	Credentials Credentials `yaml:"credentials"`
+}
+
+type Credentials struct {
+	Provider string `yaml:"provider"`
+	Ref      string `yaml:"ref"`
+}
+
+type Jarvis struct {
+	VMID int `yaml:"vmid"`
+}
+
+type Docker struct {
+	VMID int `yaml:"vmid"`
 }
 
 func Load(configDir string) (*Config, error) {
-	pattern := filepath.Join(configDir, "services", "*.yaml")
-	paths, err := filepath.Glob(pattern)
+	path := filepath.Join(configDir, "config.yaml")
+	f, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("find service config files: %w", err)
+		return nil, fmt.Errorf("open config %q: %w", path, err)
 	}
+	defer f.Close()
 
-	cfg := &Config{Services: make([]Service, 0, len(paths))}
-	for _, path := range paths {
-		svc, err := loadServiceFile(path)
-		if err != nil {
-			return nil, err
-		}
-		cfg.Services = append(cfg.Services, svc)
+	dec := yaml.NewDecoder(f)
+	dec.KnownFields(true)
+
+	var cfg Config
+	if err := dec.Decode(&cfg); err != nil {
+		return nil, fmt.Errorf("parse config %q: %w", path, err)
 	}
-
-	sort.Slice(cfg.Services, func(i, j int) bool {
-		return cfg.Services[i].Name < cfg.Services[j].Name
-	})
-
-	return cfg, nil
+	return &cfg, nil
 }
 
-func loadServiceFile(path string) (Service, error) {
-	contents, err := os.ReadFile(path)
-	if err != nil {
-		return Service{}, fmt.Errorf("read service config %q: %w", path, err)
+func (c *Config) CheckRequired() []error {
+	var errs []error
+	if strings.TrimSpace(c.Proxmox.Address) == "" {
+		errs = append(errs, fmt.Errorf("proxmox.address is required"))
 	}
-
-	var svc Service
-	if err := yaml.Unmarshal(contents, &svc); err != nil {
-		return Service{}, fmt.Errorf("parse service config %q: %w", path, err)
+	if strings.TrimSpace(c.Proxmox.User) == "" {
+		errs = append(errs, fmt.Errorf("proxmox.user is required"))
 	}
-
-	if err := svc.validate(); err != nil {
-		return Service{}, fmt.Errorf("invalid service config %q: %w", path, err)
+	if strings.TrimSpace(c.Proxmox.Credentials.Provider) == "" {
+		errs = append(errs, fmt.Errorf("proxmox.credentials.provider is required"))
 	}
-
-	return svc, nil
+	if strings.TrimSpace(c.Proxmox.Credentials.Ref) == "" {
+		errs = append(errs, fmt.Errorf("proxmox.credentials.ref is required"))
+	}
+	if c.Jarvis.VMID == 0 {
+		errs = append(errs, fmt.Errorf("jarvis.vmid is required"))
+	}
+	if c.Docker.VMID == 0 {
+		errs = append(errs, fmt.Errorf("docker.vmid is required"))
+	}
+	return errs
 }
 
-func (s Service) validate() error {
-	if s.Name == "" {
-		return fmt.Errorf("name is required")
+func (c *Config) CheckValues() []error {
+	var errs []error
+	if c.Proxmox.Credentials.Provider != "" && c.Proxmox.Credentials.Provider != "stub" {
+		errs = append(errs, fmt.Errorf("proxmox.credentials.provider must be %q, got %q", "stub", c.Proxmox.Credentials.Provider))
 	}
-	return nil
+	if c.Jarvis.VMID != 0 && c.Jarvis.VMID < 100 {
+		errs = append(errs, fmt.Errorf("jarvis.vmid must be >= 100, got %d", c.Jarvis.VMID))
+	}
+	if c.Docker.VMID != 0 && c.Docker.VMID < 100 {
+		errs = append(errs, fmt.Errorf("docker.vmid must be >= 100, got %d", c.Docker.VMID))
+	}
+	if c.Jarvis.VMID != 0 && c.Docker.VMID != 0 && c.Jarvis.VMID == c.Docker.VMID {
+		errs = append(errs, fmt.Errorf("docker.vmid must differ from jarvis.vmid (%d)", c.Jarvis.VMID))
+	}
+	return errs
 }

@@ -44,6 +44,12 @@ CLI fails with a clear error if `jarvisd` is down. v0.5 has no HTTP listener.
 
 Daemon SSHes as `proxmox.user` (`jarvis`). That account uses NOPASSWD sudo for `/usr/sbin/pct` and `/usr/bin/pvesh` (unrestricted subcommands).
 
+### FR-10 Validate
+
+`jarvis validate` asks the daemon to check config and reachability. The CLI prints one line per finished layer (`parse`, `required`, `values`, `secrets`, `fingerprint`, `ssh`, `guests`) as NDJSON events arrive. Layers after a failure are skipped. Exit 0 only if every printed layer is `ok`.
+
+Checks, in order: YAML KnownFields on `config.yaml` and `secrets.yaml`; FR-01 fields; value rules (`provider=stub`, vmids ≥ 100, distinct vmids); secret ref, key path readable; fingerprint `SHA256:` + 43 unpadded base64 (reject example placeholder); SSH with host-key pin; `jarvis.vmid` and `docker.vmid` present on the node (LXC or QEMU).
+
 ## Non-functional
 
 | ID | Requirement |
@@ -55,7 +61,7 @@ Daemon SSHes as `proxmox.user` (`jarvis`). That account uses NOPASSWD sudo for `
 
 ## Done (v0.5)
 
-FR-01 through FR-08 hold on the lab in [homelab.md](homelab.md). FR-09 is an ops prerequisite on the Proxmox node (user, sudoers, key). Docs match the commands the binaries expose.
+FR-01 through FR-08 and FR-10 hold on the lab in [homelab.md](homelab.md). FR-09 is an ops prerequisite on the Proxmox node (user, sudoers, key). Docs match the commands the binaries expose.
 
 ## Later (no ACs yet)
 

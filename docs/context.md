@@ -4,12 +4,13 @@ CLI plus daemon to list, start, and stop Proxmox guests and Docker containers on
 
 You SSH to LXC 106 (`jarvis`) and run `jarvis`. That process talks to `jarvisd` on a Unix socket. The daemon SSHs to the Proxmox node as user `jarvis` and runs `pvesh` / `pct`. Docker goes through `pct exec` on CT 102.
 
-The Go tree is still v0.2: `jarvis service ls` SSHes to hosts listed in YAML. v0.5 below is the slice to implement.
+The Go tree ships `jarvis validate`. `proxmox` / `docker` commands below are still to implement. Legacy: `jarvis service ls`.
 
 ## v0.5
 
 | Command | Behavior |
 | --- | --- |
+| `jarvis validate` | Live checklist (`✓` / `✗`); on failure, `error:` on the next line |
 | `jarvis proxmox ls` | LXC and VMs, power state from the node |
 | `jarvis proxmox start\|stop <id>` | LXC only. Refuse QEMU. Refuse stop on `jarvis.vmid` (106) |
 | `jarvis docker ls` | Containers on CT 102. Columns `STATE` and `HEALTH` |

@@ -6,11 +6,12 @@ v0.2: Unix socket, `jarvis service ls` via per-host SSH and service YAML. Replac
 
 ## v0.5 (build this)
 
-- [ ] `jarvisd` SSHes to Proxmox with host-key pinning
+- [x] `jarvis validate` (cobra; NDJSON checklist via daemon; config/secrets/SSH/guest ids)
+- [x] `jarvisd` SSHes to Proxmox with host-key pinning (used by validate)
 - [ ] `jarvis proxmox ls|start|stop` (`pct` / `pvesh`; LXC mutate; no stop on vmid 106; no QEMU mutate)
 - [ ] `jarvis docker ls|start|stop` via `pct exec 102` (container grain; `STATE` + `HEALTH`)
 - [ ] Error if CT 102 is down
-- [ ] Example config: `examples/config/`
+- [x] Example config: `examples/config/`
 - [ ] Drop `jarvis service ls` once the commands above work
 
 ## After

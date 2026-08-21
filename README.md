@@ -2,9 +2,21 @@
 
 CLI and daemon for Proxmox LXC and Docker containers on [this homelab](docs/homelab.md).
 
-**v0.5 (docs):** `proxmox` / `docker` `ls|start|stop`. You SSH to LXC 106 and talk to `jarvisd` on a Unix socket.
+**Shipped:** `jarvis validate` (live checklist through `jarvisd`).
 
-**v0.2:** `jarvis service ls` over per-host SSH. Implement v0.5 against [examples/config](examples/config/).
+**v0.5 (docs):** `proxmox` / `docker` `ls|start|stop` still to build. You SSH to LXC 106 and talk to `jarvisd` on a Unix socket.
+
+**Legacy:** `jarvis service ls`.
+
+## Quick start
+
+```bash
+# Edit secrets (key path + real PVE host-key fingerprint)
+# examples/config/secrets.yaml
+
+go run ./cmd/jarvisd --config-dir examples/config
+go run ./cmd/jarvis validate
+```
 
 ## config
 
@@ -23,7 +35,7 @@ docker:
   vmid: 102
 ```
 
-Edit `examples/config/secrets.yaml` to set the key path and PVE host-key fingerprint.
+Edit `examples/config/secrets.yaml` to set the key path and PVE host-key fingerprint (`SHA256:` + 43 unpadded base64).
 
 ## Docs
 
