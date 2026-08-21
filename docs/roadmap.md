@@ -1,36 +1,25 @@
 # Roadmap
 
-Sequenced after V1. Order reflects dependency and value, not a hard calendar.
+## Code now
 
-See [context.md](context.md) for the full product vision and V1 definition of done.
+v0.2: Unix socket, `jarvis service ls` via per-host SSH and service YAML. Replace it with the v0.5 commands.
 
-## Now — V1
+## v0.5 (build this)
 
-- [x] Daemon + CLI over Unix socket (v0.1)
-- [ ] Global task queue (one task at a time), SQLite persistence
-- [ ] Declarative service actions (`update`, `health` / `status`)
-- [ ] SSH plugin executing declared commands
-- [ ] Secrets contract (`provider` + `ref`) with stub
-- [ ] Pilot services: `harmony` (Docker), `cockpit` (LXC)
+- [ ] `jarvisd` SSHes to Proxmox with host-key pinning
+- [ ] `jarvis proxmox ls|start|stop` (`pct` / `pvesh`; LXC mutate; no stop on vmid 106; no QEMU mutate)
+- [ ] `jarvis docker ls|start|stop` via `pct exec 102` (container grain; `STATE` + `HEALTH`)
+- [ ] Error if CT 102 is down
+- [ ] Example config: `examples/config/`
+- [ ] Drop `jarvis service ls` once the commands above work
 
-## Next
+## After
 
-1. **Proxmox plugin** — operate LXC/VM lifecycle beyond raw SSH commands
-2. **Docker / Portainer plugin** — native compose and container ops
-3. **Real secrets** — Vault or OpenBao behind the existing provider contract
-4. **Network API** — same task model, reachable beyond the local socket
-5. **Observability** — OpenTelemetry for tasks, failures, and latency
-6. **Optional UI** — human-friendly view of services, tasks, and logs
-7. **Worker pool** — safe concurrency (e.g. per service), still no reckless parallelism
+| Slice | Work |
+| --- | --- |
+| v0.7 | Update check only |
+| v1 | Apply updates; queue for those jobs |
+| v1.5 | VM guest agent; QEMU start/stop |
+| v3 | HTTP, then UI |
 
-## Later / maybe
-
-- Multi-user / SSO
-- Daemon high availability
-- Broader service catalog beyond the V1 pilots
-- Policy / approval gates for destructive actions
-- AI-assisted ops (suggestions only; execution stays explicit)
-
-## Non-goals (for now)
-
-Rewriting the homelab stack, replacing Proxmox, or becoming a general-purpose orchestration platform (Kubernetes-class). Jarvis stays a focused control plane for this homelab’s weekly ops.
+Out of scope: replacing Proxmox, Kubernetes, Portainer as the Docker source of truth.

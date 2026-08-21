@@ -1,56 +1,40 @@
-# Homelab infrastructure
+# Homelab
 
-Environment Jarvis is built to operate.
+## Node
 
-## Hardware and hypervisor
+Proxmox VE, Intel i3-12100, 16 GB RAM, 1 TB NVMe, ZFS mirror 2×4 TB. Volumes: `local`, `local-lvm`, `hdd`. Node address for Jarvis: `192.168.1.40`.
 
-* Host: Proxmox VE
-* CPU: Intel Core i3-12100 (12th Gen)
-* Memory: 16 GB RAM
-* Primary storage: 1 TB NVMe
-* Secondary storage: ZFS mirror 2× 4 TB HDD
-* Proxmox volumes: `local`, `local-lvm`, `hdd`
-
-## VMs and LXC containers (Proxmox)
+## Guests
 
 | ID | Type | Name | Role |
 | --- | --- | --- | --- |
-| 100 | LXC | pi-hole | DNS / ad blocking |
-| 101 | LXC | cockpit | System administration |
-| 102 | LXC | docker-host | Docker runtime and Portainer |
-| 103 | LXC | wireguard | VPN / remote access |
-| 104 | LXC | postgresql | Central relational database |
-| 105 | VM (qemu) | remote-dev | Remote development environment |
+| 100 | LXC | pi-hole | DNS |
+| 101 | LXC | cockpit | Host UI |
+| 102 | LXC | docker-host | Docker |
+| 103 | LXC | wireguard | VPN |
+| 104 | LXC | postgresql | Database |
+| 105 | VM | remote-dev | Dev VM (list only in v0.5) |
+| 106 | LXC | jarvis | `jarvisd` + CLI (unprivileged, static IPv4, Pi-hole name `jarvis`) |
 
-## Network, security, and access
+Create 106 before running v0.5. On the node: user `jarvis`, NOPASSWD sudo for `/usr/sbin/pct` and `/usr/bin/pvesh`, SSH key + host-key fingerprint in the secrets file on 106.
 
-* Reverse proxy: Nginx Proxy Manager for HTTP/S routing and TLS
-* Auth / SSO: Authelia for single sign-on and forward auth
-* External exposure: Cloudflare Tunnel — no inbound ports opened
-* Secrets / passwords: Vaultwarden
+## Docker (CT 102)
 
-## Docker environment (LXC 102)
+| Project | Containers |
+| --- | --- |
+| authelia | `authelia` |
+| bentopdf | `bentopdf` |
+| cloudflare-tunnel | `cloudflared` |
+| filebrowser | `filebrowser` |
+| harmony | `harmony-api`, `harmony-web` |
+| homepage | `homepage` |
+| nginx-proxy-manager | `nginx-proxy-manager-app-1` |
+| vaultwarden | `vaultwarden` |
+| ai | `ai-openwebui-1` |
+| (none) | `portainer` |
 
-| Stack | Containers | Purpose |
-| --- | --- | --- |
-| authelia | `authelia` | Access security |
-| bentopdf | `bentopdf` | Web PDF editing |
-| cloudflare-tunnel | `cloudflared` | Cloudflare network connector |
-| filebrowser | `filebrowser` | Web file manager |
-| harmony | `harmony-api`, `harmony-web` | Spotify stats app |
-| homepage | `homepage` | Homelab landing dashboard |
-| nginx-proxy-manager | `nginx-proxy-manager-app-1` | Reverse proxy manager |
-| vaultwarden | `vaultwarden` | Password manager |
-| ai | `ai-openwebui-1` | AI UI |
-| - | `portainer` | Docker admin UI |
+Health for `jarvis docker ls` comes from Compose/Docker healthchecks, not from Jarvis YAML.
 
-## Observability
+## Edge
 
-* Visualization: Grafana
-* Metrics: Prometheus
-* Logs: Loki via `promtail`
-* Tracing: Tempo
-* Hypervisor metrics: `pve-exporter` (Proxmox)
-* Host metrics: `node-exporter`
-* Container metrics: `cadvisor`
-* DNS metrics: `pihole-exporter`
+Nginx Proxy Manager, Authelia, Cloudflare Tunnel, Vaultwarden. Metrics stack (Grafana, Prometheus, Loki, Tempo, exporters) is unused by Jarvis until a later slice.

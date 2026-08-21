@@ -1,173 +1,37 @@
 # Jarvis
 
-Self-hosted control plane for administering and automating a homelab.
+CLI plus daemon to list, start, and stop Proxmox guests and Docker containers on this homelab.
 
-Go, open source, declarative YAML config, backend-first. The CLI is a client; the engine is a daemon.
+You SSH to LXC 106 (`jarvis`) and run `jarvis`. That process talks to `jarvisd` on a Unix socket. The daemon SSHs to the Proxmox node as user `jarvis` and runs `pvesh` / `pct`. Docker goes through `pct exec` on CT 102.
 
-## Why this exists
+The Go tree is still v0.2: `jarvis service ls` SSHes to hosts listed in YAML. v0.5 below is the slice to implement.
 
-Homelab ops today means logging into hosts over SSH, remembering which compose file or LXC to touch, running updates by hand, and eyeballing whether things still work. That does not scale with the number of services, and it is a poor habit for both reliability and security.
+## v0.5
 
-Jarvis is the single place to declare how services are operated, enqueue work safely, and judge success with health checks - not with "the command returned."
-
-Secondary goal: grow skills across backend, architecture, infra, security, CI/CD, observability, and later AI, through a tool that is actually used every week.
-
-## Product vision (A → Z)
-
-Jarvis should become the **ops control plane** for the homelab:
-
-1. **Declare** services, hosts, credentials, and actions in config - not in ad-hoc scripts.
-2. **Act** through a daemon that queues, runs, and records every mutation.
-3. **Verify** with explicit health checks as the success criterion.
-4. **Extend** via plugins so the core never hardcodes Docker, LXC, Proxmox, or Portainer.
-5. **Harden** secrets, network access, and auditability so day-to-day admin SSH fades away.
-6. **Observe** tasks, failures, and latency with proper telemetry.
-7. **Expose** (later) a network API and optional UI for humans and automation.
-8. **Scale concurrency** carefully (per-service workers) without losing safety.
-
-V1 is the first slice of that vision: the smallest path that removes weekly SSH pain and proves the architecture.
-
-## Guiding principles
-
-| Principle | Meaning |
+| Command | Behavior |
 | --- | --- |
-| Backend first | Daemon + CLI before UI or public API |
-| Declarative ops | Actions live in YAML; the core executes and records |
-| Plugins over special cases | Targets are drivers, not if/else in the engine |
-| Health is success | Exit code of the declared health command decides the outcome |
-| Secrets never in cleartext | Always `provider` + `ref`; real backends come after a stub |
-| Safe by default | Global queue, no auto-retry, explicit timeouts |
-| Used weekly | Scope follows real pain, not portfolio theater |
+| `jarvis proxmox ls` | LXC and VMs, power state from the node |
+| `jarvis proxmox start\|stop <id>` | LXC only. Refuse QEMU. Refuse stop on `jarvis.vmid` (106) |
+| `jarvis docker ls` | Containers on CT 102. Columns `STATE` and `HEALTH` |
+| `jarvis docker start\|stop <container>` | One container (not a Compose project) |
 
-## Target architecture
+`HEALTH` is `healthy`, `unhealthy`, or `n/a` (no Docker healthcheck). `STATE` is the engine status (`running`, `exited`, …).
 
-High-level control plane: clients talk to the daemon; the daemon owns queue, state, config, and plugins that reach hosts.
+If CT 102 is stopped, docker commands fail and name that CT. They do not start it.
 
-```mermaid
-flowchart TB
-  subgraph clients [Clients]
-    CLI[CLI]
-    API[API — later]
-    UI[UI — later]
-  end
+No task queue. Two mutations can overlap. No update check, no apply, no HTTP.
 
-  subgraph control [Jarvis control plane]
-    Daemon[Daemon]
-    Queue[Task queue]
-    Store[(SQLite)]
-    Config[YAML config]
-    Secrets[Secrets provider]
-    Plugins[Plugins]
-  end
+Config: [examples/config](../examples/config/). You declare the Proxmox SSH target, the Jarvis vmid, and the Docker vmid. `pct` and `docker ps` supply the rest.
 
-  subgraph targets [Homelab targets]
-    Docker[Docker hosts]
-    LXC[LXC]
-    Proxmox[Proxmox — later]
-  end
+Secrets use `provider` + `ref`. The stub maps a ref to an SSH private key path and the PVE host-key fingerprint.
 
-  CLI --> Daemon
-  API -.-> Daemon
-  UI -.-> Daemon
-  Daemon --> Queue
-  Daemon --> Store
-  Daemon --> Config
-  Daemon --> Secrets
-  Daemon --> Plugins
-  Plugins --> Docker
-  Plugins --> LXC
-  Plugins --> Proxmox
-```
+## Later
 
-### Core ideas
-
-- **Task engine** - every action becomes a task: status, progress, logs, history, timeout.
-- **Plugins** - the core does not know target systems; plugins run declared commands or native APIs.
-- **Config** - one YAML per service; hosts and credentials live separately.
-- **Transport (V1)** - Unix socket between CLI and daemon.
-- **Runtime (V1)** - daemon on an LXC named `jarvis`.
-
-### Config shape (illustrative)
-
-Secrets are never plain values in files:
-
-```yaml
-credentials:
-  provider: stub
-  ref: homelab/docker-host
-```
-
-Example service:
-
-```yaml
-name: harmony
-host: docker-host
-actions:
-  update: "cd /opt/harmony && docker compose pull && docker compose up -d"
-  health: "curl -fsS http://127.0.0.1:8080/health"
-```
-
-## V1 scope
-
-Replace manual SSH for **update / restart** of services, with **health** as the success criterion.
-
-### Update flow
-
-```mermaid
-sequenceDiagram
-  actor Op as Operator
-  participant CLI
-  participant Daemon
-  participant Queue
-  participant Plugin as SSH plugin
-  participant Host as Target host
-
-  Op->>CLI: jarvis service update name
-  CLI->>Daemon: enqueue update
-  Daemon->>Queue: create task
-  Daemon->>Plugin: run declared update
-  Plugin->>Host: execute command
-  Host-->>Plugin: exit code
-  Daemon->>Plugin: run declared health
-  Plugin->>Host: health check
-  Host-->>Plugin: exit code
-  Daemon-->>CLI: success or failure
-```
-
-`jarvis service status <name>` = the same health check, without mutation.
-
-### V1 decisions
-
-| Topic | Choice |
+| Slice | Adds |
 | --- | --- |
-| Success | Dual: weekly ops + portfolio; V1 = real pain |
-| Targets | Docker + LXC via declarative actions (no hardcoded business logic) |
-| Runtime | Daemon on LXC `jarvis` + CLI |
-| Transport | Unix socket |
-| Task state | SQLite |
-| Concurrency | Global queue, one task at a time |
-| Retry | None (manual re-run) |
-| Secrets | `provider` + `ref` contract + stub |
-| Config | One YAML per service; hosts/credentials separate |
-| Pilot services | `harmony` (Docker), `cockpit` (LXC) |
+| v0.7 | Update check (CT packages, image digests). No apply |
+| v1 | Apply those updates. Queue only for update jobs |
+| v1.5 | QEMU guest agent. VM start/stop |
+| v3 | HTTP API, then a UI |
 
-### Out of V1
-
-Network API, UI, Proxmox / Portainer / native Docker plugins, OpenTelemetry, multi-user / SSO, daemon HA, worker pool, real secret backends (Vault, OpenBao, etc.).
-
-### Done when
-
-`update` + `status` work on `harmony` and `cockpit`; tasks and logs are trackable via CLI + SQLite.
-
-Formal acceptance criteria: [requirements.md](requirements.md).
-
-## Security (target state)
-
-- Isolated admin network.
-- Jarvis as the single day-to-day entry point for service ops.
-- No routine direct admin SSH once the control plane is trusted.
-- Secrets always resolved through a provider; never committed in cleartext.
-
-## What the project should demonstrate
-
-Clean architecture, plugins, async tasks, abstracted secrets, observability, CI/CD, documentation, and code quality - maintainable software, not a disposable web app.
+Acceptance: [requirements.md](requirements.md). Order: [roadmap.md](roadmap.md). Lab: [homelab.md](homelab.md).

@@ -1,19 +1,36 @@
 # Jarvis
 
-Self-hosted control plane for administering and automating a homelab.
+CLI and daemon for Proxmox LXC and Docker containers on [this homelab](docs/homelab.md).
 
-Replace manual SSH for service **update** / **restart**, with **health** as the success criterion.
+**v0.5 (docs):** `proxmox` / `docker` `ls|start|stop`. You SSH to LXC 106 and talk to `jarvisd` on a Unix socket.
 
-## Status
+**v0.2:** `jarvis service ls` over per-host SSH. Implement v0.5 against [examples/config](examples/config/).
 
-V1 in progress: declarative service actions, task queue, CLI + daemon.
+## config
+
+```yaml
+proxmox:
+  address: 192.168.1.40
+  user: jarvis
+  credentials:
+    provider: stub
+    ref: homelab/pve-ssh
+
+jarvis:
+  vmid: 106
+
+docker:
+  vmid: 102
+```
+
+Edit `examples/config/secrets.yaml` to set the key path and PVE host-key fingerprint.
 
 ## Docs
 
-- [Project context](docs/context.md) - vision, principles, architecture, V1
-- [Requirements](docs/requirements.md) - functional requirements & acceptance criteria
-- [Roadmap](docs/roadmap.md) - sequenced work after V1
-- [Homelab](docs/homelab.md) - infrastructure this tool targets
+- [context](docs/context.md)
+- [requirements](docs/requirements.md)
+- [roadmap](docs/roadmap.md)
+- [homelab](docs/homelab.md)
 
 ## License
 
