@@ -60,6 +60,8 @@ func (s *Server) handleConnection(conn net.Conn) {
 	switch req.Op {
 	case protocol.OpValidate:
 		s.validate(conn)
+	case protocol.OpProxmoxLs:
+		s.proxmoxLs(conn)
 	default:
 		resp := protocol.Response{Error: fmt.Sprintf("unsupported operation %q", req.Op)}
 		log.Printf("op=%s error: %s", req.Op, resp.Error)
@@ -92,6 +94,83 @@ func (s *Server) emit(enc *json.Encoder, layer string, errs []error) bool {
 		log.Printf("validate layer=%s fail: %s", ev.Layer, ev.Error)
 	}
 	return ev.OK
+}
+
+func (s *Server) proxmoxLs(conn net.Conn) {
+	enc := json.NewEncoder(conn)
+	writeErr := func(err error) {
+		log.Printf("op=%s error: %s", protocol.OpProxmoxLs, err)
+		if encErr := enc.Encode(protocol.Response{Error: err.Error()}); encErr != nil {
+			log.Printf("encode response: %v", encErr)
+		}
+	}
+
+	timeout := s.Timeout
+	if timeout <= 0 {
+		timeout = 15 * time.Second
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	runner, err := s.pveRunner(timeout)
+	if err != nil {
+		writeErr(err)
+		return
+	}
+
+	listed, err := pve.ListGuests(ctx, runner)
+	if err != nil {
+		writeErr(err)
+		return
+	}
+	guests := make([]protocol.Guest, len(listed))
+	for i, g := range listed {
+		guests[i] = protocol.Guest{ID: g.ID, Type: g.Type, Name: g.Name, Power: g.Power}
+	}
+	log.Printf("op=%s ok count=%d", protocol.OpProxmoxLs, len(guests))
+	if err := enc.Encode(struct {
+		Guests []protocol.Guest `json:"guests"`
+	}{Guests: guests}); err != nil {
+		log.Printf("encode response: %v", err)
+	}
+}
+
+func (s *Server) pveRunner(timeout time.Duration) (pve.Runner, error) {
+	if s.PVERunner != nil {
+		return s.PVERunner, nil
+	}
+	secretsPath := s.SecretsFile
+	if secretsPath == "" {
+		secretsPath = filepath.Join(s.ConfigDir, "secrets.yaml")
+	}
+	loaded := loadConfigAndSecrets(s.ConfigDir, secretsPath)
+	if len(loaded.parseErrs) > 0 {
+		return nil, fmt.Errorf("%s", joinErrors(loaded.parseErrs))
+	}
+	if errs := loaded.cfg.CheckRequired(); len(errs) > 0 {
+		return nil, fmt.Errorf("%s", joinErrors(errs))
+	}
+	if errs := loaded.cfg.CheckValues(); len(errs) > 0 {
+		return nil, fmt.Errorf("%s", joinErrors(errs))
+	}
+	ref := loaded.cfg.Proxmox.Credentials.Ref
+	if errs := loaded.stub.CheckRef(ref); len(errs) > 0 {
+		return nil, fmt.Errorf("%s", joinErrors(errs))
+	}
+	if errs := loaded.stub.CheckFingerprint(ref); len(errs) > 0 {
+		return nil, fmt.Errorf("%s", joinErrors(errs))
+	}
+	mat, err := loaded.stub.Resolve(loaded.cfg.Proxmox.Credentials.Provider, ref)
+	if err != nil {
+		return nil, err
+	}
+	return pve.NewSSHRunner(pve.SSHConfig{
+		Address:            loaded.cfg.Proxmox.Address,
+		User:               loaded.cfg.Proxmox.User,
+		PrivateKeyPath:     mat.PrivateKeyPath,
+		HostKeyFingerprint: mat.HostKeyFingerprint,
+		Timeout:            timeout,
+	})
 }
 
 func (s *Server) validate(conn net.Conn) {

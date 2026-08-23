@@ -1,7 +1,8 @@
 package protocol
 
 const (
-	OpValidate = "validate"
+	OpValidate  = "validate"
+	OpProxmoxLs = "proxmox.ls"
 )
 
 type Request struct {
@@ -10,6 +11,14 @@ type Request struct {
 
 type Response struct {
 	Error string `json:"error,omitempty"`
+}
+
+// Guest is one row of jarvis proxmox ls (CLI-ready).
+type Guest struct {
+	ID    int    `json:"id"`
+	Type  string `json:"type"`
+	Name  string `json:"name"`
+	Power string `json:"power"`
 }
 
 // ValidateEvent is one NDJSON line from OpValidate.

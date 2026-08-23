@@ -20,11 +20,11 @@ SSH to Proxmox checks `host_key_fingerprint`. A mismatch fails the command.
 
 ### FR-04 Proxmox list
 
-`jarvis proxmox ls` lists LXC and QEMU guests from the node (id, name, type, power).
+`jarvis proxmox ls` lists LXC and QEMU guests from the node. Table columns, in order: `ID`, `TYPE`, `NAME`, `POWER`. `TYPE` is `lxc` or `vm` (QEMU). `POWER` is `running` or `stopped`. Missing name prints `-`. Rows are sorted by ID. Templates are included, unmarked. Table only; no flags.
 
 ### FR-05 Proxmox start/stop
 
-`jarvis proxmox start` and `stop` run on LXC. QEMU returns an error that names the type. `stop` on `jarvis.vmid` returns an error and does not call `pct stop`.
+`jarvis proxmox start` and `stop` run on LXC. A VM (`TYPE` `vm`) returns an error that names the type (`vm`). `stop` on `jarvis.vmid` returns an error and does not call `pct stop`.
 
 ### FR-06 Docker list
 
@@ -57,7 +57,7 @@ Checks, in order: YAML KnownFields on `config.yaml` and `secrets.yaml`; FR-01 fi
 | NFR-01 | Remote command timeout: 15s for `ls`, 60s for start/stop |
 | NFR-02 | Failures include enough `pct` / `docker` stderr to act without a second SSH |
 | NFR-03 | Config and example secrets are readable and fit for git |
-| NFR-04 | README and `docs/` describe v0.5 and admit `proxmox` / `docker` commands are still to build |
+| NFR-04 | README and `docs/` describe v0.5. `proxmox start|stop` and `docker` commands are still to build |
 
 ## Done (v0.5)
 

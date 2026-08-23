@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -30,6 +31,24 @@ func main() {
 		SilenceErrors: true,
 	}
 	root.PersistentFlags().StringVar(&socketPath, "socket", "/tmp/jarvis.sock", "Unix socket path")
+
+	proxmox := &cobra.Command{
+		Use:   "proxmox",
+		Short: "Proxmox guests",
+	}
+	proxmox.AddCommand(&cobra.Command{
+		Use:   "ls",
+		Short: "List LXC and VM guests",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			guests, err := client.ProxmoxLs(socketPath)
+			if err != nil {
+				return err
+			}
+			return printGuestTable(guests)
+		},
+	})
+	root.AddCommand(proxmox)
 
 	root.AddCommand(&cobra.Command{
 		Use:   "validate",
@@ -65,6 +84,15 @@ func main() {
 		fmt.Fprintf(os.Stderr, "jarvis: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func printGuestTable(guests []protocol.Guest) error {
+	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(tw, "ID\tTYPE\tNAME\tPOWER")
+	for _, g := range guests {
+		fmt.Fprintf(tw, "%d\t%s\t%s\t%s\n", g.ID, g.Type, g.Name, g.Power)
+	}
+	return tw.Flush()
 }
 
 func useColor() bool {
