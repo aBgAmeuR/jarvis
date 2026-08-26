@@ -1,3 +1,9 @@
+// Package daemon implements jarvisd: a Unix-socket server that dispatches
+// CLI requests to Proxmox over SSH.
+//
+// Each unary op is one entry in the ops registry. handleConnection owns the
+// wire (decode request, encode reply, log); handlers own only their op logic.
+// To add an op: define it in protocol, write a handler, register it here.
 package daemon
 
 import (
@@ -7,21 +13,38 @@ import (
 	"log"
 	"net"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/abgameur/jarvis/internal/config"
 	"github.com/abgameur/jarvis/internal/protocol"
 	"github.com/abgameur/jarvis/internal/pve"
-	"github.com/abgameur/jarvis/internal/secrets"
 )
+
+// Remote command timeouts (NFR-01).
+const (
+	queryTimeout  = 15 * time.Second
+	mutateTimeout = 60 * time.Second
+)
+
+// handlerFunc runs one unary op and returns its success payload (nil for an
+// empty reply) or an error.
+type handlerFunc func(ctx context.Context, sess *session, req protocol.Request) (any, error)
+
+type opSpec struct {
+	timeout time.Duration
+	handle  handlerFunc
+}
+
+var ops = map[string]opSpec{
+	protocol.OpProxmoxLs:    {timeout: queryTimeout, handle: handleProxmoxLs},
+	protocol.OpProxmoxStart: {timeout: mutateTimeout, handle: handleProxmoxStart},
+	protocol.OpProxmoxStop:  {timeout: mutateTimeout, handle: handleProxmoxStop},
+}
 
 type Server struct {
 	SocketPath  string
 	ConfigDir   string
-	SecretsFile string
-	Timeout     time.Duration
+	SecretsFile string // empty = <ConfigDir>/secrets.yaml
 	// PVERunner overrides SSH for tests. nil = build SSH runner.
 	PVERunner pve.Runner
 }
@@ -57,17 +80,47 @@ func (s *Server) handleConnection(conn net.Conn) {
 		return
 	}
 
-	switch req.Op {
-	case protocol.OpValidate:
+	// validate streams NDJSON events and bypasses the unary registry.
+	if req.Op == protocol.OpValidate {
 		s.validate(conn)
-	case protocol.OpProxmoxLs:
-		s.proxmoxLs(conn)
-	default:
-		resp := protocol.Response{Error: fmt.Sprintf("unsupported operation %q", req.Op)}
-		log.Printf("op=%s error: %s", req.Op, resp.Error)
-		if err := json.NewEncoder(conn).Encode(resp); err != nil {
-			log.Printf("encode response: %v", err)
+		return
+	}
+
+	spec, ok := ops[req.Op]
+	if !ok {
+		respond(conn, req.Op, nil, fmt.Errorf("unsupported operation %q", req.Op))
+		return
+	}
+
+	sess, err := s.newSession(spec.timeout)
+	if err != nil {
+		respond(conn, req.Op, nil, err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), spec.timeout)
+	defer cancel()
+
+	payload, err := spec.handle(ctx, sess, req)
+	respond(conn, req.Op, payload, err)
+}
+
+// respond writes the single JSON reply of a unary op and logs the outcome.
+func respond(conn net.Conn, op string, payload any, err error) {
+	enc := json.NewEncoder(conn)
+	if err != nil {
+		log.Printf("op=%s error: %s", op, err)
+		if encErr := enc.Encode(protocol.Response{Error: err.Error()}); encErr != nil {
+			log.Printf("encode response: %v", encErr)
 		}
+		return
+	}
+	log.Printf("op=%s ok", op)
+	if payload == nil {
+		payload = protocol.Response{}
+	}
+	if encErr := enc.Encode(payload); encErr != nil {
+		log.Printf("encode response: %v", encErr)
 	}
 }
 
@@ -77,189 +130,4 @@ func joinErrors(errs []error) string {
 		parts = append(parts, e.Error())
 	}
 	return strings.Join(parts, "; ")
-}
-
-func (s *Server) emit(enc *json.Encoder, layer string, errs []error) bool {
-	ev := protocol.ValidateEvent{Layer: layer, OK: len(errs) == 0}
-	if !ev.OK {
-		ev.Error = joinErrors(errs)
-	}
-	if err := enc.Encode(ev); err != nil {
-		log.Printf("encode validate event: %v", err)
-		return false
-	}
-	if ev.OK {
-		log.Printf("validate layer=%s ok", ev.Layer)
-	} else {
-		log.Printf("validate layer=%s fail: %s", ev.Layer, ev.Error)
-	}
-	return ev.OK
-}
-
-func (s *Server) proxmoxLs(conn net.Conn) {
-	enc := json.NewEncoder(conn)
-	writeErr := func(err error) {
-		log.Printf("op=%s error: %s", protocol.OpProxmoxLs, err)
-		if encErr := enc.Encode(protocol.Response{Error: err.Error()}); encErr != nil {
-			log.Printf("encode response: %v", encErr)
-		}
-	}
-
-	timeout := s.Timeout
-	if timeout <= 0 {
-		timeout = 15 * time.Second
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	runner, err := s.pveRunner(timeout)
-	if err != nil {
-		writeErr(err)
-		return
-	}
-
-	listed, err := pve.ListGuests(ctx, runner)
-	if err != nil {
-		writeErr(err)
-		return
-	}
-	guests := make([]protocol.Guest, len(listed))
-	for i, g := range listed {
-		guests[i] = protocol.Guest{ID: g.ID, Type: g.Type, Name: g.Name, Power: g.Power}
-	}
-	log.Printf("op=%s ok count=%d", protocol.OpProxmoxLs, len(guests))
-	if err := enc.Encode(struct {
-		Guests []protocol.Guest `json:"guests"`
-	}{Guests: guests}); err != nil {
-		log.Printf("encode response: %v", err)
-	}
-}
-
-func (s *Server) pveRunner(timeout time.Duration) (pve.Runner, error) {
-	if s.PVERunner != nil {
-		return s.PVERunner, nil
-	}
-	secretsPath := s.SecretsFile
-	if secretsPath == "" {
-		secretsPath = filepath.Join(s.ConfigDir, "secrets.yaml")
-	}
-	loaded := loadConfigAndSecrets(s.ConfigDir, secretsPath)
-	if len(loaded.parseErrs) > 0 {
-		return nil, fmt.Errorf("%s", joinErrors(loaded.parseErrs))
-	}
-	if errs := loaded.cfg.CheckRequired(); len(errs) > 0 {
-		return nil, fmt.Errorf("%s", joinErrors(errs))
-	}
-	if errs := loaded.cfg.CheckValues(); len(errs) > 0 {
-		return nil, fmt.Errorf("%s", joinErrors(errs))
-	}
-	ref := loaded.cfg.Proxmox.Credentials.Ref
-	if errs := loaded.stub.CheckRef(ref); len(errs) > 0 {
-		return nil, fmt.Errorf("%s", joinErrors(errs))
-	}
-	if errs := loaded.stub.CheckFingerprint(ref); len(errs) > 0 {
-		return nil, fmt.Errorf("%s", joinErrors(errs))
-	}
-	mat, err := loaded.stub.Resolve(loaded.cfg.Proxmox.Credentials.Provider, ref)
-	if err != nil {
-		return nil, err
-	}
-	return pve.NewSSHRunner(pve.SSHConfig{
-		Address:            loaded.cfg.Proxmox.Address,
-		User:               loaded.cfg.Proxmox.User,
-		PrivateKeyPath:     mat.PrivateKeyPath,
-		HostKeyFingerprint: mat.HostKeyFingerprint,
-		Timeout:            timeout,
-	})
-}
-
-func (s *Server) validate(conn net.Conn) {
-	enc := json.NewEncoder(conn)
-
-	secretsPath := s.SecretsFile
-	if secretsPath == "" {
-		secretsPath = filepath.Join(s.ConfigDir, "secrets.yaml")
-	}
-
-	loaded := loadConfigAndSecrets(s.ConfigDir, secretsPath)
-	if !s.emit(enc, protocol.LayerParse, loaded.parseErrs) {
-		return
-	}
-	if !s.emit(enc, protocol.LayerRequired, loaded.cfg.CheckRequired()) {
-		return
-	}
-	if !s.emit(enc, protocol.LayerValues, loaded.cfg.CheckValues()) {
-		return
-	}
-
-	ref := loaded.cfg.Proxmox.Credentials.Ref
-	if !s.emit(enc, protocol.LayerSecrets, loaded.stub.CheckRef(ref)) {
-		return
-	}
-	if !s.emit(enc, protocol.LayerFingerprint, loaded.stub.CheckFingerprint(ref)) {
-		return
-	}
-
-	timeout := s.Timeout
-	if timeout <= 0 {
-		timeout = 15 * time.Second
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	runner := s.PVERunner
-	if runner == nil {
-		mat, err := loaded.stub.Resolve(loaded.cfg.Proxmox.Credentials.Provider, ref)
-		if err != nil {
-			s.emit(enc, protocol.LayerSSH, []error{err})
-			return
-		}
-		r, err := pve.NewSSHRunner(pve.SSHConfig{
-			Address:            loaded.cfg.Proxmox.Address,
-			User:               loaded.cfg.Proxmox.User,
-			PrivateKeyPath:     mat.PrivateKeyPath,
-			HostKeyFingerprint: mat.HostKeyFingerprint,
-			Timeout:            timeout,
-		})
-		if err != nil {
-			s.emit(enc, protocol.LayerSSH, []error{err})
-			return
-		}
-		runner = r
-	}
-
-	if err := pve.CheckSSH(ctx, runner); err != nil {
-		s.emit(enc, protocol.LayerSSH, []error{err})
-		return
-	}
-	s.emit(enc, protocol.LayerSSH, nil)
-
-	if err := pve.GuestsExist(ctx, runner, loaded.cfg.Jarvis.VMID, loaded.cfg.Docker.VMID); err != nil {
-		s.emit(enc, protocol.LayerGuests, []error{err})
-		return
-	}
-	s.emit(enc, protocol.LayerGuests, nil)
-}
-
-type loaded struct {
-	cfg       *config.Config
-	stub      *secrets.Stub
-	parseErrs []error
-}
-
-func loadConfigAndSecrets(configDir, secretsPath string) loaded {
-	out := loaded{cfg: &config.Config{}}
-	cfg, err := config.Load(configDir)
-	if err != nil {
-		out.parseErrs = append(out.parseErrs, err)
-	} else {
-		out.cfg = cfg
-	}
-	stub, err := secrets.LoadStub(secretsPath)
-	if err != nil {
-		out.parseErrs = append(out.parseErrs, err)
-	} else {
-		out.stub = stub
-	}
-	return out
 }

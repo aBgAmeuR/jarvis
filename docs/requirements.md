@@ -57,7 +57,7 @@ Checks, in order: YAML KnownFields on `config.yaml` and `secrets.yaml`; FR-01 fi
 | NFR-01 | Remote command timeout: 15s for `ls`, 60s for start/stop |
 | NFR-02 | Failures include enough `pct` / `docker` stderr to act without a second SSH |
 | NFR-03 | Config and example secrets are readable and fit for git |
-| NFR-04 | README and `docs/` describe v0.5. `proxmox start|stop` and `docker` commands are still to build |
+| NFR-04 | README and `docs/` describe v0.5. `docker` commands are still to build |
 
 ## Done (v0.5)
 
