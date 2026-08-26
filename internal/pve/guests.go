@@ -167,6 +167,21 @@ func PowerLXC(ctx context.Context, runner Runner, action string, vmid int) error
 	return err
 }
 
+// CTStatus returns the pct status of an LXC vmid (running, stopped, ...).
+func CTStatus(ctx context.Context, runner Runner, vmid int) (string, error) {
+	out, err := runner.Run(ctx, []string{
+		"sudo", "-n", "/usr/sbin/pct", "status", strconv.Itoa(vmid),
+	})
+	if err != nil {
+		return "", err
+	}
+	fields := strings.Fields(string(out))
+	if len(fields) != 2 || fields[0] != "status:" {
+		return "", fmt.Errorf("pct status %d: unexpected output %q", vmid, strings.TrimSpace(string(out)))
+	}
+	return fields[1], nil
+}
+
 // CheckSSH runs a trivial pvesh call to prove connectivity and auth.
 func CheckSSH(ctx context.Context, runner Runner) error {
 	_, err := pveshGet(ctx, runner, "/nodes")

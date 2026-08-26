@@ -39,6 +39,9 @@ var ops = map[string]opSpec{
 	protocol.OpProxmoxLs:    {timeout: queryTimeout, handle: handleProxmoxLs},
 	protocol.OpProxmoxStart: {timeout: mutateTimeout, handle: handleProxmoxStart},
 	protocol.OpProxmoxStop:  {timeout: mutateTimeout, handle: handleProxmoxStop},
+	protocol.OpDockerLs:     {timeout: queryTimeout, handle: handleDockerLs},
+	protocol.OpDockerStart:  {timeout: mutateTimeout, handle: handleDockerStart},
+	protocol.OpDockerStop:   {timeout: mutateTimeout, handle: handleDockerStop},
 }
 
 type Server struct {

@@ -1,5 +1,5 @@
 // jarvis is the CLI. Commands live in one file per area (proxmox.go,
-// validate.go); each exposes a newXxxCmd constructor wired up here.
+// docker.go, validate.go); each exposes a newXxxCmd constructor wired up here.
 package main
 
 import (
@@ -32,6 +32,7 @@ func newRootCmd() *cobra.Command {
 	root.PersistentFlags().StringVar(&socketPath, "socket", "/tmp/jarvis.sock", "Unix socket path")
 
 	root.AddCommand(newProxmoxCmd(&socketPath))
+	root.AddCommand(newDockerCmd(&socketPath))
 	root.AddCommand(newValidateCmd(&socketPath))
 	return root
 }

@@ -98,3 +98,25 @@ func ProxmoxStart(socketPath string, vmid int) error {
 func ProxmoxStop(socketPath string, vmid int) error {
 	return call(socketPath, protocol.Request{Op: protocol.OpProxmoxStop, VMID: vmid}, nil)
 }
+
+// DockerLs asks the daemon for the container table.
+func DockerLs(socketPath string) ([]protocol.Container, error) {
+	var res protocol.DockerLsResult
+	if err := call(socketPath, protocol.Request{Op: protocol.OpDockerLs}, &res); err != nil {
+		return nil, err
+	}
+	if res.Containers == nil {
+		res.Containers = []protocol.Container{}
+	}
+	return res.Containers, nil
+}
+
+// DockerStart starts one container by name or id.
+func DockerStart(socketPath, container string) error {
+	return call(socketPath, protocol.Request{Op: protocol.OpDockerStart, Container: container}, nil)
+}
+
+// DockerStop stops one container by name or id.
+func DockerStop(socketPath, container string) error {
+	return call(socketPath, protocol.Request{Op: protocol.OpDockerStop, Container: container}, nil)
+}

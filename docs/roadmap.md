@@ -2,7 +2,7 @@
 
 ## Code now
 
-Unix socket plus `jarvis validate`, `jarvis proxmox ls`, and `jarvis proxmox start|stop`. Replace the remaining gap with the v0.5 `docker` commands.
+Unix socket plus `jarvis validate`, `jarvis proxmox ls|start|stop`, and `jarvis docker ls|start|stop`. v0.5 is code-complete; next slice is v0.7.
 
 ## v0.5 (build this)
 
@@ -10,8 +10,8 @@ Unix socket plus `jarvis validate`, `jarvis proxmox ls`, and `jarvis proxmox sta
 - [x] `jarvisd` SSHes to Proxmox with host-key pinning (used by validate)
 - [x] `jarvis proxmox ls` (`pvesh` list; table `ID TYPE NAME POWER`; type `lxc`/`vm`)
 - [x] `jarvis proxmox start|stop` (LXC mutate; no stop on vmid 106; no QEMU mutate)
-- [ ] `jarvis docker ls|start|stop` via `pct exec 102` (container grain; `STATE` + `HEALTH`)
-- [ ] Error if CT 102 is down
+- [x] `jarvis docker ls|start|stop` via `pct exec 102` (container grain; `STATE` + `HEALTH`)
+- [x] Error if CT 102 is down
 - [x] Example config: `examples/config/`
 - [x] Drop `jarvis service ls`
 
