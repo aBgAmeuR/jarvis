@@ -1,24 +1,55 @@
-# AGENTS
+# AGENTS.md
 
-Homelab ops control plane (Go). CLI client + `jarvisd` on a Unix socket.
+Jarvis is a read-only web console over an existing homelab observability stack. What it must do: [`docs/requirements.md`](docs/requirements.md). Everything else: [`docs/`](docs/README.md).
 
-## Before coding
+## Commands
 
-Read `docs/context.md` and `docs/requirements.md`. Stay in v0.5 unless asked.
+```bash
+pnpm gen      # openapi.yaml from Go types, then the Orval client
+pnpm lint     # oxlint, go vet
+pnpm format   # oxfmt, go fmt
+pnpm build
+pnpm dev      # API and Vite dev server, /api proxied to the API
+```
+
+Done means `gen`, `lint` and `build` pass and the generated files are part of the change. There is no test suite yet. Do not add one unless asked.
 
 ## Rules
 
-- English in repo files.
-- Secrets: `provider` + `ref` only. Fingerprint and key path live in the secrets file.
-- Reach Proxmox with SSH + `pvesh`/`pct`. Reach Docker with `pct exec` on `docker.vmid`. Do not list guests or containers in YAML.
-- No task queue until v1 (updates).
-- No auto-retry.
-- Small diffs. Match existing layout.
+- Missing data: stop and name the `homelab-iac` change it needs. Do not add collection here.
+- Health is an Alertmanager alert and its `severity`. No thresholds in code.
+- The front calls the API only through the Orval hooks.
+- Refresh with TanStack Query `refetchInterval`. No SSE or WebSocket.
+- UI from `@jarvis/ui`, charts from TanStack Charts. No other UI or chart library.
 
-## Docs
+## Quality
 
-Update `docs/` and `README.md` in the same change when behavior or scope shifts.
+Go:
 
-## Done
+- Handlers only map HTTP to `internal/app`. Logic lives in `internal/app`, types in `internal/domain`.
+- Sources return domain types. A Prometheus, Loki or Proxmox type never leaves `internal/source`.
+- Every outbound call takes the request `context.Context` and its own timeout.
+- Dependencies are passed to constructors and wired in `main`. No package-level state, no `init()`.
+- Wrap errors with `%w`. Turn them into Huma errors only in `internal/httpapi`.
+- No `panic` on a request path.
 
-Meet `docs/requirements.md` for the current slice. Docs match the binaries.
+Web:
+
+- Components render and handle UI events. Fetching and logic live in hooks.
+- Server data lives only in TanStack Query. Never copy it into `useState`, and compute derived values instead of storing them.
+- Time range, selection and tab live in search params validated by zod.
+- A module in `src/modules/<name>` never imports another module. Shared code goes to `src/shared` or `@jarvis/ui`.
+- Lists that can pass 200 rows are virtualized.
+- No `any`, no `as` on API data, no `!`, no `@ts-ignore`.
+
+## Ask first
+
+New dependencies, CI or Dockerfile changes, breaking API changes, anything that writes outside the Files module.
+
+## Never
+
+- Commit. The user commits.
+- Edit generated files: `apps/api/openapi.yaml`, `packages/api-client/src/gen/`, `routeTree.gen.ts`.
+- Print or log a token, the content of a `*_FILE` secret or a `Remote-*` header value.
+- Reach the Proxmox host over SSH, `pct` or `pvesh`. Use the Proxmox API.
+- Add a database or a persistent volume.
