@@ -1,5 +1,4 @@
-@import '@jarvis/tailwind-config/base.css';
-@import '@jarvis/ui/theme.css';
+@import "@jarvis/tailwind-config/base.css";
+@import "@jarvis/ui/theme.css";
 
-/* Classes used only in stories. */
 @source '../src';

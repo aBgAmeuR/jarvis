@@ -1,21 +1,32 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Button } from "@jarvis/ui";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { Button } from '@jarvis/ui'
+const RefreshIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+  >
+    <path d="M21 12a9 9 0 1 1-3-6.7L21 8 M21 3v5h-5" />
+  </svg>
+);
 
 const meta = {
-  title: 'Components/Button',
+  title: "Components/Button",
   component: Button,
-  args: { children: 'Refresh' },
+  args: { children: "Refresh" },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['primary', 'secondary', 'ghost', 'danger'] },
-    size: { control: 'inline-radio', options: ['sm', 'md', 'lg', 'icon', 'icon-sm'] },
+    variant: { control: "inline-radio", options: ["primary", "secondary", "ghost", "danger"] },
+    size: { control: "inline-radio", options: ["md", "sm", "icon"] },
   },
-} satisfies Meta<typeof Button>
+} satisfies Meta<typeof Button>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {}
+export const Default: Story = {};
 
 export const Variants: Story = {
   render: (args) => (
@@ -34,36 +45,30 @@ export const Variants: Story = {
       </Button>
     </div>
   ),
-}
+};
 
 export const Sizes: Story = {
   render: (args) => (
     <div className="flex items-center gap-2">
-      <Button {...args} size="sm">
-        Small
-      </Button>
       <Button {...args} size="md">
+        <RefreshIcon />
         Medium
       </Button>
-      <Button {...args} size="lg">
-        Large
+      <Button {...args} size="sm">
+        <RefreshIcon />
+        Small
+      </Button>
+      <Button {...args} size="icon" variant="ghost" aria-label="Refresh">
+        <RefreshIcon />
       </Button>
     </div>
   ),
-}
+};
 
-export const IconOnly: Story = {
-  args: {
-    size: 'icon',
-    'aria-label': 'Refresh',
-    children: (
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" />
-      </svg>
-    ),
-  },
-}
+export const Loading: Story = {
+  args: { loading: true },
+};
 
 export const Disabled: Story = {
   args: { disabled: true },
-}
+};

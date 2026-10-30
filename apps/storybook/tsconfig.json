@@ -1,4 +1,4 @@
 {
   "extends": "@jarvis/tsconfig/vite-app.json",
-  "include": ["src", ".storybook", "vite.config.ts"]
+  "include": ["src", ".storybook/*.ts", "vite.config.ts"]
 }

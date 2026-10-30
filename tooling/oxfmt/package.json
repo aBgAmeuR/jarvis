@@ -2,9 +2,9 @@
   "name": "@jarvis/oxfmt-config",
   "private": true,
   "files": [
-    "oxfmt.json"
+    ".oxfmtrc.json"
   ],
-  "exports": {
-    ".": "./oxfmt.json"
+  "devDependencies": {
+    "oxfmt": "catalog:"
   }
 }

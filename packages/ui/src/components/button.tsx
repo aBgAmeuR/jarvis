@@ -1,48 +1,69 @@
-import { Button as BaseButton } from '@base-ui/react/button'
-import { cva, type VariantProps } from 'class-variance-authority'
-
-import { cn } from 'cn'
+import { Button as BaseButton } from "@base-ui/react/button";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 
 export const buttonVariants = cva(
   [
-    'inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium select-none',
-    'transition-colors',
-    'data-disabled:pointer-events-none data-disabled:opacity-50',
-    '[&_svg]:pointer-events-none [&_svg]:size-3.5 [&_svg]:shrink-0',
+    "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap select-none",
+    "transition-colors duration-100 ease-out",
+    "data-disabled:pointer-events-none data-disabled:opacity-45",
+    "[&_svg]:pointer-events-none [&_svg]:size-3.5 [&_svg]:shrink-0",
   ],
   {
     variants: {
       variant: {
-        primary: 'bg-accent text-on-accent hover:bg-accent-hover',
-        secondary:
-          'border border-border-strong bg-surface text-fg shadow-sm hover:bg-surface-hover active:bg-surface-active',
-        ghost: 'text-fg-muted hover:bg-surface-hover hover:text-fg active:bg-surface-active',
-        danger: 'bg-critical text-on-accent hover:bg-critical/90',
+        primary: "bg-primary font-semibold text-primary-foreground hover:bg-primary/90",
+        secondary: "border-input bg-background text-foreground hover:bg-muted",
+        ghost: "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+        danger:
+          "border-input bg-background text-destructive hover:border-destructive hover:bg-critical-subtle",
       },
       size: {
-        sm: 'h-5 px-1.5 text-xs',
-        md: 'h-6.5 px-2.5 text-base',
-        lg: 'h-8 px-3 text-md',
-        icon: 'size-6.5',
-        'icon-sm': 'size-5',
+        md: "h-6.5 px-2.5 text-sm",
+        sm: "h-5.5 px-2 text-xs [&_svg]:size-3",
+        icon: "size-6.5",
       },
     },
     defaultVariants: {
-      variant: 'secondary',
-      size: 'md',
+      variant: "secondary",
+      size: "md",
     },
   },
-)
+);
 
-export type ButtonProps = Omit<BaseButton.Props, 'className'> &
+export type ButtonProps = Omit<BaseButton.Props, "className"> &
   VariantProps<typeof buttonVariants> & {
-    className?: string
-  }
+    className?: string;
+    /** Shows a spinner and ignores clicks, without dimming the button. */
+    loading?: boolean;
+  };
 
 /**
- * A button. `secondary` is the default; keep `primary` for the one main action
- * of a view. Icon-only buttons need an `aria-label`.
+ * A button. `secondary` is the default. `primary` appears once per view at
+ * most. `danger` is outlined and kept for Files (Delete, Empty trash).
+ * Icon-only buttons need an `aria-label`.
  */
-export function Button({ className, variant, size, ...props }: ButtonProps) {
-  return <BaseButton className={cn(buttonVariants({ variant, size }), className)} {...props} />
+export function Button({
+  className,
+  variant,
+  size,
+  loading = false,
+  children,
+  ...props
+}: ButtonProps) {
+  return (
+    <BaseButton
+      className={cn(buttonVariants({ variant, size }), loading && "pointer-events-none", className)}
+      aria-busy={loading || undefined}
+      {...props}
+    >
+      {loading && (
+        <span
+          aria-hidden
+          className="size-3 animate-spin rounded-full border-[1.5px] border-current border-r-transparent motion-reduce:[animation-duration:2.4s]"
+        />
+      )}
+      {children}
+    </BaseButton>
+  );
 }

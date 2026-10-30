@@ -37,7 +37,7 @@ Each folder in `tooling/` is a private workspace package with config only, no co
 |---|---|---|
 | `tooling/typescript` | `@jarvis/tsconfig`: `base.json`, `vite-app.json`, `react-library.json` | `"extends": "@jarvis/tsconfig/base.json"` |
 | `tooling/oxlint` | `@jarvis/oxlint-config`: `base.json`, `react.json` | a `.oxlintrc.json` in each package, `extends: ["./node_modules/@jarvis/oxlint-config/react.json"]`; oxlint resolves paths, not package names |
-| `tooling/oxfmt` | `@jarvis/oxfmt-config` | an `oxfmt.config.ts` in each package that re-exports it; oxfmt 0.75 has no `extends` |
+| `tooling/oxfmt` | `@jarvis/oxfmt-config`: `.oxfmtrc.json` | a `.oxfmtrc.json` symlink to it in each package; oxfmt has no `extends`, and the Zed extension reads only JSON configs |
 | `tooling/tailwind` | `@jarvis/tailwind-config`: `base.css` with `@import "tailwindcss"` | `@import "@jarvis/tailwind-config/base.css"` |
 | `tooling/golangci` | `.golangci.yml` | `golangci-lint run --config` |
 | `tooling/spectral` | API style ruleset | `spectral lint --ruleset` |

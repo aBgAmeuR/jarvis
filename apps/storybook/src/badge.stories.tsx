@@ -1,44 +1,71 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-
-import { Badge } from '@jarvis/ui'
+import { Badge, StatusDot } from "@jarvis/ui";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-  title: 'Components/Badge',
+  title: "Components/Badge",
   component: Badge,
-  args: { children: 'warning', tone: 'warning', dot: false },
+  args: { children: "Warning", tone: "warning", dot: true },
   argTypes: {
-    tone: { control: 'inline-radio', options: ['critical', 'warning', 'info', 'ok', 'neutral'] },
+    tone: { control: "inline-radio", options: ["critical", "warning", "info", "ok", "neutral"] },
   },
-} satisfies Meta<typeof Badge>
+} satisfies Meta<typeof Badge>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {}
+export const Default: Story = {};
 
 export const Severities: Story = {
-  render: (args) => (
-    <div className="flex items-center gap-2">
-      <Badge {...args} tone="critical">
-        critical
-      </Badge>
-      <Badge {...args} tone="warning">
-        warning
-      </Badge>
-      <Badge {...args} tone="info">
-        info
-      </Badge>
-      <Badge {...args} tone="ok">
-        ok
-      </Badge>
-      <Badge {...args} tone="neutral">
-        lxc
-      </Badge>
+  render: () => (
+    <div className="flex flex-col gap-2.5">
+      <div className="flex items-center gap-2">
+        <Badge tone="critical" dot>
+          Critical
+        </Badge>
+        <Badge tone="warning" dot>
+          Warning
+        </Badge>
+        <Badge tone="info" dot>
+          Info
+        </Badge>
+        <Badge tone="ok" dot>
+          OK
+        </Badge>
+        <Badge tone="neutral" dot>
+          Stopped
+        </Badge>
+      </div>
+      <div className="flex items-center gap-2">
+        <Badge tone="critical" dot>
+          Critical · 3
+        </Badge>
+        <Badge>LXC</Badge>
+        <Badge>Debian 12</Badge>
+      </div>
     </div>
   ),
-}
+};
 
-export const WithDot: Story = {
-  ...Severities,
-  args: { dot: true },
-}
+export const Dots: Story = {
+  render: () => (
+    <div className="flex items-center gap-3.5">
+      <span className="flex items-center gap-2">
+        <StatusDot tone="critical" />1 critical
+      </span>
+      <span className="flex items-center gap-2">
+        <StatusDot tone="warning" />2 warning
+      </span>
+      <span className="flex items-center gap-2">
+        <StatusDot tone="info" />1 info
+      </span>
+      <span className="flex items-center gap-2">
+        <StatusDot tone="ok" />
+        running
+      </span>
+      <span className="flex items-center gap-2">
+        <StatusDot tone="neutral" />
+        stopped
+      </span>
+    </div>
+  ),
+};
