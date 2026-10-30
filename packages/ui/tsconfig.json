@@ -1,0 +1,4 @@
+{
+  "extends": "@jarvis/tsconfig/react-library.json",
+  "include": ["src"]
+}

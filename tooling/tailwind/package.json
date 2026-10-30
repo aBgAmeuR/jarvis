@@ -1,0 +1,14 @@
+{
+  "name": "@jarvis/tailwind-config",
+  "private": true,
+  "files": ["base.css"],
+  "exports": {
+    "./base.css": {
+      "style": "./base.css",
+      "default": "./base.css"
+    }
+  },
+  "dependencies": {
+    "tailwindcss": "catalog:"
+  }
+}

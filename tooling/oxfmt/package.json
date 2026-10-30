@@ -1,0 +1,10 @@
+{
+  "name": "@jarvis/oxfmt-config",
+  "private": true,
+  "files": [
+    "oxfmt.json"
+  ],
+  "exports": {
+    ".": "./oxfmt.json"
+  }
+}

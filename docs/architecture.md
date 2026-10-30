@@ -13,7 +13,7 @@ How Jarvis is built and how it runs. Where it runs in the homelab: [deployment.m
 | API client | Orval: TanStack Query hooks and zod schemas, no mocks |
 | UI | `@jarvis/ui`, custom components on Base UI, Tailwind v4 tokens |
 | Charts | TanStack Charts only, Canvas renderer for dense series |
-| Component docs | Storybook for `@jarvis/ui` |
+| Component docs | Storybook for `@jarvis/ui`, in `apps/storybook` |
 | Lint and format | oxlint and oxfmt for TypeScript, `go vet` and `go fmt` for Go |
 
 Dependencies and toolchain: [development.md](development.md).

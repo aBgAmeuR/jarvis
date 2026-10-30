@@ -1,0 +1,122 @@
+/*
+ * Jarvis design tokens. Import after @jarvis/tailwind-config/base.css.
+ *
+ * Every color is a light-dark() pair. color-scheme picks the side: the system
+ * setting by default, data-theme="light" or "dark" on <html> to force one.
+ * The default Tailwind palette is removed so only these tokens exist.
+ */
+
+@source './';
+
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  /* Surfaces */
+  --color-bg: light-dark(oklch(0.985 0.002 250), oklch(0.165 0.006 260));
+  --color-surface: light-dark(oklch(1 0 0), oklch(0.205 0.007 260));
+  --color-surface-raised: light-dark(oklch(1 0 0), oklch(0.245 0.008 260));
+  --color-surface-hover: light-dark(oklch(0.955 0.004 250), oklch(0.27 0.008 260));
+  --color-surface-active: light-dark(oklch(0.925 0.005 250), oklch(0.31 0.009 260));
+  --color-inverse: light-dark(oklch(0.24 0.008 260), oklch(0.93 0.004 250));
+  --color-on-inverse: light-dark(oklch(0.97 0.002 250), oklch(0.2 0.007 260));
+
+  /* Lines */
+  --color-border: light-dark(oklch(0.91 0.005 250), oklch(0.3 0.008 260));
+  --color-border-strong: light-dark(oklch(0.84 0.007 250), oklch(0.38 0.01 260));
+  --color-ring: light-dark(oklch(0.55 0.17 255), oklch(0.7 0.14 255));
+
+  /* Text */
+  --color-fg: light-dark(oklch(0.22 0.008 260), oklch(0.93 0.004 250));
+  --color-fg-muted: light-dark(oklch(0.45 0.01 260), oklch(0.72 0.008 250));
+  --color-fg-subtle: light-dark(oklch(0.6 0.01 260), oklch(0.56 0.01 255));
+
+  /* Accent, for the one primary action of a view */
+  --color-accent: light-dark(oklch(0.52 0.17 255), oklch(0.68 0.15 255));
+  --color-accent-hover: light-dark(oklch(0.47 0.17 255), oklch(0.74 0.14 255));
+  --color-on-accent: light-dark(oklch(0.99 0 0), oklch(0.17 0.02 260));
+
+  /*
+   * Severity, mapped one to one to the Alertmanager `severity` label.
+   * `ok` means no firing alert. Each one has a solid color for dots and text,
+   * and a subtle background for badges.
+   */
+  --color-critical: light-dark(oklch(0.55 0.2 25), oklch(0.7 0.18 25));
+  --color-critical-subtle: light-dark(oklch(0.96 0.025 25), oklch(0.29 0.07 25));
+  --color-warning: light-dark(oklch(0.6 0.14 65), oklch(0.8 0.14 75));
+  --color-warning-subtle: light-dark(oklch(0.97 0.03 80), oklch(0.3 0.06 70));
+  --color-info: light-dark(oklch(0.52 0.15 250), oklch(0.72 0.12 250));
+  --color-info-subtle: light-dark(oklch(0.96 0.02 250), oklch(0.29 0.05 255));
+  --color-ok: light-dark(oklch(0.55 0.14 155), oklch(0.74 0.15 155));
+  --color-ok-subtle: light-dark(oklch(0.96 0.03 155), oklch(0.28 0.05 155));
+  --color-neutral: light-dark(oklch(0.55 0.01 260), oklch(0.64 0.01 255));
+  --color-neutral-subtle: light-dark(oklch(0.95 0.004 250), oklch(0.28 0.008 260));
+
+  /* Type: 12 px base, compact scale */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1rem;
+  --text-base: 0.75rem;
+  --text-base--line-height: 1.125rem;
+  --text-md: 0.8125rem;
+  --text-md--line-height: 1.25rem;
+  --text-lg: 0.9375rem;
+  --text-lg--line-height: 1.375rem;
+  --text-xl: 1.125rem;
+  --text-xl--line-height: 1.625rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+
+  --radius-sm: 0.1875rem;
+  --radius-md: 0.3125rem;
+  --radius-lg: 0.5rem;
+
+  --shadow-sm: 0 1px 2px light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.3));
+  --shadow-md:
+    0 4px 12px light-dark(oklch(0 0 0 / 0.08), oklch(0 0 0 / 0.4)),
+    0 0 0 1px light-dark(oklch(0 0 0 / 0.04), oklch(1 0 0 / 0.06));
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 1px;
+  }
+}

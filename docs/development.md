@@ -5,14 +5,14 @@ How to work on the repo: layout, commands, shared tooling, dependencies, CI and 
 ## Repository
 
 ```
-.claude/CLAUDE.md          points to AGENTS.md
 .github/                   workflows, renovate.json, CODEOWNERS
 apps/api/                  Go module: cmd/jarvis-api, internal/{domain,app,source,httpapi}
 apps/api/openapi.yaml      generated, committed
+apps/storybook/            Storybook for @jarvis/ui, with the stories
 apps/web/                  TanStack Start SPA, modules in src/modules/<name>
 docker/                    Dockerfile, Dockerfile.dockerignore
 docs/
-packages/ui/               @jarvis/ui, its design tokens and its Storybook
+packages/ui/               @jarvis/ui and its design tokens
 packages/api-client/       Orval config and output in src/gen/
 tooling/                   shared config packages
 .gitignore  AGENTS.md  LICENSE  README.md
@@ -36,15 +36,15 @@ Each folder in `tooling/` is a private workspace package with config only, no co
 | Folder | Content | Used with |
 |---|---|---|
 | `tooling/typescript` | `@jarvis/tsconfig`: `base.json`, `vite-app.json`, `react-library.json` | `"extends": "@jarvis/tsconfig/base.json"` |
-| `tooling/oxlint` | `@jarvis/oxlint-config`: `base.json`, `react.json` | a two-line `.oxlintrc.json` with `extends` in each package |
-| `tooling/oxfmt` | `@jarvis/oxfmt-config` | `oxfmt -c <path>`; oxfmt 0.75 has no `extends` |
-| `tooling/tailwind` | `@jarvis/tailwind-config`: `base.css` with `@import "tailwindcss"`, the dark variant and plugins | `@import "@jarvis/tailwind-config/base.css"` |
+| `tooling/oxlint` | `@jarvis/oxlint-config`: `base.json`, `react.json` | a `.oxlintrc.json` in each package, `extends: ["./node_modules/@jarvis/oxlint-config/react.json"]`; oxlint resolves paths, not package names |
+| `tooling/oxfmt` | `@jarvis/oxfmt-config` | an `oxfmt.config.ts` in each package that re-exports it; oxfmt 0.75 has no `extends` |
+| `tooling/tailwind` | `@jarvis/tailwind-config`: `base.css` with `@import "tailwindcss"` | `@import "@jarvis/tailwind-config/base.css"` |
 | `tooling/golangci` | `.golangci.yml` | `golangci-lint run --config` |
 | `tooling/spectral` | API style ruleset | `spectral lint --ruleset` |
 | `tooling/commitlint` | commitlint config | `--config` |
 | `tooling/go` | Go module with `tool` directives: golangci-lint, gofumpt, oasdiff | `go tool <name>` |
 
-Design tokens (`@theme`: colors, sizes, spacing) live in `packages/ui/src/theme.css`, since they belong to the design system. Storybook, Orval and Vite config stay in the one package that uses each of them.
+Design tokens (`@theme`: colors, sizes, spacing) live in `packages/ui/src/theme.css`, since they belong to the design system. Storybook is an app of its own in `apps/storybook`, which imports `@jarvis/ui` like `apps/web` does. Orval and Vite config stay in the one package that uses each of them.
 
 ## Dependencies
 
@@ -65,17 +65,17 @@ Internal packages are referenced with `"workspace:*"`.
 
 ## Toolchain
 
-Each tool pins its own version.
+Each tool pins its own version, except Node, which only has a minimum.
 
 | Tool | Pinned in | Installed by |
 |---|---|---|
 | Go | `toolchain` directive in `apps/api/go.mod` | Go downloads it on first use |
-| Node | `devEngines.runtime` in the root `package.json`, `onFail: "download"` | pnpm, with version and checksum in the lockfile |
+| Node | `engines.node` (`>=24`) in the root `package.json` | the machine or `setup-node` |
 | pnpm | `packageManager` in the root `package.json` | corepack or `pnpm/action-setup` |
 | turbo | root `devDependencies`, from the catalog | pnpm |
 | Go tools | `tooling/go/go.mod` | `go tool` |
 
-A machine needs any `go` and any `pnpm`. CI reads the same files: `setup-go` with `go-version-file`, `pnpm/action-setup` with `packageManager`.
+A machine needs any `go`, any `pnpm` and Node 24 or later. CI reads the same files: `setup-go` with `go-version-file`, `pnpm/action-setup` with `packageManager`.
 
 ## Release
 
