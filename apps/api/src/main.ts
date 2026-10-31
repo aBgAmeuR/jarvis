@@ -8,5 +8,4 @@ import "./style.css";
 createApiReference("#app", {
   content: spec,
   expandAllParameters: true,
-  hideTestRequestButton: true,
 });

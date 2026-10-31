@@ -32,10 +32,10 @@ Errors are `application/problem+json` (RFC 9457).
 |---|---|---|
 | Node | Proxmox node name | `pve` |
 | Guest | VMID | `116` |
-| Service | catalog slug | `grafana` |
-| Probe | slug | `http-grafana`, `icmp-116`, `dns-116` |
+| Service | its name, with the guest added when several share it (`alloy-111`) | `grafana` |
+| Probe | kind and guest, or `http` and the first label of the site | `icmp-116`, `dns-116`, `http-monitoring`, `icmp-pve` |
 | Alert | Alertmanager fingerprint | |
-| Client | MAC, lowercase, hyphens | `aa-bb-cc-dd-ee-ff` |
+| Client | MAC, lowercase, hyphens; only devices with a DHCP lease | `aa-bb-cc-dd-ee-ff` |
 | VPN peer | peer name | |
 | File | base64url of the path, `root` for the dataset root | |
 
@@ -53,6 +53,8 @@ The client sends no point count. The backend picks the Prometheus step: `step = 
 | 24 h | 2 min | 720 |
 | 7 d | 15 min | 672 |
 | 30 d | 1 h | 720 |
+
+Both ends are aligned down to the step, so identical requests in the same step share one read, and the response returns the window actually read. A window over 30 days keeps the 1 h step and returns more than 720 points; 90 days is the maximum, and a longer one is refused with a 422.
 
 The response is columnar and does not return the step. A gap is a missing timestamp.
 
@@ -87,7 +89,7 @@ Paths are relative to `/api/v1`. The Spec column points to [requirements.md](req
 
 | Method | Path | Spec |
 |---|---|---|
-| GET | `/overview` | S-01 |
+| GET | `/overview` | S-01, one call: `status`, `toHandle`, `nodes`, `guests`, `probes` |
 | GET | `/nodes`, `/nodes/{node}` | S-02 |
 | GET | `/nodes/{node}/metrics` | S-02 |
 | GET | `/nodes/{node}/storages` | S-02 |
@@ -99,7 +101,7 @@ Paths are relative to `/api/v1`. The Spec column points to [requirements.md](req
 | GET | `/services/{service}/metrics` | S-06, rate, errors, latency |
 | GET | `/logs` | S-04, S-06; filters `guest`, `service`, `level`, `q` |
 
-The "To handle" list is `GET /alerts?state=firing`, sorted by severity.
+`status` is the severity of the worst firing alert (`ok` without any, `unknown` when Alertmanager does not answer). `toHandle` is `GET /alerts?state=firing` in short form, most severe first. A source that fails leaves its part out and appears in `degraded`.
 
 ### Availability
 
@@ -127,7 +129,7 @@ Alertmanager does not keep resolved alerts. `state=resolved` reads the `ALERTS` 
 | GET | `/vpn-peers`, `/vpn-peers/{peer}` | R-04 |
 | GET | `/vpn-peers/{peer}/metrics` | R-04 |
 
-Top clients are `GET /clients?sort=-queries&limit=10`.
+Top clients are `GET /clients?sort=-queries&limit=10`. `/dns/domains` counts Blocky log lines per domain in Loki, which stops a query past `limits_config.max_query_series` (5000 in `homelab-iac`): a very wide range on a busy resolver can fail with a 502.
 
 ### Maintenance
 
@@ -136,6 +138,8 @@ Top clients are `GET /clients?sort=-queries&limit=10`.
 | GET | `/backups?guest=` | M-03 |
 | GET | `/backup-jobs` | M-03 |
 | GET | `/drift-items` | M-04; `kind` is `missingInIac`, `missingInProxmox` or `resourceMismatch` |
+
+A `resourceMismatch` carries `differences`: the cores, memory, swap and disk (`cores`, `memoryMb`, `swapMb`, `diskGb`) that differ between `catalog.json` and the container configuration in Proxmox. When Proxmox refuses the configuration, the other items are still listed and the source is in `degraded`.
 
 M-01 and M-05 are fields of `/guests` and `/nodes/{node}/zpools`.
 

@@ -1,5 +1,626 @@
 components:
   schemas:
+    AlertBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/AlertBody.json
+          format: uri
+          readOnly: true
+          type: string
+        annotations:
+          additionalProperties:
+            type: string
+          description: Alert annotations, with summary and description.
+          examples:
+            - summary: Guest 116 (dns) is not running
+          type: object
+        endsAt:
+          description: When a resolved alert stopped firing, RFC 3339 in UTC.
+          examples:
+            - "2026-10-31T10:12:00Z"
+          format: date-time
+          type: string
+        fingerprint:
+          description: Alertmanager fingerprint, the alert id.
+          examples:
+            - 3a1f9c0d5b7e2a44
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: Alert labels.
+          examples:
+            - severity: critical
+              vmid: "116"
+          type: object
+        name:
+          description: Alert rule name.
+          examples:
+            - GuestDown
+          type: string
+        severity:
+          description: Severity label of the rule.
+          enum:
+            - critical
+            - warning
+            - info
+            - none
+          examples:
+            - critical
+          type: string
+        startsAt:
+          description: When the alert started firing, RFC 3339 in UTC. For a resolved alert that began before the window, its first sample in the window.
+          examples:
+            - "2026-10-31T09:41:00Z"
+          format: date-time
+          type: string
+        state:
+          description: firing, or suppressed when silenced or inhibited.
+          enum:
+            - firing
+            - suppressed
+            - resolved
+          examples:
+            - firing
+          type: string
+      required:
+        - fingerprint
+        - name
+        - severity
+        - state
+        - startsAt
+        - labels
+        - annotations
+      type: object
+    AtaHealthBody:
+      additionalProperties: false
+      properties:
+        pendingSectors:
+          description: Sectors waiting to be reallocated.
+          examples:
+            - 0
+          format: int64
+          type: integer
+        reallocatedSectors:
+          description: Reallocated sectors.
+          examples:
+            - 0
+          format: int64
+          type: integer
+        udmaCrcErrors:
+          description: Interface CRC errors.
+          examples:
+            - 0
+          format: int64
+          type: integer
+        uncorrectableSectors:
+          description: Uncorrectable sectors found offline.
+          examples:
+            - 0
+          format: int64
+          type: integer
+      required:
+        - reallocatedSectors
+        - pendingSectors
+        - uncorrectableSectors
+        - udmaCrcErrors
+      type: object
+    BackupBody:
+      additionalProperties: false
+      properties:
+        backupCount:
+          description: Backup files kept for the guest.
+          examples:
+            - 7
+          format: int64
+          type: integer
+        covered:
+          description: Whether a backup job covers the guest.
+          examples:
+            - true
+          type: boolean
+        lastBackupAt:
+          description: When the newest backup file was written, RFC 3339 in UTC. Absent without any.
+          examples:
+            - "2026-10-31T03:00:00Z"
+          format: date-time
+          type: string
+        lastBackupSizeBytes:
+          description: Size of the newest backup file.
+          examples:
+            - 524288000
+          format: int64
+          minimum: 0
+          type: integer
+        lastResult:
+          description: Result of the last backup run.
+          enum:
+            - ok
+            - warning
+            - error
+            - unknown
+          examples:
+            - ok
+          type: string
+        lastRunAt:
+          description: When the last backup run started, RFC 3339 in UTC. Absent without any.
+          examples:
+            - "2026-10-31T03:00:00Z"
+          format: date-time
+          type: string
+        name:
+          description: Guest name.
+          examples:
+            - dns
+          type: string
+        vmid:
+          description: Proxmox guest id.
+          examples:
+            - 116
+          format: int64
+          type: integer
+      required:
+        - vmid
+        - name
+        - covered
+        - backupCount
+        - lastBackupSizeBytes
+        - lastResult
+      type: object
+    BackupJobBody:
+      additionalProperties: false
+      properties:
+        comment:
+          description: Comment on the job.
+          examples:
+            - Nightly
+          type: string
+        enabled:
+          description: Whether the job runs.
+          examples:
+            - true
+          type: boolean
+        id:
+          description: Proxmox backup job id.
+          examples:
+            - backup-3f1a2b4c-0d5e
+          type: string
+        mode:
+          description: Backup mode.
+          examples:
+            - snapshot
+          type: string
+        nextRunAt:
+          description: Next run, RFC 3339 in UTC.
+          examples:
+            - "2026-11-01T03:00:00Z"
+          format: date-time
+          type: string
+        schedule:
+          description: When the job runs, as Proxmox writes it.
+          examples:
+            - "03:00"
+          type: string
+        storage:
+          description: Where the backups go.
+          examples:
+            - local
+          type: string
+      required:
+        - id
+        - enabled
+        - schedule
+        - storage
+        - mode
+      type: object
+    BucketBody:
+      additionalProperties: false
+      properties:
+        availability:
+          description: Share of successful probes that day, from 0 to 1. Absent without samples.
+          examples:
+            - 1
+          format: double
+          type: number
+        start:
+          description: First instant of the UTC day, RFC 3339.
+          examples:
+            - "2026-10-30T00:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - start
+      type: object
+    CertificateBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/CertificateBody.json
+          format: uri
+          readOnly: true
+          type: string
+        expiresAt:
+          description: When the certificate expires, RFC 3339 in UTC.
+          examples:
+            - "2027-01-15T10:00:00Z"
+          format: date-time
+          type: string
+        expiresInSeconds:
+          description: Time left before it expires. Negative once expired.
+          examples:
+            - 7776000
+          format: int64
+          type: integer
+        site:
+          description: Site host name.
+          examples:
+            - files.antoinejosset.fr
+          type: string
+        target:
+          description: URL probed.
+          examples:
+            - https://files.antoinejosset.fr/healthz
+          type: string
+        vmid:
+          description: Guest behind the site.
+          examples:
+            - 115
+          format: int64
+          type: integer
+      required:
+        - site
+        - target
+        - expiresAt
+        - expiresInSeconds
+      type: object
+    ClientBody:
+      additionalProperties: false
+      properties:
+        blocked:
+          description: Queries the resolver blocked over the last 24 hours.
+          examples:
+            - 87
+          format: int64
+          type: integer
+        id:
+          description: MAC address in lowercase, with hyphens.
+          examples:
+            - bc-07-1d-35-46-1f
+          type: string
+        ip:
+          description: IP address of the DHCP lease.
+          examples:
+            - 192.168.1.22
+          type: string
+        lastQueryAt:
+          description: Last time the device queried, to 5 minutes. Absent when it did not in the last 24 hours.
+          examples:
+            - "2026-10-31T18:25:00Z"
+          format: date-time
+          type: string
+        leaseExpiresAt:
+          description: When the DHCP lease expires, RFC 3339 in UTC.
+          examples:
+            - "2026-11-01T10:00:00Z"
+          format: date-time
+          type: string
+        mac:
+          description: MAC address.
+          examples:
+            - bc:07:1d:35:46:1f
+          type: string
+        name:
+          description: Name the resolver found for the device. Absent when it has none.
+          examples:
+            - iPhone.lan
+          type: string
+        queries:
+          description: DNS queries over the last 24 hours.
+          examples:
+            - 1250
+          format: int64
+          type: integer
+      required:
+        - id
+        - mac
+        - ip
+        - leaseExpiresAt
+        - queries
+        - blocked
+      type: object
+    ClientDetailBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ClientDetailBody.json
+          format: uri
+          readOnly: true
+          type: string
+        blocked:
+          description: Queries the resolver blocked over the last 24 hours.
+          examples:
+            - 87
+          format: int64
+          type: integer
+        degraded:
+          description: Sources that failed. The client is still returned.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        id:
+          description: MAC address in lowercase, with hyphens.
+          examples:
+            - bc-07-1d-35-46-1f
+          type: string
+        ip:
+          description: IP address of the DHCP lease.
+          examples:
+            - 192.168.1.22
+          type: string
+        lastQueryAt:
+          description: Last time the device queried, to 5 minutes. Absent when it did not in the last 24 hours.
+          examples:
+            - "2026-10-31T18:25:00Z"
+          format: date-time
+          type: string
+        leaseExpiresAt:
+          description: When the DHCP lease expires, RFC 3339 in UTC.
+          examples:
+            - "2026-11-01T10:00:00Z"
+          format: date-time
+          type: string
+        mac:
+          description: MAC address.
+          examples:
+            - bc:07:1d:35:46:1f
+          type: string
+        name:
+          description: Name the resolver found for the device. Absent when it has none.
+          examples:
+            - iPhone.lan
+          type: string
+        queries:
+          description: DNS queries over the last 24 hours.
+          examples:
+            - 1250
+          format: int64
+          type: integer
+      required:
+        - degraded
+        - id
+        - mac
+        - ip
+        - leaseExpiresAt
+        - queries
+        - blocked
+      type: object
+    DNSBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/DNSBody.json
+          format: uri
+          readOnly: true
+          type: string
+        blocked:
+          description: Queries blocked over the last 24 hours.
+          examples:
+            - 2200
+          format: int64
+          type: integer
+        cached:
+          description: Queries answered from the cache over the last 24 hours.
+          examples:
+            - 35000
+          format: int64
+          type: integer
+        queries:
+          description: DNS queries over the last 24 hours.
+          examples:
+            - 52000
+          format: int64
+          type: integer
+        queriesPerSecond:
+          description: Queries per second over the last 5 minutes.
+          examples:
+            - 0.6
+          format: double
+          type: number
+        upstreamLatencySeconds:
+          description: Average time the upstream resolver took over the last 24 hours.
+          examples:
+            - 0.01
+          format: double
+          type: number
+      required:
+        - queries
+        - blocked
+        - cached
+        - upstreamLatencySeconds
+        - queriesPerSecond
+      type: object
+    DegradedBody:
+      additionalProperties: false
+      properties:
+        reason:
+          description: How it failed.
+          examples:
+            - Did not answer in time
+          type: string
+        source:
+          description: Data source that failed.
+          examples:
+            - alertmanager
+          type: string
+      required:
+        - source
+        - reason
+      type: object
+    DiskBody:
+      additionalProperties: false
+      properties:
+        ata:
+          $ref: "#/components/schemas/AtaHealthBody"
+          description: ATA health figures. Absent on other drives.
+        device:
+          description: Device path.
+          examples:
+            - /dev/sda
+          type: string
+        healthPassed:
+          description: Result of the SMART overall health test.
+          examples:
+            - true
+          type: boolean
+        model:
+          description: Drive model.
+          examples:
+            - WDC WD40EFPX-68C6CN0
+          type: string
+        nvme:
+          $ref: "#/components/schemas/NvmeHealthBody"
+          description: NVMe health figures. Absent on other drives.
+        powerOnHours:
+          description: Hours powered on. Absent when not reported.
+          examples:
+            - 7533
+          format: int64
+          type: integer
+        protocol:
+          description: Interface protocol.
+          examples:
+            - ATA
+          type: string
+        rotational:
+          description: Whether the drive has spinning platters.
+          examples:
+            - true
+          type: boolean
+        serial:
+          description: Serial number.
+          examples:
+            - WD-WX32D855YNY2
+          type: string
+        standby:
+          description: Whether the drive is asleep.
+          examples:
+            - false
+          type: boolean
+        temperatureCelsius:
+          description: Drive temperature. Absent when not reported.
+          examples:
+            - 26
+          format: double
+          type: number
+      required:
+        - device
+        - model
+        - serial
+        - protocol
+        - rotational
+        - healthPassed
+        - standby
+      type: object
+    DomainBody:
+      additionalProperties: false
+      properties:
+        count:
+          description: Lookups over the window.
+          examples:
+            - 18
+          format: int64
+          type: integer
+        domain:
+          description: Domain name, with its trailing dot.
+          examples:
+            - googleads.g.doubleclick.net.
+          type: string
+      required:
+        - domain
+        - count
+      type: object
+    DriftItemBody:
+      additionalProperties: false
+      properties:
+        differences:
+          description: The resources that differ. Only for resourceMismatch.
+          items:
+            $ref: "#/components/schemas/ResourceDifferenceBody"
+          type: array
+        kind:
+          description: "What differs: a guest in Proxmox that homelab-iac does not manage, the reverse, or resources that differ between the two."
+          enum:
+            - missingInIac
+            - missingInProxmox
+            - resourceMismatch
+          examples:
+            - missingInIac
+          type: string
+        name:
+          description: Guest name.
+          examples:
+            - remote-dev
+          type: string
+        vmid:
+          description: Guest id.
+          examples:
+            - 105
+          format: int64
+          type: integer
+      required:
+        - kind
+        - vmid
+        - name
+      type: object
+    EntryBody:
+      additionalProperties: false
+      properties:
+        instance:
+          description: Guest name.
+          examples:
+            - dns
+          type: string
+        level:
+          description: Journal priority. Absent when the stream has none.
+          examples:
+            - info
+          type: string
+        line:
+          description: The log line.
+          examples:
+            - query resolved
+          type: string
+        service:
+          description: Unit or container the line comes from.
+          examples:
+            - blocky
+          type: string
+        timestamp:
+          description: When the line was written, RFC 3339 in UTC.
+          examples:
+            - "2026-10-31T18:23:58.123456789Z"
+          format: date-time
+          type: string
+        vmid:
+          description: Guest VMID. Absent when the stream has none.
+          examples:
+            - 116
+          format: int64
+          type: integer
+      required:
+        - timestamp
+        - line
+        - service
+      type: object
     ErrorDetail:
       additionalProperties: false
       properties:
@@ -59,6 +680,592 @@ components:
           format: uri
           type: string
       type: object
+    GetProbeAvailabilityOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/GetProbeAvailabilityOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: The last 90 UTC days, then today so far, oldest first.
+          items:
+            $ref: "#/components/schemas/BucketBody"
+          type: array
+      required:
+        - items
+      type: object
+    GuestBody:
+      additionalProperties: false
+      properties:
+        address:
+          description: IP address from the catalog.
+          examples:
+            - 192.168.1.116
+          type: string
+        alertCount:
+          description: Number of firing alerts on the guest.
+          examples:
+            - 1
+          format: int64
+          type: integer
+        alertSeverity:
+          description: Severity of the worst firing alert on the guest. Absent when none fires.
+          enum:
+            - critical
+            - warning
+            - info
+          examples:
+            - warning
+          type: string
+        description:
+          description: Description from the catalog.
+          examples:
+            - Blocky and dnsmasq
+          type: string
+        kind:
+          description: Container or virtual machine.
+          enum:
+            - lxc
+            - qemu
+          examples:
+            - lxc
+          type: string
+        managedByIac:
+          description: Whether homelab-iac manages the guest. Absent when the catalog is unavailable.
+          examples:
+            - true
+          type: boolean
+        name:
+          description: Guest name.
+          examples:
+            - dns
+          type: string
+        node:
+          description: Proxmox node hosting the guest.
+          examples:
+            - pve
+          type: string
+        status:
+          description: Proxmox status.
+          examples:
+            - running
+          type: string
+        upgrades:
+          $ref: "#/components/schemas/UpgradesBody"
+          description: Pending apt upgrades. Absent when the guest reports none.
+        usage:
+          $ref: "#/components/schemas/UsageBody"
+          description: Resource usage. Absent unless the guest is running.
+        vmid:
+          description: Proxmox guest id.
+          examples:
+            - 116
+          format: int64
+          type: integer
+      required:
+        - vmid
+        - name
+        - kind
+        - node
+        - status
+        - alertCount
+      type: object
+    GuestDetailBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/GuestDetailBody.json
+          format: uri
+          readOnly: true
+          type: string
+        address:
+          description: IP address from the catalog.
+          examples:
+            - 192.168.1.116
+          type: string
+        alertCount:
+          description: Number of firing alerts on the guest.
+          examples:
+            - 1
+          format: int64
+          type: integer
+        alertSeverity:
+          description: Severity of the worst firing alert on the guest. Absent when none fires.
+          enum:
+            - critical
+            - warning
+            - info
+          examples:
+            - warning
+          type: string
+        degraded:
+          description: Sources that failed. The guest is still returned.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        description:
+          description: Description from the catalog.
+          examples:
+            - Blocky and dnsmasq
+          type: string
+        kind:
+          description: Container or virtual machine.
+          enum:
+            - lxc
+            - qemu
+          examples:
+            - lxc
+          type: string
+        managedByIac:
+          description: Whether homelab-iac manages the guest. Absent when the catalog is unavailable.
+          examples:
+            - true
+          type: boolean
+        name:
+          description: Guest name.
+          examples:
+            - dns
+          type: string
+        node:
+          description: Proxmox node hosting the guest.
+          examples:
+            - pve
+          type: string
+        status:
+          description: Proxmox status.
+          examples:
+            - running
+          type: string
+        upgrades:
+          $ref: "#/components/schemas/UpgradesBody"
+          description: Pending apt upgrades. Absent when the guest reports none.
+        usage:
+          $ref: "#/components/schemas/UsageBody"
+          description: Resource usage. Absent unless the guest is running.
+        vmid:
+          description: Proxmox guest id.
+          examples:
+            - 116
+          format: int64
+          type: integer
+      required:
+        - degraded
+        - vmid
+        - name
+        - kind
+        - node
+        - status
+        - alertCount
+      type: object
+    ListAlertsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListAlertsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Alerts, most severe first, then most recent first. Resolved alerts come most recently ended first.
+          items:
+            $ref: "#/components/schemas/AlertBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListBackupJobsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListBackupJobsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Backup jobs by id.
+          items:
+            $ref: "#/components/schemas/BackupJobBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListBackupsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListBackupsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Backup status of the guests by VMID.
+          items:
+            $ref: "#/components/schemas/BackupBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListCertificatesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListCertificatesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Certificates, the first to expire first.
+          items:
+            $ref: "#/components/schemas/CertificateBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListClientDomainsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListClientDomainsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: The most looked-up domains first.
+          items:
+            $ref: "#/components/schemas/DomainBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListClientsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListClientsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        degraded:
+          description: Sources that failed. The clients are still listed, without their counts or names.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        items:
+          description: Devices that hold a DHCP lease.
+          items:
+            $ref: "#/components/schemas/ClientBody"
+          type: array
+      required:
+        - items
+        - degraded
+      type: object
+    ListDNSDomainsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListDNSDomainsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: The most looked-up domains first.
+          items:
+            $ref: "#/components/schemas/DomainBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListDisksOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListDisksOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Physical disks of the node by device.
+          items:
+            $ref: "#/components/schemas/DiskBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListDriftItemsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListDriftItemsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        degraded:
+          description: Sources that failed. The other differences are still listed.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        items:
+          description: Differences between Proxmox and homelab-iac.
+          items:
+            $ref: "#/components/schemas/DriftItemBody"
+          type: array
+      required:
+        - items
+        - degraded
+      type: object
+    ListGuestsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListGuestsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        degraded:
+          description: Sources that failed. The guests are still listed.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        items:
+          description: Guests by VMID.
+          items:
+            $ref: "#/components/schemas/GuestBody"
+          type: array
+      required:
+        - items
+        - degraded
+      type: object
+    ListNodesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListNodesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Proxmox nodes.
+          items:
+            $ref: "#/components/schemas/NodeBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListPeersOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListPeersOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: VPN peers by name.
+          items:
+            $ref: "#/components/schemas/PeerBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListProbesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListProbesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Probes by id.
+          items:
+            $ref: "#/components/schemas/ProbeBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListServicesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListServicesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Services by slug.
+          items:
+            $ref: "#/components/schemas/ServiceBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListSilencesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListSilencesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Silences, the last to end first.
+          items:
+            $ref: "#/components/schemas/SilenceBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListSourcesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListSourcesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Status of each data source.
+          items:
+            $ref: "#/components/schemas/SourceBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListStoragesOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListStoragesOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Storages of the node by name.
+          items:
+            $ref: "#/components/schemas/StorageBody"
+          type: array
+      required:
+        - items
+      type: object
+    ListZPoolsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ListZPoolsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: ZFS pools of the node by name.
+          items:
+            $ref: "#/components/schemas/ZpoolBody"
+          type: array
+      required:
+        - items
+      type: object
+    MatcherBody:
+      additionalProperties: false
+      properties:
+        isEqual:
+          description: Whether the matcher selects equal labels, not different ones.
+          examples:
+            - true
+          type: boolean
+        isRegex:
+          description: Whether the value is a regular expression.
+          examples:
+            - false
+          type: boolean
+        name:
+          description: Label name.
+          examples:
+            - alertname
+          type: string
+        value:
+          description: Label value or pattern.
+          examples:
+            - GuestNotBackedUp
+          type: string
+      required:
+        - name
+        - value
+        - isRegex
+        - isEqual
+      type: object
+    MeBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/MeBody.json
+          format: uri
+          readOnly: true
+          type: string
+        groups:
+          description: Groups of the account.
+          examples:
+            - - admin
+          items:
+            type: string
+          type: array
+        isAdmin:
+          description: Whether the account is in the admin group.
+          examples:
+            - true
+          type: boolean
+        user:
+          description: Account name forwarded by TinyAuth.
+          examples:
+            - antoine
+          type: string
+      required:
+        - user
+        - groups
+        - isAdmin
+      type: object
     MetaBody:
       additionalProperties: false
       properties:
@@ -89,12 +1296,1671 @@ components:
         - commit
         - buildDate
       type: object
+    MetricsBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/MetricsBody.json
+          format: uri
+          readOnly: true
+          type: string
+        end:
+          description: End of the window actually read, aligned on its step.
+          examples:
+            - "2026-10-31T10:00:00Z"
+          format: date-time
+          type: string
+        series:
+          description: The requested series.
+          items:
+            $ref: "#/components/schemas/SeriesBody"
+          type: array
+        start:
+          description: Start of the window actually read, aligned on its step.
+          examples:
+            - "2026-10-30T10:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - start
+        - end
+        - series
+      type: object
+    NodeBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/NodeBody.json
+          format: uri
+          readOnly: true
+          type: string
+        name:
+          description: Proxmox node name.
+          examples:
+            - pve
+          type: string
+        online:
+          description: Whether Proxmox reports the node online.
+          examples:
+            - true
+          type: boolean
+        usage:
+          $ref: "#/components/schemas/UsageBody"
+          description: Resource usage. Absent when the node is offline or Proxmox gives no figures.
+      required:
+        - name
+        - online
+      type: object
+    NvmeHealthBody:
+      additionalProperties: false
+      properties:
+        availableSparePercent:
+          description: Spare capacity left, in percent.
+          examples:
+            - 100
+          format: double
+          type: number
+        criticalWarning:
+          description: Critical warning bit field, 0 when none.
+          examples:
+            - 0
+          format: int64
+          type: integer
+        mediaErrors:
+          description: Unrecovered data integrity errors.
+          examples:
+            - 0
+          format: int64
+          type: integer
+        percentageUsed:
+          description: Wear reported by the drive, in percent.
+          examples:
+            - 1
+          format: double
+          type: number
+      required:
+        - percentageUsed
+        - availableSparePercent
+        - criticalWarning
+        - mediaErrors
+      type: object
+    OverviewAlertBody:
+      additionalProperties: false
+      properties:
+        fingerprint:
+          description: Alertmanager fingerprint, the id to read the alert with.
+          examples:
+            - 3a1f9c0d5b7e2a44
+          type: string
+        name:
+          description: Alert rule name.
+          examples:
+            - GuestDown
+          type: string
+        severity:
+          description: Severity label of the rule.
+          enum:
+            - critical
+            - warning
+            - info
+          examples:
+            - critical
+          type: string
+        startsAt:
+          description: When the alert started firing, RFC 3339 in UTC.
+          examples:
+            - "2026-10-31T09:41:00Z"
+          format: date-time
+          type: string
+        summary:
+          description: Summary annotation of the alert. Empty without one.
+          examples:
+            - Guest 116 (dns) is not running
+          type: string
+      required:
+        - fingerprint
+        - name
+        - severity
+        - startsAt
+        - summary
+      type: object
+    OverviewBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/OverviewBody.json
+          format: uri
+          readOnly: true
+          type: string
+        degraded:
+          description: Sources that failed. Their part is missing.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        guests:
+          $ref: "#/components/schemas/OverviewGuestsBody"
+          description: Guest counters. Absent when Proxmox did not answer.
+        nodes:
+          description: Proxmox nodes.
+          items:
+            $ref: "#/components/schemas/OverviewNodeBody"
+          type: array
+        probes:
+          $ref: "#/components/schemas/OverviewProbesBody"
+          description: Probe counters. Absent when Prometheus did not answer.
+        status:
+          description: Severity of the worst firing alert, ok without any, unknown when Alertmanager did not answer.
+          enum:
+            - ok
+            - info
+            - warning
+            - critical
+            - unknown
+          examples:
+            - ok
+          type: string
+        toHandle:
+          description: The firing alerts, the most severe first.
+          items:
+            $ref: "#/components/schemas/OverviewAlertBody"
+          type: array
+      required:
+        - status
+        - toHandle
+        - nodes
+        - degraded
+      type: object
+    OverviewGuestsBody:
+      additionalProperties: false
+      properties:
+        running:
+          description: Guests that are running.
+          examples:
+            - 7
+          format: int64
+          type: integer
+        total:
+          description: Guests in Proxmox, templates excluded.
+          examples:
+            - 7
+          format: int64
+          type: integer
+      required:
+        - total
+        - running
+      type: object
+    OverviewNodeBody:
+      additionalProperties: false
+      properties:
+        name:
+          description: Proxmox node name.
+          examples:
+            - pve
+          type: string
+        online:
+          description: Whether Proxmox reports the node online.
+          examples:
+            - true
+          type: boolean
+        usage:
+          $ref: "#/components/schemas/OverviewUsageBody"
+          description: Resource usage. Absent when the node is offline or Proxmox gives no figures.
+      required:
+        - name
+        - online
+      type: object
+    OverviewProbesBody:
+      additionalProperties: false
+      properties:
+        total:
+          description: Probes.
+          examples:
+            - 12
+          format: int64
+          type: integer
+        up:
+          description: Probes whose last check succeeded.
+          examples:
+            - 12
+          format: int64
+          type: integer
+      required:
+        - total
+        - up
+      type: object
+    OverviewUsageBody:
+      additionalProperties: false
+      properties:
+        cpuUsageRatio:
+          description: CPU in use, from 0 to 1 of all cores.
+          examples:
+            - 0.12
+          format: double
+          type: number
+        diskTotalBytes:
+          description: Root disk size.
+          examples:
+            - 8589934592
+          format: int64
+          minimum: 0
+          type: integer
+        diskUsedBytes:
+          description: Root disk in use.
+          examples:
+            - 2147483648
+          format: int64
+          minimum: 0
+          type: integer
+        memoryTotalBytes:
+          description: Memory available.
+          examples:
+            - 4294967296
+          format: int64
+          minimum: 0
+          type: integer
+        memoryUsedBytes:
+          description: Memory in use.
+          examples:
+            - 1073741824
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+        - cpuUsageRatio
+        - memoryUsedBytes
+        - memoryTotalBytes
+        - diskUsedBytes
+        - diskTotalBytes
+      type: object
+    PeerBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/PeerBody.json
+          format: uri
+          readOnly: true
+          type: string
+        allowedIps:
+          description: Addresses the peer may use.
+          examples:
+            - 10.0.0.2/32
+          type: string
+        interface:
+          description: WireGuard interface.
+          examples:
+            - wg0
+          type: string
+        lastHandshakeAt:
+          description: Last handshake, RFC 3339 in UTC. Absent when the peer never connected.
+          examples:
+            - "2026-10-31T18:20:00Z"
+          format: date-time
+          type: string
+        name:
+          description: Peer name.
+          examples:
+            - client-1
+          type: string
+        receivedBytes:
+          description: Bytes received from the peer since the interface came up.
+          examples:
+            - 1048576
+          format: int64
+          minimum: 0
+          type: integer
+        transmittedBytes:
+          description: Bytes sent to the peer since the interface came up.
+          examples:
+            - 2097152
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+        - name
+        - interface
+        - allowedIps
+        - receivedBytes
+        - transmittedBytes
+      type: object
+    ProbeBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ProbeBody.json
+          format: uri
+          readOnly: true
+          type: string
+        availability24h:
+          description: Share of successful probes over 24 hours, from 0 to 1. Absent without samples.
+          examples:
+            - 1
+          format: double
+          type: number
+        availability30d:
+          description: Share of successful probes over 30 days, from 0 to 1. Absent without samples.
+          examples:
+            - 0.998
+          format: double
+          type: number
+        availability7d:
+          description: Share of successful probes over 7 days, from 0 to 1. Absent without samples.
+          examples:
+            - 0.999
+          format: double
+          type: number
+        durationSeconds:
+          description: How long the last probe took.
+          examples:
+            - 0.0012
+          format: double
+          type: number
+        httpStatusCode:
+          description: Status of the last HTTP probe. Absent for other kinds.
+          examples:
+            - 200
+          format: int64
+          type: integer
+        id:
+          description: "Probe id: kind and guest, or http and site."
+          examples:
+            - icmp-116
+          type: string
+        kind:
+          description: What the probe does.
+          enum:
+            - icmp
+            - dns
+            - http
+          examples:
+            - icmp
+          type: string
+        name:
+          description: Name of the probed guest or host.
+          examples:
+            - dns
+          type: string
+        target:
+          description: Address or URL probed.
+          examples:
+            - 192.168.1.116
+          type: string
+        up:
+          description: Whether the last probe succeeded.
+          examples:
+            - true
+          type: boolean
+        vmid:
+          description: Probed guest. Absent for the host.
+          examples:
+            - 116
+          format: int64
+          type: integer
+      required:
+        - id
+        - kind
+        - name
+        - target
+        - up
+        - durationSeconds
+      type: object
+    ResourceDifferenceBody:
+      additionalProperties: false
+      properties:
+        actual:
+          description: Value in Proxmox.
+          examples:
+            - 1024
+          format: int64
+          type: integer
+        declared:
+          description: Value in homelab-iac.
+          examples:
+            - 512
+          format: int64
+          type: integer
+        field:
+          description: Resource that differs.
+          enum:
+            - cores
+            - memoryMb
+            - swapMb
+            - diskGb
+          examples:
+            - memoryMb
+          type: string
+      required:
+        - field
+        - declared
+        - actual
+      type: object
+    SearchLogsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/SearchLogsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        items:
+          description: Log lines, newest first.
+          items:
+            $ref: "#/components/schemas/EntryBody"
+          type: array
+      required:
+        - items
+      type: object
+    SeriesBody:
+      additionalProperties: false
+      properties:
+        name:
+          description: Series name.
+          examples:
+            - cpuUsageRatio
+          type: string
+        timestamps:
+          description: Sample times, RFC 3339 in UTC. A gap is a missing timestamp.
+          items:
+            format: date-time
+            type: string
+          type: array
+        unit:
+          description: Unit of the values.
+          enum:
+            - ratio
+            - bytes
+            - bytesPerSecond
+            - load
+            - celsius
+            - seconds
+            - perSecond
+          examples:
+            - ratio
+          type: string
+        values:
+          description: Sample values, one per timestamp.
+          items:
+            format: double
+            type: number
+          type: array
+      required:
+        - name
+        - unit
+        - timestamps
+        - values
+      type: object
+    ServiceBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/ServiceBody.json
+          format: uri
+          readOnly: true
+          type: string
+        dependsOn:
+          description: Slugs of the services it calls, from the service graph.
+          examples:
+            - - grafana
+          items:
+            type: string
+          type: array
+        guestName:
+          description: Name of that guest.
+          examples:
+            - monitoring
+          type: string
+        instrumented:
+          description: Whether request metrics exist for it.
+          examples:
+            - true
+          type: boolean
+        name:
+          description: Unit, container or site name.
+          examples:
+            - grafana
+          type: string
+        probeId:
+          description: Probe that checks the site. Sites only.
+          examples:
+            - http-monitoring
+          type: string
+        slug:
+          description: "Service id: its name, with the guest added when several share it."
+          examples:
+            - grafana
+          type: string
+        status:
+          description: Whether monitoring sees the service running.
+          enum:
+            - up
+            - down
+            - unknown
+          examples:
+            - up
+          type: string
+        type:
+          description: Where the service comes from.
+          enum:
+            - systemd
+            - container
+            - site
+          examples:
+            - container
+          type: string
+        url:
+          description: Public URL. Sites only.
+          examples:
+            - https://monitoring.antoinejosset.fr
+          type: string
+        vmid:
+          description: Guest that hosts it. Zero for a site without a guest.
+          examples:
+            - 111
+          format: int64
+          type: integer
+      required:
+        - slug
+        - name
+        - type
+        - vmid
+        - status
+        - dependsOn
+        - instrumented
+      type: object
+    SilenceBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/SilenceBody.json
+          format: uri
+          readOnly: true
+          type: string
+        comment:
+          description: Why it was created.
+          examples:
+            - Planned backup rollout
+          type: string
+        createdBy:
+          description: Who created the silence.
+          examples:
+            - antoine
+          type: string
+        endsAt:
+          description: When the silence ends, RFC 3339 in UTC.
+          examples:
+            - "2026-11-01T10:00:00Z"
+          format: date-time
+          type: string
+        id:
+          description: Alertmanager silence id.
+          examples:
+            - f3b1c0aa-3f3d-4a0e-9a9e-7c9d5d3a1b11
+          type: string
+        matchers:
+          description: Labels the silence applies to.
+          items:
+            $ref: "#/components/schemas/MatcherBody"
+          type: array
+        startsAt:
+          description: When the silence starts, RFC 3339 in UTC.
+          examples:
+            - "2026-10-31T10:00:00Z"
+          format: date-time
+          type: string
+        state:
+          description: Silence state.
+          enum:
+            - active
+            - pending
+            - expired
+          examples:
+            - active
+          type: string
+      required:
+        - id
+        - state
+        - startsAt
+        - endsAt
+        - createdBy
+        - comment
+        - matchers
+      type: object
+    SourceBody:
+      additionalProperties: false
+      properties:
+        checkedAt:
+          description: When the check ran, RFC 3339 in UTC.
+          examples:
+            - "2026-10-31T10:00:00Z"
+          format: date-time
+          type: string
+        name:
+          description: Data source name.
+          examples:
+            - prometheus
+          type: string
+        reason:
+          description: How the source failed. Absent when it is up.
+          examples:
+            - Did not answer in time
+          type: string
+        up:
+          description: Whether the source answered its readiness check.
+          examples:
+            - true
+          type: boolean
+      required:
+        - name
+        - up
+        - checkedAt
+      type: object
+    StorageBody:
+      additionalProperties: false
+      properties:
+        content:
+          description: What the storage holds.
+          examples:
+            - - images
+              - rootdir
+          items:
+            type: string
+          type: array
+        name:
+          description: Storage id.
+          examples:
+            - hdd
+          type: string
+        shared:
+          description: Whether several nodes use the storage.
+          examples:
+            - false
+          type: boolean
+        status:
+          description: Proxmox status.
+          examples:
+            - available
+          type: string
+        totalBytes:
+          description: Space available.
+          examples:
+            - 3861712470016
+          format: int64
+          minimum: 0
+          type: integer
+        type:
+          description: Proxmox storage type.
+          examples:
+            - zfspool
+          type: string
+        usedBytes:
+          description: Space in use.
+          examples:
+            - 348728942592
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+        - name
+        - type
+        - content
+        - status
+        - shared
+        - usedBytes
+        - totalBytes
+      type: object
+    UpgradesBody:
+      additionalProperties: false
+      properties:
+        rebootRequired:
+          description: Whether a reboot is needed to finish an upgrade.
+          examples:
+            - false
+          type: boolean
+        regularPending:
+          description: Other pending upgrades.
+          examples:
+            - 12
+          format: int64
+          type: integer
+        securityPending:
+          description: Pending upgrades from the security repository.
+          examples:
+            - 3
+          format: int64
+          type: integer
+      required:
+        - securityPending
+        - regularPending
+        - rebootRequired
+      type: object
+    UsageBody:
+      additionalProperties: false
+      properties:
+        cpuCount:
+          description: Number of cores.
+          examples:
+            - 2
+          format: int64
+          type: integer
+        cpuUsageRatio:
+          description: CPU in use, from 0 to 1 of all cores.
+          examples:
+            - 0.12
+          format: double
+          type: number
+        diskTotalBytes:
+          description: Root disk size.
+          examples:
+            - 8589934592
+          format: int64
+          minimum: 0
+          type: integer
+        diskUsedBytes:
+          description: Root disk in use.
+          examples:
+            - 2147483648
+          format: int64
+          minimum: 0
+          type: integer
+        memoryTotalBytes:
+          description: Memory available.
+          examples:
+            - 4294967296
+          format: int64
+          minimum: 0
+          type: integer
+        memoryUsedBytes:
+          description: Memory in use.
+          examples:
+            - 1073741824
+          format: int64
+          minimum: 0
+          type: integer
+        uptimeSeconds:
+          description: Time since boot.
+          examples:
+            - 86400
+          format: int64
+          minimum: 0
+          type: integer
+      required:
+        - cpuUsageRatio
+        - cpuCount
+        - memoryUsedBytes
+        - memoryTotalBytes
+        - diskUsedBytes
+        - diskTotalBytes
+        - uptimeSeconds
+      type: object
+    ZpoolBody:
+      additionalProperties: false
+      properties:
+        latestSnapshotAt:
+          description: Creation time of the newest snapshot of the pool or of a dataset below it, RFC 3339 in UTC. Absent without any.
+          examples:
+            - "2026-10-31T00:00:00Z"
+          format: date-time
+          type: string
+        name:
+          description: Pool name.
+          examples:
+            - hdd
+          type: string
+        state:
+          description: ZFS pool state.
+          enum:
+            - online
+            - degraded
+            - faulted
+            - offline
+            - removed
+            - suspended
+            - unavail
+            - unknown
+          examples:
+            - online
+          type: string
+      required:
+        - name
+        - state
+      type: object
 info:
   description: Read-only console over the homelab observability stack.
   title: Jarvis API
   version: 1.0.0
 openapi: 3.1.0
 paths:
+  /alerts:
+    get:
+      operationId: listAlerts
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Alert state. Resolved alerts are rebuilt from Prometheus over the window, which the other states ignore.
+          explode: false
+          in: query
+          name: state
+          schema:
+            default: firing
+            description: Alert state. Resolved alerts are rebuilt from Prometheus over the window, which the other states ignore.
+            enum:
+              - firing
+              - suppressed
+              - resolved
+            type: string
+        - description: Only alerts of this severity.
+          explode: false
+          in: query
+          name: severity
+          schema:
+            description: Only alerts of this severity.
+            enum:
+              - critical
+              - warning
+              - info
+            type: string
+        - description: Only alerts of this guest VMID.
+          explode: false
+          in: query
+          name: guest
+          schema:
+            description: Only alerts of this guest VMID.
+            examples:
+              - "116"
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListAlertsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List alerts
+      tags:
+        - availability
+  /alerts/{fingerprint}:
+    get:
+      operationId: getAlert
+      parameters:
+        - description: Alertmanager fingerprint.
+          in: path
+          name: fingerprint
+          required: true
+          schema:
+            description: Alertmanager fingerprint.
+            examples:
+              - 3a1f9c0d5b7e2a44
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get an alert
+      tags:
+        - availability
+  /backup-jobs:
+    get:
+      operationId: listBackupJobs
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListBackupJobsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List backup jobs
+      tags:
+        - maintenance
+  /backups:
+    get:
+      operationId: listBackups
+      parameters:
+        - description: Only this guest VMID.
+          explode: false
+          in: query
+          name: guest
+          schema:
+            description: Only this guest VMID.
+            examples:
+              - 116
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListBackupsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the backup status of guests
+      tags:
+        - maintenance
+  /certificates:
+    get:
+      operationId: listCertificates
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListCertificatesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List certificates
+      tags:
+        - availability
+  /certificates/{site}:
+    get:
+      operationId: getCertificate
+      parameters:
+        - description: Site host name.
+          in: path
+          name: site
+          required: true
+          schema:
+            description: Site host name.
+            examples:
+              - files.antoinejosset.fr
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a certificate
+      tags:
+        - availability
+  /clients:
+    get:
+      operationId: listClients
+      parameters:
+        - description: Sort field, prefixed with - for descending order.
+          explode: false
+          in: query
+          name: sort
+          schema:
+            default: name
+            description: Sort field, prefixed with - for descending order.
+            enum:
+              - name
+              - -name
+              - queries
+              - -queries
+              - blocked
+              - -blocked
+              - lastQueryAt
+              - -lastQueryAt
+            type: string
+        - description: Maximum number of clients. All when absent.
+          explode: false
+          in: query
+          name: limit
+          schema:
+            description: Maximum number of clients. All when absent.
+            examples:
+              - 10
+            format: int64
+            maximum: 1000
+            minimum: 1
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListClientsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List network clients
+      tags:
+        - network
+  /clients/{mac}:
+    get:
+      operationId: getClient
+      parameters:
+        - description: MAC address in lowercase, with hyphens.
+          in: path
+          name: mac
+          required: true
+          schema:
+            description: MAC address in lowercase, with hyphens.
+            examples:
+              - bc-07-1d-35-46-1f
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDetailBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a network client
+      tags:
+        - network
+  /clients/{mac}/domains:
+    get:
+      operationId: listClientDomains
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: MAC address in lowercase, with hyphens.
+          in: path
+          name: mac
+          required: true
+          schema:
+            description: MAC address in lowercase, with hyphens.
+            examples:
+              - bc-07-1d-35-46-1f
+            type: string
+        - description: Whether the resolver allowed or blocked the lookups.
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: allowed
+            description: Whether the resolver allowed or blocked the lookups.
+            enum:
+              - allowed
+              - blocked
+            type: string
+        - description: Number of domains.
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            description: Number of domains.
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListClientDomainsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the domains a client looked up
+      tags:
+        - network
+  /clients/{mac}/metrics:
+    get:
+      operationId: getClientMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: MAC address in lowercase, with hyphens.
+          in: path
+          name: mac
+          required: true
+          schema:
+            description: MAC address in lowercase, with hyphens.
+            examples:
+              - bc-07-1d-35-46-1f
+            type: string
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - queriesPerSecond
+            items:
+              enum:
+                - queriesPerSecond
+                - blockedPerSecond
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the DNS activity of a client
+      tags:
+        - network
+  /dns:
+    get:
+      operationId: getDns
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DNSBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the DNS resolver summary
+      tags:
+        - network
+  /dns/domains:
+    get:
+      operationId: listDnsDomains
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Whether the resolver allowed or blocked the lookups.
+          explode: false
+          in: query
+          name: status
+          schema:
+            default: allowed
+            description: Whether the resolver allowed or blocked the lookups.
+            enum:
+              - allowed
+              - blocked
+            type: string
+        - description: Number of domains.
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            description: Number of domains.
+            format: int64
+            maximum: 100
+            minimum: 1
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListDNSDomainsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the domains the resolver was asked for
+      tags:
+        - network
+  /dns/metrics:
+    get:
+      operationId: getDnsMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - queriesPerSecond
+            items:
+              enum:
+                - queriesPerSecond
+                - blockedPerSecond
+                - upstreamLatencySeconds
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the DNS resolver metrics
+      tags:
+        - network
+  /drift-items:
+    get:
+      operationId: listDriftItems
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListDriftItemsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the differences between Proxmox and homelab-iac
+      tags:
+        - maintenance
+  /guests:
+    get:
+      operationId: listGuests
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGuestsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List guests
+      tags:
+        - supervision
+  /guests/{vmid}:
+    get:
+      operationId: getGuest
+      parameters:
+        - description: Proxmox guest id.
+          in: path
+          name: vmid
+          required: true
+          schema:
+            description: Proxmox guest id.
+            examples:
+              - 116
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuestDetailBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a guest
+      tags:
+        - supervision
+  /guests/{vmid}/metrics:
+    get:
+      operationId: getGuestMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Proxmox guest id.
+          in: path
+          name: vmid
+          required: true
+          schema:
+            description: Proxmox guest id.
+            examples:
+              - 116
+            format: int64
+            type: integer
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - cpuUsageRatio
+                - memoryUsedBytes
+            items:
+              enum:
+                - cpuUsageRatio
+                - memoryUsedBytes
+                - diskUsedBytes
+                - diskReadBytesPerSecond
+                - diskWriteBytesPerSecond
+                - networkReceiveBytesPerSecond
+                - networkTransmitBytesPerSecond
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the metrics of a guest
+      tags:
+        - supervision
+  /logs:
+    get:
+      operationId: searchLogs
+      parameters:
+        - description: Only lines of this guest VMID.
+          explode: false
+          in: query
+          name: guest
+          schema:
+            description: Only lines of this guest VMID.
+            examples:
+              - 116
+            format: int64
+            type: integer
+        - description: Only lines of this unit or container.
+          explode: false
+          in: query
+          name: service
+          schema:
+            description: Only lines of this unit or container.
+            examples:
+              - blocky
+            type: string
+        - description: Only lines of this journal priority.
+          explode: false
+          in: query
+          name: level
+          schema:
+            description: Only lines of this journal priority.
+            enum:
+              - emerg
+              - alert
+              - crit
+              - error
+              - warning
+              - notice
+              - info
+              - debug
+            type: string
+        - description: Only lines containing this text, case-sensitive.
+          explode: false
+          in: query
+          name: q
+          schema:
+            description: Only lines containing this text, case-sensitive.
+            examples:
+              - timeout
+            type: string
+        - description: Oldest instant to read, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Oldest instant to read, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Newest instant to read, exclusive, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: Newest instant to read, exclusive, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Maximum number of lines.
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 100
+            description: Maximum number of lines.
+            format: int64
+            maximum: 1000
+            minimum: 1
+            type: integer
+        - description: Where the previous page stopped, from its Link header. Replaces end.
+          explode: false
+          in: query
+          name: cursor
+          schema:
+            description: Where the previous page stopped, from its Link header. Replaces end.
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchLogsOutputBody"
+          description: OK
+          headers:
+            Link:
+              schema:
+                description: The URL of the next page with rel=next, when more lines may follow.
+                type: string
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Search logs
+      tags:
+        - supervision
+  /me:
+    get:
+      operationId: getMe
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the logged-in account
+      tags:
+        - common
   /meta:
     get:
       operationId: getMeta
@@ -114,5 +2980,699 @@ paths:
       summary: Get build information
       tags:
         - common
+  /nodes:
+    get:
+      operationId: listNodes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListNodesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List nodes
+      tags:
+        - supervision
+  /nodes/{node}:
+    get:
+      operationId: getNode
+      parameters:
+        - description: Proxmox node name.
+          in: path
+          name: node
+          required: true
+          schema:
+            description: Proxmox node name.
+            examples:
+              - pve
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NodeBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a node
+      tags:
+        - supervision
+  /nodes/{node}/disks:
+    get:
+      operationId: listDisks
+      parameters:
+        - description: Proxmox node name.
+          in: path
+          name: node
+          required: true
+          schema:
+            description: Proxmox node name.
+            examples:
+              - pve
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListDisksOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the disks of a node with their SMART health
+      tags:
+        - supervision
+  /nodes/{node}/metrics:
+    get:
+      operationId: getNodeMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Proxmox node name.
+          in: path
+          name: node
+          required: true
+          schema:
+            description: Proxmox node name.
+            examples:
+              - pve
+            type: string
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - cpuUsageRatio
+                - load1
+            items:
+              enum:
+                - cpuUsageRatio
+                - memoryUsedBytes
+                - diskUsedBytes
+                - load1
+                - cpuTemperatureCelsius
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the metrics of a node
+      tags:
+        - supervision
+  /nodes/{node}/storages:
+    get:
+      operationId: listStorages
+      parameters:
+        - description: Proxmox node name.
+          in: path
+          name: node
+          required: true
+          schema:
+            description: Proxmox node name.
+            examples:
+              - pve
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListStoragesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the storages of a node
+      tags:
+        - supervision
+  /nodes/{node}/zpools:
+    get:
+      operationId: listZpools
+      parameters:
+        - description: Proxmox node name.
+          in: path
+          name: node
+          required: true
+          schema:
+            description: Proxmox node name.
+            examples:
+              - pve
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListZPoolsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List the ZFS pools of a node
+      tags:
+        - supervision
+  /overview:
+    get:
+      description: Global status, node resources, key counters and the alerts to handle, in one call.
+      operationId: getOverview
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OverviewBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the overview
+      tags:
+        - overview
+  /probes:
+    get:
+      operationId: listProbes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListProbesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List probes
+      tags:
+        - availability
+  /probes/{probe}:
+    get:
+      operationId: getProbe
+      parameters:
+        - description: Probe id.
+          in: path
+          name: probe
+          required: true
+          schema:
+            description: Probe id.
+            examples:
+              - icmp-116
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProbeBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a probe
+      tags:
+        - availability
+  /probes/{probe}/availability:
+    get:
+      operationId: getProbeAvailability
+      parameters:
+        - description: Probe id.
+          in: path
+          name: probe
+          required: true
+          schema:
+            description: Probe id.
+            examples:
+              - icmp-116
+            type: string
+        - description: Size of a bucket. Only days are supported.
+          explode: false
+          in: query
+          name: bucket
+          schema:
+            default: 1d
+            description: Size of a bucket. Only days are supported.
+            enum:
+              - 1d
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetProbeAvailabilityOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the daily availability of a probe
+      tags:
+        - availability
+  /probes/{probe}/metrics:
+    get:
+      operationId: getProbeMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Probe id.
+          in: path
+          name: probe
+          required: true
+          schema:
+            description: Probe id.
+            examples:
+              - icmp-116
+            type: string
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - durationSeconds
+            items:
+              enum:
+                - durationSeconds
+                - success
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the metrics of a probe
+      tags:
+        - availability
+  /services:
+    get:
+      operationId: listServices
+      parameters:
+        - description: Only services of this guest VMID.
+          explode: false
+          in: query
+          name: guest
+          schema:
+            description: Only services of this guest VMID.
+            examples:
+              - 111
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListServicesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List services
+      tags:
+        - supervision
+  /services/{service}:
+    get:
+      operationId: getService
+      parameters:
+        - description: Service slug.
+          in: path
+          name: service
+          required: true
+          schema:
+            description: Service slug.
+            examples:
+              - grafana
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a service
+      tags:
+        - supervision
+  /services/{service}/metrics:
+    get:
+      description: The series are empty when the service is not instrumented.
+      operationId: getServiceMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Service slug.
+          in: path
+          name: service
+          required: true
+          schema:
+            description: Service slug.
+            examples:
+              - grafana
+            type: string
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - requestsPerSecond
+            items:
+              enum:
+                - requestsPerSecond
+                - errorRatio
+                - latencyP95Seconds
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the request metrics of a service
+      tags:
+        - supervision
+  /silences:
+    get:
+      operationId: listSilences
+      parameters:
+        - description: Only silences in this state. All when absent.
+          explode: false
+          in: query
+          name: state
+          schema:
+            description: Only silences in this state. All when absent.
+            enum:
+              - active
+              - pending
+              - expired
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSilencesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List silences
+      tags:
+        - availability
+  /silences/{id}:
+    get:
+      operationId: getSilence
+      parameters:
+        - description: Alertmanager silence id.
+          in: path
+          name: id
+          required: true
+          schema:
+            description: Alertmanager silence id.
+            examples:
+              - f3b1c0aa-3f3d-4a0e-9a9e-7c9d5d3a1b11
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SilenceBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a silence
+      tags:
+        - availability
+  /sources:
+    get:
+      operationId: listSources
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSourcesOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List data source statuses
+      tags:
+        - common
+  /vpn-peers:
+    get:
+      operationId: listVpnPeers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPeersOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: List VPN peers
+      tags:
+        - network
+  /vpn-peers/{peer}:
+    get:
+      operationId: getVpnPeer
+      parameters:
+        - description: Peer name.
+          in: path
+          name: peer
+          required: true
+          schema:
+            description: Peer name.
+            examples:
+              - client-1
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PeerBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get a VPN peer
+      tags:
+        - network
+  /vpn-peers/{peer}/metrics:
+    get:
+      operationId: getVpnPeerMetrics
+      parameters:
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+        - description: Peer name.
+          in: path
+          name: peer
+          required: true
+          schema:
+            description: Peer name.
+            examples:
+              - client-1
+            type: string
+        - description: Series to read, comma-separated. All when absent.
+          explode: false
+          in: query
+          name: series
+          schema:
+            description: Series to read, comma-separated. All when absent.
+            examples:
+              - - receiveBytesPerSecond
+            items:
+              enum:
+                - receiveBytesPerSecond
+                - transmitBytesPerSecond
+              type: string
+            type:
+              - array
+              - "null"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Get the traffic of a VPN peer
+      tags:
+        - network
 servers:
   - url: /api/v1

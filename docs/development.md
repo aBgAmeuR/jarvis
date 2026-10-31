@@ -45,7 +45,7 @@ Each folder in `tooling/` is a private workspace package with config only, no co
 | `tooling/golangci` | `.golangci.yml` | `golangci-lint run --config` |
 | `tooling/spectral` | API style ruleset | `spectral lint --ruleset` |
 | `tooling/commitlint` | commitlint config | `--config` |
-| `tooling/go` | Go module with `tool` directives: golangci-lint, gofumpt, oasdiff | `go tool <name>` |
+| `tooling/go` | Go module with `tool` directives: golangci-lint (gofumpt and oasdiff to come) | `GOWORK=off go tool -modfile=…/tooling/go/go.mod <name>`; it stays out of `go.work` because its dependencies clash with the server's |
 
 Design tokens (`@theme`: colors, sizes, spacing) live in `packages/ui/src/theme.css`, since they belong to the design system. Storybook is an app of its own in `apps/storybook`, which imports `@jarvis/ui` like `apps/web` does. Orval and Vite config stay in the one package that uses each of them.
 

@@ -13,8 +13,13 @@ Variables are loaded into one Go struct and validated at startup. Defaults are `
 | `JARVIS_ALERTMANAGER_URL` | `http://alertmanager:9093` | Alertmanager base URL |
 | `JARVIS_PROXMOX_URL` | required | Proxmox API URL |
 | `JARVIS_PROXMOX_TOKEN_FILE` | required | read-only Proxmox API token |
+| `JARVIS_PROXMOX_CA_FILE` | none, system CAs only | PEM CA added to the trusted roots for Proxmox (`/etc/pve/pve-root-ca.pem`) |
 | `JARVIS_CATALOG_PATH` | `/etc/jarvis/catalog.json` | path to `catalog.json` |
 | `JARVIS_TRUSTED_PROXY` | required | address allowed to send `Remote-*` headers (`192.168.1.113`) |
 | `JARVIS_FILES_ROOT` | none, Files off when unset | dataset root, v2 only |
+| `JARVIS_REQUEST_TIMEOUT` | `5s` | time allowed to each call to a data source |
+| `JARVIS_CACHE_TTL` | `2s` | how long an identical read of a data source is replayed; `0` turns the cache off |
+| `JARVIS_LOG_LEVEL` | `info` | `debug`, `info`, `warn` or `error` |
+| `JARVIS_OTLP_ENDPOINT` | none, no traces exported when unset | OTLP HTTP collector base URL, such as `http://192.168.1.111:4318` |
 
 `JARVIS_TRUSTED_PROXY` has no default because a wrong one would let any client choose its identity.

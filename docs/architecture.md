@@ -30,7 +30,20 @@ It reaches `prometheus:9090`, `loki:3100`, `tempo:3200` and `alertmanager:9093` 
 
 ## Code layout
 
-Each data source (Prometheus, Loki, Tempo, Alertmanager, Proxmox, catalog, filesystem) is a Go interface in `internal/app`, implemented in `internal/source`. Sources return domain types only.
+The Go code is split by layer, then by feature (`supervision`, `availability`, `identity`, `health`):
+
+| Layer | Holds | May import |
+|---|---|---|
+| `internal/domain` | types and rules: `Severity`, `SourceError`, `Degraded`, and one package per feature | the standard library |
+| `internal/app` | use cases, one package per feature; the interfaces a use case needs (`ports.go`) are defined here | `domain` |
+| `internal/source` | one package per data source (Proxmox, Alertmanager, catalog…), implementing those interfaces and returning domain types only | `domain`, `platform` |
+| `internal/httpapi` | Huma routes and JSON bodies, one package per feature, and the HTTP middleware | `app`, `domain`, `platform` |
+| `internal/platform` | infrastructure without business rules: config, logging, telemetry, the HTTP client with its cache, the server | the standard library |
+| `internal/bootstrap` | builds every adapter and use case and wires them; the only package that sees them all | everything |
+
+A feature package never imports another feature of the same layer: when `supervision` needs the firing alerts, it defines the small interface it needs and `bootstrap` provides an adapter on `availability`. The `overview` feature works the same way for the alerts, the Proxmox inventory and the probes. golangci-lint enforces these rules with `depguard` (`tooling/golangci/.golangci.yml`).
+
+Outgoing calls go through one HTTP client per source: a context deadline on every call, a cap on the body size, TLS 1.2 at least, and a short cache that sends one request for identical concurrent reads (`JARVIS_CACHE_TTL`). A source failure is a `SourceError` with a kind (`timeout`, `unreachable`, `bad_status`, `invalid_response`, `unavailable`); clients see the kind, never the URL or the cause, which go to the logs.
 
 Front modules are `supervision`, `availability`, `network`, `maintenance` and `files`. Each one is lazy-loaded by route and never imports another module.
 
@@ -48,6 +61,6 @@ Caddy forwards the `Remote-User` and `Remote-Groups` headers it gets from TinyAu
 
 These paths sit at the root, outside the versioned API and outside identity. They are not in `openapi.yaml`.
 
-Logs are JSON through `slog`. Traces go to Tempo with OpenTelemetry. On shutdown the server lets running requests and tus uploads finish.
+Logs are JSON through `slog`, each record carrying the `request_id` (also returned in `X-Request-Id`) and the `trace_id`. The query string and the `Remote-*` headers are never logged. Traces go to Tempo with OpenTelemetry when `JARVIS_OTLP_ENDPOINT` is set. A panic in a handler is logged and answered with a 500. API reads carry an `ETag` and answer `304` when the caller already has that version. On shutdown the server lets running requests and tus uploads finish.
 
 HTTP responses carry a strict CSP with no external script, `Referrer-Policy` and `X-Content-Type-Options: nosniff`.

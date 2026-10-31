@@ -1,0 +1,32 @@
+{
+  "name": "@jarvis/api-client",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "gen": "orval",
+    "build": "tsc",
+    "lint": "oxlint",
+    "format": "oxfmt"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "catalog:"
+  },
+  "devDependencies": {
+    "@jarvis/openapi": "workspace:*",
+    "@jarvis/oxfmt-config": "workspace:*",
+    "@jarvis/oxlint-config": "workspace:*",
+    "@jarvis/tsconfig": "workspace:*",
+    "orval": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}
