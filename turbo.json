@@ -10,6 +10,7 @@
       "outputs": ["dist/**", "storybook-static/**"]
     },
     "lint": {},
+    "test": {},
     "format": {
       "cache": false
     },

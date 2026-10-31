@@ -3,6 +3,7 @@ import { Chart } from "@tanstack/charts/react";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { useMemo } from "react";
 
+import { dataTransition } from "./animation.ts";
 import { hoverDot } from "./hover-dot.ts";
 
 export type SparklineProps = {
@@ -30,6 +31,7 @@ export function Sparkline({ values, ariaLabel, height = 24 }: SparklineProps) {
       // The dot follows the pointer along the line; no tooltip, no keyboard.
       focus: "nearest-x",
       maxFocusDistance: Number.POSITIVE_INFINITY,
+      svgAnimation: dataTransition,
       focusRing: hoverDot,
       keyboard: false,
     });

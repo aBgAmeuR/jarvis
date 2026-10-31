@@ -41,12 +41,10 @@ export function Tooltip({
         <BaseTooltip.Positioner side={side} align={align} sideOffset={sideOffset}>
           <BaseTooltip.Popup
             className={cn(
-              "max-w-60 rounded-sm bg-foreground px-1.75 py-1 text-xs/3.5 text-background",
-              "transition-[opacity,translate] duration-160 ease-out motion-reduce:transition-none",
-              "data-ending-style:opacity-0 data-starting-style:opacity-0",
-              // Enters with a 4 px slide away from the trigger.
-              "data-[side=top]:data-starting-style:translate-y-1 data-[side=bottom]:data-starting-style:-translate-y-1",
-              "data-[side=left]:data-starting-style:translate-x-1 data-[side=right]:data-starting-style:-translate-x-1",
+              "max-w-60 origin-(--transform-origin) rounded-sm bg-foreground px-1.75 py-1 text-xs/3.5 text-background",
+              "transition-[opacity,scale] duration-125 ease-out data-instant:duration-0",
+              "data-ending-style:scale-97 data-ending-style:opacity-0 data-starting-style:scale-97 data-starting-style:opacity-0",
+              "motion-reduce:data-ending-style:scale-100 motion-reduce:data-starting-style:scale-100",
               className,
             )}
           >

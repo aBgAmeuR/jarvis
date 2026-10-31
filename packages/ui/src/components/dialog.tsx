@@ -25,8 +25,9 @@ export function DialogContent({ className, ...props }: Styled<BaseDialog.Popup.P
         className={cn(
           "fixed top-1/2 left-1/2 z-50 flex w-105 max-w-[calc(100%-2rem)] -translate-1/2 flex-col",
           "rounded-lg bg-popover text-popover-foreground shadow-overlay outline-none",
-          "transition-[opacity,scale] duration-220 ease-out motion-reduce:transition-none",
-          "data-ending-style:scale-98 data-ending-style:opacity-0 data-starting-style:scale-98 data-starting-style:opacity-0",
+          "transition-[opacity,scale] duration-220 ease-out",
+          "data-ending-style:scale-96 data-ending-style:opacity-0 data-starting-style:scale-96 data-starting-style:opacity-0",
+          "motion-reduce:data-ending-style:scale-100 motion-reduce:data-starting-style:scale-100",
           className,
         )}
         {...props}

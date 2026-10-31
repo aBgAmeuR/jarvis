@@ -4,6 +4,7 @@ import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { tooltip } from "@tanstack/charts/tooltip";
 import { useMemo } from "react";
 
+import { dataTransition } from "./animation.ts";
 import { hoverDot } from "./hover-dot.ts";
 
 /** One series as the API returns it: columnar, a gap is a missing timestamp. */
@@ -89,6 +90,7 @@ export function TimeSeriesChart({
         x: { scale: scaleLinear, axis: { ticks: { format: formatTick } } },
         y: { scale: scaleLinear, nice: true, grid: true, axis: { ticks: { format: formatValue } } },
       },
+      svgAnimation: dataTransition,
       // Every series at the hovered time, anywhere in the plot.
       focus: "group-x",
       maxFocusDistance: Number.POSITIVE_INFINITY,

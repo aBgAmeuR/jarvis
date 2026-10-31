@@ -3,6 +3,8 @@ import { pie, polar, radialArc } from "@tanstack/charts/polar";
 import { Chart } from "@tanstack/charts/react";
 import { type ReactNode, useMemo } from "react";
 
+import { dataTransition } from "./animation.ts";
+
 const paints = {
   neutral: "var(--foreground)",
   warning: "var(--warning)",
@@ -49,6 +51,7 @@ export function Gauge({ ratio, value, label, tone, ariaLabel, size = 56 }: Gauge
       ],
       // A polar chart has no Cartesian axes.
       scales: { x: null, y: null },
+      svgAnimation: dataTransition,
       keyboard: false,
     });
   }, [ratio, tone]);

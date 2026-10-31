@@ -39,19 +39,12 @@ export function CommandPalette({
   return (
     <BaseDialog.Root open={open} onOpenChange={onOpenChange}>
       <BaseDialog.Portal>
-        <BaseDialog.Backdrop
-          className={cn(
-            "fixed inset-0 z-50 bg-scrim transition-opacity duration-160 ease-out motion-reduce:transition-none",
-            "data-ending-style:opacity-0 data-starting-style:opacity-0",
-          )}
-        />
+        <BaseDialog.Backdrop className="bg-scrim fixed inset-0 z-50" />
         <BaseDialog.Popup
           aria-label="Search"
           className={cn(
             "fixed top-[15vh] left-1/2 z-50 flex max-h-[70vh] w-140 max-w-[calc(100%-2rem)] -translate-x-1/2 flex-col",
             "rounded-md bg-popover text-popover-foreground shadow-overlay outline-none",
-            "transition-[opacity,translate] duration-160 ease-out motion-reduce:transition-none",
-            "data-ending-style:opacity-0 data-starting-style:-translate-y-1 data-starting-style:opacity-0",
           )}
         >
           <Autocomplete.Root

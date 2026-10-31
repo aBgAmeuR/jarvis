@@ -1,6 +1,7 @@
 import { Icon, Refresh01Icon } from "@jarvis/icons";
 import { Badge, Button, Tooltip } from "@jarvis/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 const meta = {
   title: "Components/Tooltip",
@@ -33,6 +34,14 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   parameters: { docs: { description: { story: "Tooltip on an icon button." } } },
+  play: async ({ args }) => {
+    // Keyboard focus shows it at once; the hover delay is not under test.
+    await userEvent.tab();
+    const tip = await screen.findByText(String(args.content));
+    await waitFor(() => expect(tip).toBeVisible());
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByText(String(args.content))).toBeNull());
+  },
 };
 
 export const OnBadge: Story = {
@@ -43,6 +52,12 @@ export const OnBadge: Story = {
           "A non-interactive element needs `tabIndex={0}` to show the tooltip from the keyboard.",
       },
     },
+  },
+  play: async ({ canvas }) => {
+    await userEvent.tab();
+    await expect(canvas.getByText("Critical")).toHaveFocus();
+    const tip = await screen.findByText("Firing since 2026-10-30 09:12 UTC");
+    await waitFor(() => expect(tip).toBeVisible());
   },
   render: () => (
     <Tooltip content="Firing since 2026-10-30 09:12 UTC">

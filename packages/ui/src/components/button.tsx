@@ -7,7 +7,8 @@ import { focusRing } from "../lib/styles.ts";
 export const buttonVariants = cva(
   [
     "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-sm border border-transparent font-medium whitespace-nowrap select-none",
-    "transition-colors duration-100 ease-out",
+    "transition-[color,background-color,border-color,scale] duration-100 ease-out",
+    "active:scale-97 motion-reduce:active:scale-100",
     "data-disabled:pointer-events-none data-disabled:opacity-45",
     "[&_svg]:pointer-events-none [&_svg]:size-3.5 [&_svg]:shrink-0",
     focusRing,

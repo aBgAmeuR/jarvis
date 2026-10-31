@@ -19,13 +19,12 @@ export const fieldStyles = [
   focusRing,
 ].join(" ");
 
-/** Popover, menu, select: overlay surface with a 160 ms fade and a 4 px slide. */
+/** Popover, menu, select: overlay surface that scales out of its trigger in 160 ms. */
 export const popupStyles = [
-  "rounded-md bg-popover text-popover-foreground shadow-overlay outline-none",
-  "transition-[opacity,translate] duration-160 ease-out motion-reduce:transition-none",
-  "data-ending-style:opacity-0 data-starting-style:opacity-0",
-  "data-[side=top]:data-starting-style:translate-y-1 data-[side=bottom]:data-starting-style:-translate-y-1",
-  "data-[side=left]:data-starting-style:translate-x-1 data-[side=right]:data-starting-style:-translate-x-1",
+  "origin-(--transform-origin) rounded-md bg-popover text-popover-foreground shadow-overlay outline-none",
+  "transition-[opacity,scale] duration-160 ease-out",
+  "data-ending-style:scale-97 data-ending-style:opacity-0 data-starting-style:scale-97 data-starting-style:opacity-0",
+  "motion-reduce:data-ending-style:scale-100 motion-reduce:data-starting-style:scale-100",
 ].join(" ");
 
 /** A row in a menu, select or palette: 26 px, highlighted with the accent fill. */

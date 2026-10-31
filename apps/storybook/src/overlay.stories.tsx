@@ -24,6 +24,7 @@ import {
   PopoverTrigger,
 } from "@jarvis/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 const meta = {
   title: "Components/Overlays",
@@ -43,6 +44,15 @@ type Story = StoryObj<typeof meta>;
 export const PopoverStory: Story = {
   parameters: { docs: { description: { story: "Anchored, non-modal content." } } },
   name: "Popover",
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("button", { name: "ZfsPoolDegraded" });
+    await userEvent.click(trigger);
+    const link = await screen.findByText("Open in Grafana Explore");
+    await waitFor(() => expect(link).toBeVisible());
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByText("Open in Grafana Explore")).toBeNull());
+    await expect(trigger).toHaveFocus();
+  },
   render: () => (
     <Popover>
       <PopoverTrigger render={<Button />}>ZfsPoolDegraded</PopoverTrigger>
@@ -80,6 +90,24 @@ export const MenuStory: Story = {
     },
   },
   name: "Menu",
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("button", { name: "Open in…" });
+    await userEvent.click(trigger);
+    await screen.findByRole("menu");
+
+    await expect(screen.getByRole("menuitem", { name: "Proxmox console" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await userEvent.keyboard("{ArrowDown}");
+    await expect(screen.getByRole("menuitem", { name: "Grafana Explore" })).toHaveAttribute(
+      "data-highlighted",
+    );
+
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
+    await expect(trigger).toHaveFocus();
+  },
   render: () => (
     <Menu>
       <MenuTrigger render={<Button />}>Open in…</MenuTrigger>
@@ -103,6 +131,22 @@ export const DialogStory: Story = {
     },
   },
   name: "Dialog",
+  play: async ({ canvas }) => {
+    const trigger = canvas.getByRole("button", { name: "Delete" });
+    await userEvent.click(trigger);
+    const dialog = await screen.findByRole("dialog", { name: "Move 3 files to trash?" });
+    await waitFor(() => expect(dialog).toBeVisible());
+
+    await userEvent.click(screen.getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await expect(trigger).toHaveFocus();
+
+    // Escape closes it as well.
+    await userEvent.click(trigger);
+    await screen.findByRole("dialog");
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  },
   render: () => (
     <Dialog>
       <DialogTrigger render={<Button variant="danger" />}>Delete</DialogTrigger>

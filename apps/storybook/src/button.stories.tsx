@@ -1,6 +1,7 @@
 import { Icon, Refresh01Icon } from "@jarvis/icons";
 import { Button } from "@jarvis/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, fn, userEvent } from "storybook/test";
 
 const meta = {
   title: "Components/Button",
@@ -25,6 +26,15 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   parameters: { docs: { description: { story: "Secondary button, the default variant." } } },
+  args: { onClick: fn() },
+  play: async ({ args, canvas }) => {
+    const button = canvas.getByRole("button", { name: "Refresh" });
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalledTimes(1);
+    button.focus();
+    await userEvent.keyboard("{Enter}");
+    await expect(args.onClick).toHaveBeenCalledTimes(2);
+  },
 };
 
 export const Variants: Story = {
@@ -79,6 +89,12 @@ export const Loading: Story = {
     },
   },
   args: { loading: true },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("button", { name: "Refresh" })).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+  },
 };
 
 export const Disabled: Story = {
@@ -87,5 +103,8 @@ export const Disabled: Story = {
       description: { story: "Disabled buttons drop to 45 % opacity and leave the tab order." },
     },
   },
-  args: { disabled: true },
+  args: { disabled: true, onClick: fn() },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("button", { name: "Refresh" })).toBeDisabled();
+  },
 };

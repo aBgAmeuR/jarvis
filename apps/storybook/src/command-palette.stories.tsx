@@ -13,6 +13,7 @@ import {
 } from "@jarvis/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 const meta = {
   title: "Components/Command palette",
@@ -78,8 +79,8 @@ function Search() {
               ))}
             </CommandPaletteGroup>
           ))}
-          <CommandPaletteEmpty>No result for "{query}"</CommandPaletteEmpty>
         </CommandPaletteList>
+        <CommandPaletteEmpty>No result for "{query}"</CommandPaletteEmpty>
         <CommandPaletteFooter>
           <Kbd>↑↓</Kbd>navigate<Kbd>↵</Kbd>open<Kbd>⌘↵</Kbd>Grafana
         </CommandPaletteFooter>
@@ -90,5 +91,18 @@ function Search() {
 
 export const Default: Story = {
   parameters: { docs: { description: { story: "Open the palette and type to filter." } } },
+  play: async () => {
+    const input = await screen.findByPlaceholderText("Search everything");
+    await expect(await screen.findByText("adguard-exporter")).toBeVisible();
+
+    await userEvent.clear(input);
+    await userEvent.type(input, "ex");
+    await expect(await screen.findByText("adguard-exporter")).toBeVisible();
+    await waitFor(() => expect(screen.queryByText("adguard-dns")).toBeNull());
+
+    await userEvent.clear(input);
+    await userEvent.type(input, "zzz");
+    await expect(await screen.findByText(/No result for/)).toBeVisible();
+  },
   render: () => <Search />,
 };
