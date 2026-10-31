@@ -8,7 +8,7 @@ How Jarvis is built and how it runs. Where it runs in the homelab: [deployment.m
 |---|---|
 | Monorepo | pnpm workspaces and Turborepo, with Turborepo's native Go support (`futureFlags.experimentalGoWorkspaces`, `go.work` at the root) |
 | API | Go, Huma v2 on the standard `net/http` mux (`humago`) |
-| API docs | OpenAPI 3.1 generated from the Go types, served by Scalar at `/api/docs` |
+| API docs | OpenAPI 3.1 generated from the Go types, rendered by Scalar in `apps/api`, published on GitHub Pages |
 | Front | TanStack Start in SPA mode, TanStack Router and TanStack Query |
 | API client | Orval: TanStack Query hooks and zod schemas, no mocks |
 | UI | `@jarvis/ui`, custom components on Base UI, Tailwind v4 tokens |

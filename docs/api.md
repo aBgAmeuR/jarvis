@@ -1,6 +1,6 @@
 # API
 
-The rules every endpoint follows, and the list of endpoints. Once `apps/api/openapi.yaml` exists, the endpoint tables give way to the generated docs at `/api/docs`, and this file keeps only the rules.
+The rules every endpoint follows, and the list of endpoints. Once `packages/openapi/openapi.yaml` exists, the endpoint tables give way to the Scalar docs published on GitHub Pages, and this file keeps only the rules.
 
 ## Contract
 

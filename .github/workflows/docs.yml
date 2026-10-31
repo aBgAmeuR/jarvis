@@ -23,12 +23,13 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @jarvis/storybook build
+      - run: pnpm --filter @jarvis/storybook --filter @jarvis/api build
 
       - run: |
           mkdir site
           cp .github/pages/index.html site/
           cp -r apps/storybook/storybook-static site/storybook
+          cp -r apps/api/dist site/api
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site

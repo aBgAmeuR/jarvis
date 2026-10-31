@@ -6,8 +6,9 @@ How to work on the repo: layout, commands, shared tooling, dependencies, CI and 
 
 ```
 .github/                   workflows, renovate.json, CODEOWNERS
-apps/api/                  Go module: cmd/jarvis-api, internal/{domain,app,source,httpapi}
-apps/api/openapi.yaml      generated, committed
+apps/server/               Go module: cmd/jarvis-server, internal/{domain,app,source,httpapi}
+apps/api/                  Scalar API docs
+packages/openapi/          openapi.yaml, generated, committed
 apps/storybook/            Storybook for @jarvis/ui, with the stories
 apps/web/                  TanStack Start SPA, modules in src/modules/<name>
 docker/                    Dockerfile, Dockerfile.dockerignore
@@ -71,7 +72,7 @@ Each tool pins its own version, except Node, which only has a minimum.
 
 | Tool | Pinned in | Installed by |
 |---|---|---|
-| Go | `toolchain` directive in `apps/api/go.mod` | Go downloads it on first use |
+| Go | `go` directive in `go.work` | Go downloads it on first use |
 | Node | `engines.node` (`>=24`) in the root `package.json` | the machine or `setup-node` |
 | pnpm | `packageManager` in the root `package.json` | corepack or `pnpm/action-setup` |
 | turbo | root `devDependencies`, from the catalog | pnpm |

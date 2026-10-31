@@ -1,0 +1,8 @@
+{
+  "name": "@jarvis/openapi",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./openapi.yaml": "./openapi.yaml"
+  }
+}

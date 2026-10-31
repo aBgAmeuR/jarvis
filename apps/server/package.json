@@ -1,0 +1,11 @@
+{
+  "name": "@jarvis/server",
+  "private": true,
+  "scripts": {
+    "gen": "go run ./cmd/openapi > ../../packages/openapi/openapi.yaml",
+    "build": "go build -o bin/jarvis-server ./cmd/jarvis-server",
+    "dev": "go run ./cmd/jarvis-server",
+    "lint": "go vet ./...",
+    "format": "go fmt ./..."
+  }
+}

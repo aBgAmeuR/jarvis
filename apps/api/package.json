@@ -1,0 +1,24 @@
+{
+  "name": "@jarvis/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite --port 6007",
+    "lint": "oxlint",
+    "format": "oxfmt"
+  },
+  "dependencies": {
+    "@jarvis/openapi": "workspace:*",
+    "@scalar/api-reference": "catalog:"
+  },
+  "devDependencies": {
+    "@jarvis/oxfmt-config": "workspace:*",
+    "@jarvis/oxlint-config": "workspace:*",
+    "@jarvis/tsconfig": "workspace:*",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

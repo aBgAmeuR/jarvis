@@ -10,4 +10,17 @@ export default {
     "@storybook/addon-vitest",
   ],
   typescript: { reactDocgen: "react-docgen" },
+  viteFinal: (config) => ({
+    ...config,
+    build: {
+      ...config.build,
+      rolldownOptions: {
+        ...config.build?.rolldownOptions,
+        onLog(level, log, defaultHandler) {
+          if (log.code === "MODULE_LEVEL_DIRECTIVE") return;
+          defaultHandler(level, log);
+        },
+      },
+    },
+  }),
 } satisfies StorybookConfig;

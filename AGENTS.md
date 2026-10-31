@@ -10,6 +10,7 @@ pnpm lint     # oxlint, go vet
 pnpm format   # oxfmt, go fmt
 pnpm build
 pnpm dev      # API and Vite dev server, /api proxied to the API
+pnpm test
 ```
 
 Done means `gen`, `lint` and `build` pass and the generated files are part of the change. There is no test suite yet. Do not add one unless asked.
@@ -49,7 +50,7 @@ New dependencies, CI or Dockerfile changes, breaking API changes, anything that 
 ## Never
 
 - Commit. The user commits.
-- Edit generated files: `apps/api/openapi.yaml`, `packages/api-client/src/gen/`, `routeTree.gen.ts`.
+- Edit generated files: `packages/openapi/openapi.yaml`, `packages/api-client/src/gen/`, `routeTree.gen.ts`.
 - Print or log a token, the content of a `*_FILE` secret or a `Remote-*` header value.
 - Reach the Proxmox host over SSH, `pct` or `pvesh`. Use the Proxmox API.
 - Add a database or a persistent volume.

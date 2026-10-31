@@ -16,6 +16,7 @@ catalog:
   "@storybook/addon-themes": 10.6.5
   "@storybook/addon-vitest": 10.6.5
   "@storybook/react-vite": 10.6.5
+  "@scalar/api-reference": 1.76.0
   "@tailwindcss/vite": 4.3.3
   "@tanstack/charts": 1.1.0
   "@tanstack/react-table": 9.3.1
@@ -39,3 +40,4 @@ catalog:
 
 allowBuilds:
   esbuild: false
+  vue-demi: false
