@@ -1,0 +1,38 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" tags={["!autodocs"]} parameters={{ layout: "fullscreen" }} />
+
+<div className="mx-auto max-w-3xl px-6 py-12">
+
+# Jarvis UI
+
+The component library behind the Jarvis console, a read-only view over the homelab observability stack. Dense, quiet, and readable in light and dark.
+
+## Packages
+
+- `@jarvis/ui`: Components, built on Base UI primitives and Tailwind tokens.
+- `@jarvis/icons`: The only icon set. Wraps Hugeicons with a single `Icon`.
+- `@jarvis/charts`: Time series, sparklines and gauges on TanStack Charts.
+
+## Principles
+
+- **Health is an alert.** Tones (`critical`, `warning`, `info`, `ok`) map to an Alertmanager `severity`. No component computes a threshold.
+- **Tokens only.** Colors, radii and type sizes come from `theme.css`. Switch the theme from the toolbar to check both.
+- **Accessible by default.** Every story is checked by the Accessibility addon and fails on violations. Icon-only controls need an `aria-label`.
+- **Compose, don't configure.** Parts such as `CardHeader` and `DialogContent` are exported separately.
+
+## Using the docs
+
+Each page has a live canvas, a controls table generated from the props, and copyable source. Open the **Accessibility** panel under a story to see violations, passes and items to review.
+
+```tsx
+import { Badge, Button } from "@jarvis/ui";
+import { Icon, Refresh01Icon } from "@jarvis/icons";
+
+<Button>
+  <Icon icon={Refresh01Icon} />
+  Refresh
+</Button>;
+```
+
+</div>

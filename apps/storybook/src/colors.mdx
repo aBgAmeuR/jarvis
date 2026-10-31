@@ -1,0 +1,62 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+All colors are CSS variables defined in `theme.css` and exposed as Tailwind utilities (`bg-primary`, `text-muted-foreground`). Each has a dark value; toggle the theme to compare.
+
+export const Swatch = ({ name, note }) => (
+  <div className="flex flex-col gap-1.5">
+    <div className={`bg-${name} border-border h-12 rounded-md border`} />
+    <code className="text-xs">{name}</code>
+    {note && <span className="text-muted-foreground text-xs">{note}</span>}
+  </div>
+);
+
+export const Grid = ({ children }) => (
+  <div className="my-4 grid grid-cols-2 gap-4 sm:grid-cols-4">{children}</div>
+);
+
+## Surfaces
+
+<Grid>
+  <Swatch name="background" note="Page" />
+  <Swatch name="card" note="Cards" />
+  <Swatch name="popover" note="Overlays" />
+  <Swatch name="muted" note="Subtle fills" />
+  <Swatch name="secondary" note="Tracks, hover" />
+  <Swatch name="accent" note="Hover, selection" />
+  <Swatch name="primary" note="Primary action" />
+  <Swatch name="border" note="Hairlines" />
+</Grid>
+
+## Severity
+
+Tone follows the Alertmanager `severity` label. Each tone has a `-subtle` background for badges and rows.
+
+<Grid>
+  <Swatch name="critical" />
+  <Swatch name="warning" />
+  <Swatch name="info" />
+  <Swatch name="ok" />
+  <Swatch name="critical-subtle" />
+  <Swatch name="warning-subtle" />
+  <Swatch name="info-subtle" />
+  <Swatch name="ok-subtle" />
+</Grid>
+
+## Chart series
+
+Eight categorical colors, tuned to stay distinguishable in both themes.
+
+<Grid>
+  <Swatch name="chart-1" />
+  <Swatch name="chart-2" />
+  <Swatch name="chart-3" />
+  <Swatch name="chart-4" />
+  <Swatch name="chart-5" />
+  <Swatch name="chart-6" />
+  <Swatch name="chart-7" />
+  <Swatch name="chart-8" />
+</Grid>

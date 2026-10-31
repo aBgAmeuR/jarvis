@@ -3,6 +3,14 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
   title: "Components/Card",
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Surface for a titled group of content. Compose `CardHeader`, `CardTitle`, `CardContent` and `CardFooter`.",
+      },
+    },
+  },
   component: Card,
 } satisfies Meta<typeof Card>;
 
@@ -16,6 +24,11 @@ const pools = [
 ];
 
 export const StoragePools: Story = {
+  parameters: {
+    docs: {
+      description: { story: "A card holding a list with inline usage bars and a degraded badge." },
+    },
+  },
   render: (args) => (
     <Card {...args} className="w-80">
       <CardHeader>

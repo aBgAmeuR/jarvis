@@ -1,0 +1,30 @@
+{
+  "name": "@jarvis/icons",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "oxlint",
+    "format": "oxfmt"
+  },
+  "dependencies": {
+    "@hugeicons/core-free-icons": "catalog:",
+    "@hugeicons/react": "catalog:"
+  },
+  "devDependencies": {
+    "@jarvis/oxlint-config": "workspace:*",
+    "@jarvis/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  }
+}

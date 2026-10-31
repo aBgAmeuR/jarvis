@@ -1,0 +1,38 @@
+{
+  "name": "@jarvis/charts",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": {
+      "style": "./src/theme.css",
+      "default": "./src/theme.css"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "oxlint",
+    "format": "oxfmt"
+  },
+  "dependencies": {
+    "@tanstack/charts": "catalog:"
+  },
+  "devDependencies": {
+    "@jarvis/oxlint-config": "workspace:*",
+    "@jarvis/tsconfig": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  }
+}

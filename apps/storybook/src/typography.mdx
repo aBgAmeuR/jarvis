@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+**Geist** for text, **Geist Mono** for identifiers, IPs, paths and log lines. Numbers are tabular by default so columns line up.
+
+export const sizes = [
+  ["text-2xs", "10 / 14", "Dense captions"],
+  ["text-xs", "11 / 16", "Secondary text, badges"],
+  ["text-sm", "12 / 16", "Body, the default"],
+  ["text-md", "13 / 18", "Emphasis"],
+  ["text-lg", "15 / 20", "Section titles"],
+  ["text-xl", "18 / 24", "Page titles"],
+  ["text-2xl", "24 / 30", "Stat values"],
+];
+
+<div className="my-4 flex flex-col">
+  {sizes.map(([cls, spec, use]) => (
+    <div key={cls} className="border-border flex items-baseline gap-4 border-b py-2.5">
+      <code className="text-muted-foreground w-20 shrink-0 text-xs">{cls}</code>
+      <span className={cls}>Proxmox pve · 10.0.10.4</span>
+      <span className="text-muted-foreground ml-auto text-xs">
+        {spec} · {use}
+      </span>
+    </div>
+  ))}
+</div>
+
+## Monospace
+
+<p className="font-mono text-sm">ct-104 · 10.0.10.4 · /shared/photos/2026</p>
+
+Use `font-mono` for anything a user may copy or compare character by character.

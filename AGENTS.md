@@ -20,7 +20,7 @@ Done means `gen`, `lint` and `build` pass and the generated files are part of th
 - Health is an Alertmanager alert and its `severity`. No thresholds in code.
 - The front calls the API only through the Orval hooks.
 - Refresh with TanStack Query `refetchInterval`. No SSE or WebSocket.
-- UI from `@jarvis/ui`, charts from TanStack Charts. No other UI or chart library.
+- UI from `@jarvis/ui`, icons from `@jarvis/icons`, charts from `@jarvis/charts`.
 
 ## Quality
 

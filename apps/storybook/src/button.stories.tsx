@@ -1,20 +1,17 @@
+import { Icon, Refresh01Icon } from "@jarvis/icons";
 import { Button } from "@jarvis/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-const RefreshIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-  >
-    <path d="M21 12a9 9 0 1 1-3-6.7L21 8 M21 3v5h-5" />
-  </svg>
-);
-
 const meta = {
   title: "Components/Button",
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Triggers an action. `secondary` is the default, `primary` appears once per view at most, and `danger` is outlined and reserved for destructive Files actions. Icon-only buttons need an `aria-label`.",
+      },
+    },
+  },
   component: Button,
   args: { children: "Refresh" },
   argTypes: {
@@ -26,9 +23,12 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: { docs: { description: { story: "Secondary button, the default variant." } } },
+};
 
 export const Variants: Story = {
+  parameters: { docs: { description: { story: "Four variants. Use one `primary` per view." } } },
   render: (args) => (
     <div className="flex items-center gap-2">
       <Button {...args} variant="primary">
@@ -48,27 +48,44 @@ export const Variants: Story = {
 };
 
 export const Sizes: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "`md` and `sm` carry a label, `icon` is square and needs an `aria-label`.",
+      },
+    },
+  },
   render: (args) => (
     <div className="flex items-center gap-2">
       <Button {...args} size="md">
-        <RefreshIcon />
+        <Icon icon={Refresh01Icon} />
         Medium
       </Button>
       <Button {...args} size="sm">
-        <RefreshIcon />
+        <Icon icon={Refresh01Icon} />
         Small
       </Button>
       <Button {...args} size="icon" variant="ghost" aria-label="Refresh">
-        <RefreshIcon />
+        <Icon icon={Refresh01Icon} />
       </Button>
     </div>
   ),
 };
 
 export const Loading: Story = {
+  parameters: {
+    docs: {
+      description: { story: "Shows a spinner and ignores clicks without dimming the button." },
+    },
+  },
   args: { loading: true },
 };
 
 export const Disabled: Story = {
+  parameters: {
+    docs: {
+      description: { story: "Disabled buttons drop to 45 % opacity and leave the tab order." },
+    },
+  },
   args: { disabled: true },
 };

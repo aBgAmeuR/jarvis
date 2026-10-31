@@ -1,0 +1,35 @@
+/*
+ * Jarvis look for TanStack Charts. Import after @jarvis/ui/theme.css.
+ * Charts inherit color: text and grid follow muted-foreground, series use
+ * the chart-* tokens, so light and dark need no chart rebuild.
+ */
+
+@source './';
+
+.ts-chart-host {
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  --ts-chart-1: var(--chart-1);
+  --ts-chart-2: var(--chart-2);
+  --ts-chart-3: var(--chart-3);
+  --ts-chart-4: var(--chart-4);
+  --ts-chart-5: var(--chart-5);
+  --ts-chart-6: var(--chart-6);
+
+  /*
+   * Halo around the crosshair time label. The default, Canvas, follows
+   * color-scheme, which the .dark class does not change: it stayed white.
+   * Charts sit on cards, so the halo takes the card color.
+   */
+  --ts-chart-crosshair-label-halo: var(--card);
+
+  /* Minimal tooltip, same look as the Tooltip component: inverted, flat. */
+  --ts-chart-tooltip-background: var(--foreground);
+  --ts-chart-tooltip-color: var(--background);
+  --ts-chart-tooltip-border: none;
+  --ts-chart-tooltip-border-radius: calc(var(--radius) - 6px);
+  --ts-chart-tooltip-shadow: none;
+  --ts-chart-tooltip-padding: 4px 7px;
+  --ts-chart-tooltip-font: 400 11px/14px var(--font-sans);
+}

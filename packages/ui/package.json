@@ -18,6 +18,8 @@
     "@base-ui/react": "catalog:",
     "@fontsource-variable/geist": "catalog:",
     "@fontsource-variable/geist-mono": "catalog:",
+    "@jarvis/icons": "workspace:*",
+    "@tanstack/react-table": "catalog:",
     "class-variance-authority": "catalog:",
     "cn": "catalog:"
   },

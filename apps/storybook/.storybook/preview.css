@@ -1,4 +1,5 @@
 @import "@jarvis/tailwind-config/base.css";
 @import "@jarvis/ui/theme.css";
+@import "@jarvis/charts/theme.css";
 
 @source '../src';

@@ -12,6 +12,8 @@ apps/storybook/            Storybook for @jarvis/ui, with the stories
 apps/web/                  TanStack Start SPA, modules in src/modules/<name>
 docker/                    Dockerfile, Dockerfile.dockerignore
 docs/
+packages/charts/           @jarvis/charts: chart presets and the chart theme over TanStack Charts
+packages/icons/            @jarvis/icons: the Icon component and the Hugeicons free set
 packages/ui/               @jarvis/ui and its design tokens
 packages/api-client/       Orval config and output in src/gen/
 tooling/                   shared config packages

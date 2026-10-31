@@ -9,6 +9,8 @@
     "format": "oxfmt"
   },
   "dependencies": {
+    "@jarvis/charts": "workspace:*",
+    "@jarvis/icons": "workspace:*",
     "@jarvis/ui": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"
@@ -17,6 +19,8 @@
     "@jarvis/oxlint-config": "workspace:*",
     "@jarvis/tailwind-config": "workspace:*",
     "@jarvis/tsconfig": "workspace:*",
+    "@storybook/addon-a11y": "catalog:",
+    "@storybook/addon-docs": "catalog:",
     "@storybook/addon-themes": "catalog:",
     "@storybook/react-vite": "catalog:",
     "@tailwindcss/vite": "catalog:",

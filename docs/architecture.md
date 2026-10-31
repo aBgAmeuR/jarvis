@@ -12,7 +12,9 @@ How Jarvis is built and how it runs. Where it runs in the homelab: [deployment.m
 | Front | TanStack Start in SPA mode, TanStack Router and TanStack Query |
 | API client | Orval: TanStack Query hooks and zod schemas, no mocks |
 | UI | `@jarvis/ui`, custom components on Base UI, Tailwind v4 tokens |
-| Charts | TanStack Charts only, Canvas renderer for dense series |
+| Icons | `@jarvis/icons`, Hugeicons free set, 14 px with a 1.5 stroke |
+| Charts | `@jarvis/charts`, presets and theme over TanStack Charts; Canvas renderer for dense series |
+| Tables | TanStack Table, rendered by `DataTable` in `@jarvis/ui` |
 | Component docs | Storybook for `@jarvis/ui`, in `apps/storybook` |
 | Lint and format | oxlint and oxfmt for TypeScript, `go vet` and `go fmt` for Go |
 

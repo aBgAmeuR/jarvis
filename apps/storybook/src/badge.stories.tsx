@@ -3,6 +3,14 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
   title: "Components/Badge",
+  parameters: {
+    docs: {
+      description: {
+        component:
+          "Compact label. Tone maps to an Alertmanager `severity`; there are no thresholds in the UI. `StatusDot` is the dot-only form for dense rows.",
+      },
+    },
+  },
   component: Badge,
   args: { children: "Warning", tone: "warning", dot: true },
   argTypes: {
@@ -13,9 +21,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: { docs: { description: { story: "A toned badge with a leading dot." } } },
+};
 
 export const Severities: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "One tone per severity, plus neutral for stopped or untoned metadata.",
+      },
+    },
+  },
   render: () => (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center gap-2">
@@ -47,6 +64,9 @@ export const Severities: Story = {
 };
 
 export const Dots: Story = {
+  parameters: {
+    docs: { description: { story: "Dot with inline text, for counts and guest states." } },
+  },
   render: () => (
     <div className="flex items-center gap-3.5">
       <span className="flex items-center gap-2">
