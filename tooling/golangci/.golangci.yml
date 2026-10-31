@@ -1,0 +1,794 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - contextcheck
+    - copyloopvar
+    - depguard
+    - errcheck
+    - errorlint
+    - exhaustive
+    - govet
+    - ineffassign
+    - intrange
+    - misspell
+    - nilerr
+    - noctx
+    - sloglint
+    - staticcheck
+    - unparam
+    - unused
+    - usestdlibvars
+    - gosec
+  settings:
+    exhaustive:
+      default-signifies-exhaustive: true
+    sloglint:
+      kv-only: true
+      static-msg: true
+    depguard:
+      rules:
+        layer-domain:
+          files:
+            - "**/internal/domain/**"
+          deny:
+            - pkg: jarvis/server/internal/app
+              desc: domain must not depend on app
+            - pkg: jarvis/server/internal/source
+              desc: domain must not depend on source
+            - pkg: jarvis/server/internal/httpapi
+              desc: domain must not depend on httpapi
+            - pkg: jarvis/server/internal/platform
+              desc: domain must not depend on platform
+            - pkg: jarvis/server/internal/bootstrap
+              desc: domain must not depend on bootstrap
+        layer-app:
+          files:
+            - "**/internal/app/**"
+          deny:
+            - pkg: jarvis/server/internal/source
+              desc: app must not depend on source
+            - pkg: jarvis/server/internal/httpapi
+              desc: app must not depend on httpapi
+            - pkg: jarvis/server/internal/platform
+              desc: app must not depend on platform
+            - pkg: jarvis/server/internal/bootstrap
+              desc: app must not depend on bootstrap
+        layer-source:
+          files:
+            - "**/internal/source/**"
+          deny:
+            - pkg: jarvis/server/internal/app
+              desc: source must not depend on app
+            - pkg: jarvis/server/internal/httpapi
+              desc: source must not depend on httpapi
+            - pkg: jarvis/server/internal/bootstrap
+              desc: source must not depend on bootstrap
+        layer-httpapi:
+          files:
+            - "**/internal/httpapi/**"
+          deny:
+            - pkg: jarvis/server/internal/source
+              desc: httpapi must not depend on source
+            - pkg: jarvis/server/internal/bootstrap
+              desc: httpapi must not depend on bootstrap
+        layer-platform:
+          files:
+            - "**/internal/platform/**"
+          deny:
+            - pkg: jarvis/server/internal/domain
+              desc: platform must not depend on domain
+            - pkg: jarvis/server/internal/app
+              desc: platform must not depend on app
+            - pkg: jarvis/server/internal/source
+              desc: platform must not depend on source
+            - pkg: jarvis/server/internal/httpapi
+              desc: platform must not depend on httpapi
+            - pkg: jarvis/server/internal/bootstrap
+              desc: platform must not depend on bootstrap
+        feature-domain-availability:
+          files:
+            - "**/internal/domain/availability/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/availability must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/availability must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/availability must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/availability must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/availability must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/availability must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/availability must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/availability must not import the feature supervision
+        feature-domain-health:
+          files:
+            - "**/internal/domain/health/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/health must not import the feature availability
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/health must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/health must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/health must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/health must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/health must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/health must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/health must not import the feature supervision
+        feature-domain-identity:
+          files:
+            - "**/internal/domain/identity/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/identity must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/identity must not import the feature health
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/identity must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/identity must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/identity must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/identity must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/identity must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/identity must not import the feature supervision
+        feature-domain-logs:
+          files:
+            - "**/internal/domain/logs/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/logs must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/logs must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/logs must not import the feature identity
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/logs must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/logs must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/logs must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/logs must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/logs must not import the feature supervision
+        feature-domain-maintenance:
+          files:
+            - "**/internal/domain/maintenance/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/maintenance must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/maintenance must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/maintenance must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/maintenance must not import the feature logs
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/maintenance must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/maintenance must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/maintenance must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/maintenance must not import the feature supervision
+        feature-domain-network:
+          files:
+            - "**/internal/domain/network/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/network must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/network must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/network must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/network must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/network must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/network must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/network must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/network must not import the feature supervision
+        feature-domain-overview:
+          files:
+            - "**/internal/domain/overview/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/overview must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/overview must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/overview must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/overview must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/overview must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/overview must not import the feature network
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/overview must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/overview must not import the feature supervision
+        feature-domain-services:
+          files:
+            - "**/internal/domain/services/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/services must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/services must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/services must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/services must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/services must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/services must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/services must not import the feature overview
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/services must not import the feature supervision
+        feature-domain-supervision:
+          files:
+            - "**/internal/domain/supervision/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/supervision must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/supervision must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/supervision must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/supervision must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/supervision must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/supervision must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/supervision must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/supervision must not import the feature services
+        feature-app-availability:
+          files:
+            - "**/internal/app/availability/**"
+          deny:
+            - pkg: jarvis/server/internal/app/health
+              desc: app/availability must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/availability must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/availability must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/availability must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/availability must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/availability must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/availability must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/availability must not import the feature supervision
+        feature-app-health:
+          files:
+            - "**/internal/app/health/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/health must not import the feature availability
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/health must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/health must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/health must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/health must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/health must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/health must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/health must not import the feature supervision
+        feature-app-identity:
+          files:
+            - "**/internal/app/identity/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/identity must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/identity must not import the feature health
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/identity must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/identity must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/identity must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/identity must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/identity must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/identity must not import the feature supervision
+        feature-app-logs:
+          files:
+            - "**/internal/app/logs/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/logs must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/logs must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/logs must not import the feature identity
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/logs must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/logs must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/logs must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/logs must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/logs must not import the feature supervision
+        feature-app-maintenance:
+          files:
+            - "**/internal/app/maintenance/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/maintenance must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/maintenance must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/maintenance must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/maintenance must not import the feature logs
+            - pkg: jarvis/server/internal/app/network
+              desc: app/maintenance must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/maintenance must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/maintenance must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/maintenance must not import the feature supervision
+        feature-app-network:
+          files:
+            - "**/internal/app/network/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/network must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/network must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/network must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/network must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/network must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/network must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/network must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/network must not import the feature supervision
+        feature-app-overview:
+          files:
+            - "**/internal/app/overview/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/overview must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/overview must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/overview must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/overview must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/overview must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/overview must not import the feature network
+            - pkg: jarvis/server/internal/app/services
+              desc: app/overview must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/overview must not import the feature supervision
+        feature-app-services:
+          files:
+            - "**/internal/app/services/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/services must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/services must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/services must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/services must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/services must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/services must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/services must not import the feature overview
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/services must not import the feature supervision
+        feature-app-supervision:
+          files:
+            - "**/internal/app/supervision/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/supervision must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/supervision must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/supervision must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/supervision must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/supervision must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/supervision must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/supervision must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/supervision must not import the feature services
+        feature-httpapi-availability:
+          files:
+            - "**/internal/httpapi/availability/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/availability must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/availability must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/availability must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/availability must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/availability must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/availability must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/availability must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/availability must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/availability must not import the feature supervision
+        feature-httpapi-health:
+          files:
+            - "**/internal/httpapi/health/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/health must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/health must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/health must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/health must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/health must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/health must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/health must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/health must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/health must not import the feature supervision
+        feature-httpapi-identity:
+          files:
+            - "**/internal/httpapi/identity/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/identity must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/identity must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/identity must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/identity must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/identity must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/identity must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/identity must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/identity must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/identity must not import the feature supervision
+        feature-httpapi-logs:
+          files:
+            - "**/internal/httpapi/logs/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/logs must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/logs must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/logs must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/logs must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/logs must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/logs must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/logs must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/logs must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/logs must not import the feature supervision
+        feature-httpapi-maintenance:
+          files:
+            - "**/internal/httpapi/maintenance/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/maintenance must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/maintenance must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/maintenance must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/maintenance must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/maintenance must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/maintenance must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/maintenance must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/maintenance must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/maintenance must not import the feature supervision
+        feature-httpapi-meta:
+          files:
+            - "**/internal/httpapi/meta/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/meta must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/meta must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/meta must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/meta must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/meta must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/meta must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/meta must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/meta must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/meta must not import the feature supervision
+        feature-httpapi-network:
+          files:
+            - "**/internal/httpapi/network/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/network must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/network must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/network must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/network must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/network must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/network must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/network must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/network must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/network must not import the feature supervision
+        feature-httpapi-overview:
+          files:
+            - "**/internal/httpapi/overview/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/overview must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/overview must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/overview must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/overview must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/overview must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/overview must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/overview must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/overview must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/overview must not import the feature supervision
+        feature-httpapi-services:
+          files:
+            - "**/internal/httpapi/services/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/services must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/services must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/services must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/services must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/services must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/services must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/services must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/services must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/services must not import the feature supervision
+        feature-httpapi-supervision:
+          files:
+            - "**/internal/httpapi/supervision/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/supervision must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/supervision must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/supervision must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/supervision must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/supervision must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/supervision must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/supervision must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/supervision must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/supervision must not import the feature services
+        feature-source-alertmanager:
+          files:
+            - "**/internal/source/alertmanager/**"
+          deny:
+            - pkg: jarvis/server/internal/source/catalog
+              desc: source/alertmanager must not import the feature catalog
+            - pkg: jarvis/server/internal/source/loki
+              desc: source/alertmanager must not import the feature loki
+            - pkg: jarvis/server/internal/source/pathcheck
+              desc: source/alertmanager must not import the feature pathcheck
+            - pkg: jarvis/server/internal/source/prometheus
+              desc: source/alertmanager must not import the feature prometheus
+            - pkg: jarvis/server/internal/source/proxmox
+              desc: source/alertmanager must not import the feature proxmox
+            - pkg: jarvis/server/internal/source/readiness
+              desc: source/alertmanager must not import the feature readiness
+        feature-source-catalog:
+          files:
+            - "**/internal/source/catalog/**"
+          deny:
+            - pkg: jarvis/server/internal/source/alertmanager
+              desc: source/catalog must not import the feature alertmanager
+            - pkg: jarvis/server/internal/source/loki
+              desc: source/catalog must not import the feature loki
+            - pkg: jarvis/server/internal/source/pathcheck
+              desc: source/catalog must not import the feature pathcheck
+            - pkg: jarvis/server/internal/source/prometheus
+              desc: source/catalog must not import the feature prometheus
+            - pkg: jarvis/server/internal/source/proxmox
+              desc: source/catalog must not import the feature proxmox
+            - pkg: jarvis/server/internal/source/readiness
+              desc: source/catalog must not import the feature readiness
+        feature-source-loki:
+          files:
+            - "**/internal/source/loki/**"
+          deny:
+            - pkg: jarvis/server/internal/source/alertmanager
+              desc: source/loki must not import the feature alertmanager
+            - pkg: jarvis/server/internal/source/catalog
+              desc: source/loki must not import the feature catalog
+            - pkg: jarvis/server/internal/source/pathcheck
+              desc: source/loki must not import the feature pathcheck
+            - pkg: jarvis/server/internal/source/prometheus
+              desc: source/loki must not import the feature prometheus
+            - pkg: jarvis/server/internal/source/proxmox
+              desc: source/loki must not import the feature proxmox
+            - pkg: jarvis/server/internal/source/readiness
+              desc: source/loki must not import the feature readiness
+        feature-source-pathcheck:
+          files:
+            - "**/internal/source/pathcheck/**"
+          deny:
+            - pkg: jarvis/server/internal/source/alertmanager
+              desc: source/pathcheck must not import the feature alertmanager
+            - pkg: jarvis/server/internal/source/catalog
+              desc: source/pathcheck must not import the feature catalog
+            - pkg: jarvis/server/internal/source/loki
+              desc: source/pathcheck must not import the feature loki
+            - pkg: jarvis/server/internal/source/prometheus
+              desc: source/pathcheck must not import the feature prometheus
+            - pkg: jarvis/server/internal/source/proxmox
+              desc: source/pathcheck must not import the feature proxmox
+            - pkg: jarvis/server/internal/source/readiness
+              desc: source/pathcheck must not import the feature readiness
+        feature-source-prometheus:
+          files:
+            - "**/internal/source/prometheus/**"
+          deny:
+            - pkg: jarvis/server/internal/source/alertmanager
+              desc: source/prometheus must not import the feature alertmanager
+            - pkg: jarvis/server/internal/source/catalog
+              desc: source/prometheus must not import the feature catalog
+            - pkg: jarvis/server/internal/source/loki
+              desc: source/prometheus must not import the feature loki
+            - pkg: jarvis/server/internal/source/pathcheck
+              desc: source/prometheus must not import the feature pathcheck
+            - pkg: jarvis/server/internal/source/proxmox
+              desc: source/prometheus must not import the feature proxmox
+            - pkg: jarvis/server/internal/source/readiness
+              desc: source/prometheus must not import the feature readiness
+        feature-source-proxmox:
+          files:
+            - "**/internal/source/proxmox/**"
+          deny:
+            - pkg: jarvis/server/internal/source/alertmanager
+              desc: source/proxmox must not import the feature alertmanager
+            - pkg: jarvis/server/internal/source/catalog
+              desc: source/proxmox must not import the feature catalog
+            - pkg: jarvis/server/internal/source/loki
+              desc: source/proxmox must not import the feature loki
+            - pkg: jarvis/server/internal/source/pathcheck
+              desc: source/proxmox must not import the feature pathcheck
+            - pkg: jarvis/server/internal/source/prometheus
+              desc: source/proxmox must not import the feature prometheus
+            - pkg: jarvis/server/internal/source/readiness
+              desc: source/proxmox must not import the feature readiness
+        feature-source-readiness:
+          files:
+            - "**/internal/source/readiness/**"
+          deny:
+            - pkg: jarvis/server/internal/source/alertmanager
+              desc: source/readiness must not import the feature alertmanager
+            - pkg: jarvis/server/internal/source/catalog
+              desc: source/readiness must not import the feature catalog
+            - pkg: jarvis/server/internal/source/loki
+              desc: source/readiness must not import the feature loki
+            - pkg: jarvis/server/internal/source/pathcheck
+              desc: source/readiness must not import the feature pathcheck
+            - pkg: jarvis/server/internal/source/prometheus
+              desc: source/readiness must not import the feature prometheus
+            - pkg: jarvis/server/internal/source/proxmox
+              desc: source/readiness must not import the feature proxmox
+  exclusions:
+    generated: lax
+    presets:
+      - std-error-handling
+      - common-false-positives
+
+formatters:
+  enable:
+    - gofmt

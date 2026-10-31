@@ -5,7 +5,7 @@
     "gen": "go run ./cmd/openapi > ../../packages/openapi/openapi.yaml",
     "build": "go build -buildvcs=false -o bin/jarvis-server ./cmd/jarvis-server",
     "dev": "go run ./cmd/jarvis-server",
-    "lint": "go vet ./...",
+    "lint": "go vet ./... && GOWORK=off go tool -modfile=../../tooling/go/go.mod golangci-lint run --config ../../tooling/golangci/.golangci.yml ./...",
     "format": "go fmt ./..."
   }
 }
