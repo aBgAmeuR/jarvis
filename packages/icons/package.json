@@ -16,6 +16,7 @@
     "@hugeicons/react": "catalog:"
   },
   "devDependencies": {
+    "@jarvis/oxfmt-config": "workspace:*",
     "@jarvis/oxlint-config": "workspace:*",
     "@jarvis/tsconfig": "workspace:*",
     "@types/react": "catalog:",

@@ -16,6 +16,7 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@jarvis/oxfmt-config": "workspace:*",
     "@jarvis/oxlint-config": "workspace:*",
     "@jarvis/tailwind-config": "workspace:*",
     "@jarvis/tsconfig": "workspace:*",

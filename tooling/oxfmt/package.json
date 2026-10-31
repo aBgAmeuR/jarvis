@@ -1,9 +1,13 @@
 {
   "name": "@jarvis/oxfmt-config",
   "private": true,
+  "type": "module",
   "files": [
-    ".oxfmtrc.json"
+    "index.ts"
   ],
+  "exports": {
+    ".": "./index.ts"
+  },
   "devDependencies": {
     "oxfmt": "catalog:"
   }
