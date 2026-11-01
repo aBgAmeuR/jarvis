@@ -37,18 +37,23 @@ jobs:
   image:
     needs: version
     if: needs.version.outputs.version != ''
+    uses: ./.github/workflows/image.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+
+  publish:
+    needs: [version, image]
     permissions:
       contents: read
       packages: write
       id-token: write
       attestations: write
-    uses: ./.github/workflows/image.yml
+    uses: ./.github/workflows/publish.yml
     with:
-      push: true
       version: ${{ needs.version.outputs.version }}
 
   release:
-    needs: image
+    needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write

@@ -1,0 +1,91 @@
+name: publish
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+
+env:
+  IMAGE: ghcr.io/abgameur/jarvis
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.digest.outputs.digest }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: image-${{ inputs.version }}
+          path: ${{ runner.temp }}
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=raw,value=${{ inputs.version }}
+            type=raw,value=latest
+      - id: digest
+        run: |
+          docker load -i "$RUNNER_TEMP/jarvis.tar"
+          for ref in $TAGS; do
+            docker tag jarvis:ci "$ref"
+            docker push "$ref"
+          done
+          ref=$(docker inspect --format '{{index .RepoDigests 0}}' "$(echo "$TAGS" | head -n1)")
+          echo "digest=${ref#*@}" >> "$GITHUB_OUTPUT"
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+
+  attest:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}@${{ needs.publish.outputs.digest }}
+          format: spdx-json
+          output: sbom.spdx.json
+
+      - uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ needs.publish.outputs.digest }}
+          sbom-path: sbom.spdx.json
+          push-to-registry: true
+
+      - uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ needs.publish.outputs.digest }}
+          push-to-registry: true
+
+      - run: |
+          gh attestation verify "oci://$IMAGE@${{ needs.publish.outputs.digest }}" --repo "${{ github.repository }}"
+          gh attestation verify "oci://$IMAGE@${{ needs.publish.outputs.digest }}" --repo "${{ github.repository }}" \
+            --predicate-type https://spdx.dev/Document/v2.3
+        env:
+          GH_TOKEN: ${{ github.token }}
