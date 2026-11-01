@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +12,7 @@ import (
 	"jarvis/server/internal/bootstrap"
 	"jarvis/server/internal/domain"
 	"jarvis/server/internal/platform/config"
+	"jarvis/server/internal/platform/healthcheck"
 	"jarvis/server/internal/platform/logging"
 )
 
@@ -28,6 +30,14 @@ func main() {
 	if err != nil {
 		logger.Error("exit", "error", err)
 		os.Exit(1)
+	}
+
+	if len(os.Args) > 1 && os.Args[1] == "healthcheck" {
+		if err := healthcheck.Run(context.Background(), cfg.ListenAddr); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
 	}
 	logger.Info("config", "config", cfg)
 

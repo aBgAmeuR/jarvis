@@ -80,13 +80,24 @@ Each tool pins its own version, except Node, which only has a minimum.
 
 A machine needs any `go`, any `pnpm` and Node 24 or later. CI reads the same files: `setup-go` with `go-version-file`, `pnpm/action-setup` with `packageManager`.
 
+## Workflows
+
+| File | Runs on | Does |
+|---|---|---|
+| `ci.yml` | pull request, `workflow_call` | `server` (lint, build, `gen` leaves no diff), `web`, `storybook` and `image` in parallel, then `ci-ok` (`re-actors/alls-green`), the only required check |
+| `image.yml` | `workflow_call` | `build`, then `test` and `scan` (Trivy, HIGH and CRITICAL fail) in parallel. With `push`: `publish` pushes that same tested image to GHCR, then `attest` attaches the SPDX SBOM (Trivy) and the SLSA provenance, both signed with sigstore, and verifies them |
+| `release.yml` | push to `master` | `ci`, then `version`, then `image` with `push`, then `release` |
+| `docs.yml` | push to `master` on docs paths | builds Storybook and the API docs, deploys to Pages |
+
 ## Release
 
-`.github/workflows/release.yml` runs semantic-release on every push to `master`. It reads the commits since the last tag, pushes the next `vX.Y.Z` tag and publishes the GitHub release with its notes. CI never commits: the version lives only in tags. There is no config file and no `CHANGELOG.md`; the plugins are passed on the command line (commit-analyzer, release-notes-generator, github).
+`release.yml` calls `ci.yml` first, so nothing is released from a red `master`. `version` runs semantic-release in dry-run mode (`cycjimmy/semantic-release-action`) and reads `new_release_version` from its outputs; with no releasable commit the rest is skipped. `image` publishes that version, and only then does `release` run semantic-release for real: the `vX.Y.Z` tag and the GitHub release exist only if the image was published. CI never commits: the version lives only in tags. There is no config file and no `CHANGELOG.md`; semantic-release runs its default plugins, and the npm one publishes nothing because the root `package.json` is private.
 
-## CI (planned)
+Check an image: `gh attestation verify oci://ghcr.io/abgameur/jarvis:<version> --repo aBgAmeuR/jarvis` for the provenance, and add `--predicate-type https://spdx.dev/Document/v2.3` for the SBOM.
 
-To set up soon on GitHub Actions. Every check is required before merge.
+## Checks (planned)
+
+To add to `ci.yml`. Every check is required before merge. Already in place: `gen` leaves no diff, Trivy on the image, the image test, SBOM and provenance signed with sigstore.
 
 | Area | Checks |
 |---|---|
@@ -97,6 +108,6 @@ To set up soon on GitHub Actions. Every check is required before merge.
 | UI | Storybook builds |
 | Security | CodeQL for Go and TypeScript, gitleaks, dependency review, Trivy on the image, hadolint |
 | Workflows | actionlint, zizmor, actions, least-privilege `GITHUB_TOKEN` |
-| Release | Conventional Commits with commitlint, semantic-release, multi-arch image on GHCR with SBOM (syft), cosign signature and build provenance |
+| Release | Conventional Commits with commitlint, multi-arch image |
 
 Tests are out of scope for now, except the fuzz test on file paths.

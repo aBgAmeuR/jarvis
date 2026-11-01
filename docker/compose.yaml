@@ -1,0 +1,27 @@
+services:
+  jarvis:
+    image: jarvis
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./catalog.json:/etc/jarvis/catalog.json:ro
+    secrets:
+      - proxmox_token
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "jarvis", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+secrets:
+  proxmox_token:
+    file: ./proxmox_token

@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/bin
+**/.turbo
+**/.tanstack
+**/storybook-static
+.git
+.github
+.env*
+docs

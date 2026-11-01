@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [tanstackStart({ spa: { enabled: true } }), react(), tailwindcss()],
+  preview: { host: "127.0.0.1" },
   server: {
     proxy: {
       "/api": {

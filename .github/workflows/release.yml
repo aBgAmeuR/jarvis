@@ -4,16 +4,62 @@ on:
   push:
     branches: [master]
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  release:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  version:
+    needs: ci
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.next.outputs.new_release_version }}
     steps:
       - uses: actions/checkout@v7
-      - run: npx semantic-release@25 -p @semantic-release/commit-analyzer,@semantic-release/release-notes-generator,@semantic-release/github
+        with:
+          fetch-depth: 0
+      - id: next
+        uses: cycjimmy/semantic-release-action@v8
+        with:
+          semantic_version: 25
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  image:
+    needs: version
+    if: needs.version.outputs.version != ''
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/image.yml
+    with:
+      push: true
+      version: ${{ needs.version.outputs.version }}
+
+  release:
+    needs: image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: cycjimmy/semantic-release-action@v8
+        with:
+          semantic_version: 25
         env:
           GITHUB_TOKEN: ${{ github.token }}

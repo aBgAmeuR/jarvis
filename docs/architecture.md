@@ -24,7 +24,7 @@ Not used: TanStack DB, micro-frontends, MSW or any mock, SSE or WebSocket, a dat
 
 ## Runtime
 
-Jarvis is one container, `jarvis-api`. Nothing runs on the Proxmox host. The binary serves the API and the SPA, embedded with `go:embed`.
+Jarvis is one container, `jarvis`. Nothing runs on the Proxmox host. The binary serves the API and the SPA, embedded with `go:embed`.
 
 It reaches `prometheus:9090`, `loki:3100`, `tempo:3200` and `alertmanager:9093` by service name, and Proxmox through its HTTPS API with a read-only `PVEAuditor` token.
 

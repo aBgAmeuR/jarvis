@@ -2,21 +2,18 @@ name: ci
 
 on:
   pull_request:
-  push:
-    branches: [master]
+  workflow_call:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  check:
+  server:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -29,8 +26,50 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm build
+      - run: pnpm --filter @jarvis/server lint
+      - run: pnpm --filter @jarvis/server build
+
+      - run: pnpm gen
+      - run: git diff --exit-code
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter "@jarvis/web..." lint
+      - run: pnpm --filter "@jarvis/web..." build
+
+  storybook:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter "@jarvis/storybook^..." build
 
       # The stories run as tests in Chromium: interactions and accessibility.
-      - run: pnpm test
+      - run: pnpm --filter @jarvis/storybook test
+
+  image:
+    uses: ./.github/workflows/image.yml
+
+  ci-ok:
+    if: always()
+    needs: [server, web, storybook, image]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}

@@ -6,18 +6,18 @@ How the image is built and how Jarvis runs in the homelab, with what it needs fr
 
 `docker/Dockerfile` builds from the repo root: `docker build -f docker/Dockerfile .`. BuildKit reads `docker/Dockerfile.dockerignore`, so there is no root `.dockerignore`.
 
-The build is multi-stage: `turbo prune` and the Vite build, then `go build -trimpath` with the version set by `-ldflags`, then a distroless image running as non-root.
+The build is multi-stage: the Vite build, then `go build -trimpath` with the version set by `-ldflags` and the SPA copied into `internal/platform/webui/static` for `go:embed`, then a distroless image running as non-root. The binary is `jarvis`. Compose is in `docker/compose.yaml`, its variables in `docker/.env.example`.
 
-- Base images are pinned by digest in each `FROM`. Renovate bumps them.
+- Base images are pinned by tag in each `FROM`, with the registry spelled out so Podman accepts them.
 - The only `ARG`s are `VERSION` (default `dev`) and `COMMIT` (default `unknown`). CI sets them to the tag and the SHA.
 - The Dockerfile sets no `JARVIS_*` variable. Defaults live in the Go config struct, see [configuration.md](configuration.md).
-- The image has no shell. `jarvis-api healthcheck` calls `/healthz` and exits 0 or 1.
+- The image has no shell. `jarvis healthcheck` calls `/healthz` and exits 0 or 1.
 
 ## Homelab
 
 Jarvis runs in the `docker/monitoring` compose on CT 111, next to Prometheus, Loki, Tempo and Alertmanager. Caddy publishes it behind TinyAuth `forward_auth`. The guest firewall opens its port to Caddy only.
 
-In the compose file the container runs with `read_only: true`, `cap_drop: [ALL]`, `no-new-privileges`, a memory limit and a healthcheck that runs `jarvis-api healthcheck`. The Files dataset is mounted only when the Files module ships.
+In the compose file the container runs with `read_only: true`, `cap_drop: [ALL]`, `no-new-privileges`, a memory limit and a healthcheck that runs `jarvis healthcheck`. The Files dataset is mounted only when the Files module ships.
 
 The homelab-iac compose pins the image by digest, and Renovate bumps it.
 
