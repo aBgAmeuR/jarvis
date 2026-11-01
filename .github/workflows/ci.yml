@@ -63,6 +63,7 @@ jobs:
       - run: pnpm --filter @jarvis/storybook test
 
   image:
+    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/image.yml
 
   ci-ok:
@@ -73,3 +74,4 @@ jobs:
       - uses: re-actors/alls-green@release/v1
         with:
           jobs: ${{ toJSON(needs) }}
+          allowed-skips: image

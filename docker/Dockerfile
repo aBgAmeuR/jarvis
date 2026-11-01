@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 RUN pnpm --filter "@jarvis/web..." build
 
-FROM docker.io/library/golang:1.26.8-bookworm AS server
+FROM docker.io/library/golang:1.26-bookworm AS server
 ARG VERSION=dev
 ARG COMMIT=unknown
 WORKDIR /src
