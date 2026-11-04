@@ -45,7 +45,7 @@ A feature package never imports another feature of the same layer: when `supervi
 
 Outgoing calls go through one HTTP client per source: a context deadline on every call, a cap on the body size, TLS 1.2 at least, and a short cache that sends one request for identical concurrent reads (`JARVIS_CACHE_TTL`). A source failure is a `SourceError` with a kind (`timeout`, `unreachable`, `bad_status`, `invalid_response`, `unavailable`); clients see the kind, never the URL or the cause, which go to the logs.
 
-Front modules are `supervision`, `availability`, `network`, `maintenance` and `files`. Each one is lazy-loaded by route and never imports another module.
+The front is split by page, each one lazy-loaded by route. A page never imports another page; what two pages share goes to `entities` or `shared`.
 
 ## Identity
 

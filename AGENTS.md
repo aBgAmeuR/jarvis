@@ -41,7 +41,11 @@ Web:
 - Components render and handle UI events. Fetching and logic live in hooks.
 - Server data lives only in TanStack Query. Never copy it into `useState`, and compute derived values instead of storing them.
 - Time range, selection and tab live in search params validated by zod.
-- A module in `src/modules/<name>` never imports another module. Shared code goes to `src/shared` or `@jarvis/ui`.
+- Layers of `apps/web/src`, top to bottom: `routes` (with `router.tsx`), `pages`, `entities`, `shared`. `app` (shell, theme) sits beside `pages` and uses only `shared`. A layer imports only from the layers below it; oxlint enforces it.
+- A route file binds a URL to a page and mounts nothing else. A page `pages/<page>` holds everything one URL shows and never imports another page. Its `index.ts` exports the component and `search.ts` the zod schema, so the route keeps the page out of the main chunk.
+- `entities/<name>` holds what two pages share about one object: data hooks and small blocks, no layout. Create it at the second use, not before. Generic code goes to `shared`.
+- Segments: `ui` renders, `model` holds pure logic and URL state. Components call the Orval hooks directly; a hook in `model` exists only when it adds logic. `router.tsx` sets the inventory interval as the default refetch; a query with another rhythm sets its own.
+- Each component fetches what it shows. A page puts one `TimeWindowProvider` above its queries, so they share one `end`. Only the open tab is mounted.
 - Lists that can pass 200 rows are virtualized.
 - No `any`, no `as` on API data, no `!`, no `@ts-ignore`.
 

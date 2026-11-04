@@ -1,4 +1,7 @@
 {
   "extends": "@jarvis/tsconfig/vite-app.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  },
   "include": ["src", "vite.config.ts"]
 }

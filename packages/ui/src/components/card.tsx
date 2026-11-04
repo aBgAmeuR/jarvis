@@ -1,12 +1,16 @@
 import { cn } from "cn";
 import type { ComponentProps } from "react";
 
-/** A panel on the card depth: 1 px border, no shadow. */
+/**
+ * A panel on the card depth: 1 px border, no shadow. It rises in on mount;
+ * a placeholder card passes `motion-safe:animate-none` so the loaded card
+ * is the one that moves.
+ */
 export function Card({ className, ...props }: ComponentProps<"section">) {
   return (
     <section
       className={cn(
-        "flex min-w-0 flex-col rounded-md border bg-card text-card-foreground",
+        "flex min-w-0 flex-col rounded-md border bg-card text-card-foreground motion-safe:animate-rise",
         className,
       )}
       {...props}

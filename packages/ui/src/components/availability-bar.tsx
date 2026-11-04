@@ -1,6 +1,8 @@
 import { cn } from "cn";
 import type { ComponentProps } from "react";
 
+import type { CssVars } from "../lib/styles.ts";
+
 /** One day: up all day, degraded, down at some point, or no data. */
 export type AvailabilityDay = "up" | "degraded" | "down" | "unknown";
 
@@ -27,11 +29,22 @@ export function AvailabilityBar({ days, className, ...props }: AvailabilityBarPr
     // The bars are drawn in CSS, so an <img> cannot replace this element.
     // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
     <div role="img" className={cn("flex h-4.5 min-w-0 items-end gap-px", className)} {...props}>
-      {days.map((day, index) => (
-        // Days have no id; the position in the window is the identity.
-        // oxlint-disable-next-line react/no-array-index-key
-        <i key={index} className={cn("min-w-px flex-1 rounded-[1px]", dayStyles[day])} />
-      ))}
+      {days.map((day, index) => {
+        // Each bar starts 4 ms after the previous one.
+        const style: CssVars = { "--i": index };
+        return (
+          // Days have no id; the position in the window is the identity.
+          // oxlint-disable-next-line react/no-array-index-key
+          <i
+            key={index}
+            className={cn(
+              "min-w-px flex-1 origin-bottom rounded-[1px] motion-safe:animate-grow-y motion-safe:[animation-delay:calc(var(--i)*4ms)]",
+              dayStyles[day],
+            )}
+            style={style}
+          />
+        );
+      })}
     </div>
   );
 }

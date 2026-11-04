@@ -1,6 +1,9 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import type { PropsWithChildren } from "react";
 
+import { AppShell } from "@/app/shell/app-shell.tsx";
+import { themeScript } from "@/app/theme/theme.ts";
+
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -10,7 +13,11 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Jarvis" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    scripts: [{ children: themeScript }],
+    links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "stylesheet", href: appCss },
+    ],
   }),
   component: Root,
 });
@@ -18,21 +25,16 @@ export const Route = createRootRoute({
 function Root() {
   return (
     <Document>
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-4 p-4">
-        <header className="flex items-center gap-2">
-          <h1 className="text-base font-semibold">Jarvis</h1>
-        </header>
-        <main>
-          <Outlet />
-        </main>
-      </div>
+      <AppShell>
+        <Outlet />
+      </AppShell>
     </Document>
   );
 }
 
 function Document({ children }: PropsWithChildren) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

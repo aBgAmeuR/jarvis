@@ -6,6 +6,7 @@ import { useMemo } from "react";
 
 import { dataTransition } from "./animation.ts";
 import { hoverDot } from "./hover-dot.ts";
+import { useSeriesEpoch } from "./series-epoch.ts";
 
 /** One series as the API returns it: columnar, a gap is a missing timestamp. */
 export type TimeSeries = {
@@ -59,6 +60,7 @@ export function TimeSeriesChart({
   height = 160,
   formatValue = String,
 }: TimeSeriesChartProps) {
+  const epoch = useSeriesEpoch(series);
   const definition = useMemo(() => {
     const points = series.flatMap(toPoints);
     const times = points.map((point) => point.time);
@@ -113,5 +115,11 @@ export function TimeSeriesChart({
     });
   }, [series, formatValue]);
 
-  return <Chart definition={definition} height={height} ariaLabel={ariaLabel} />;
+  // A new range remounts the chart and fades it in: its paths cannot tween
+  // between two lengths, and a fade costs the browser nothing per frame.
+  return (
+    <div key={epoch} className="ts-chart-enter">
+      <Chart definition={definition} height={height} ariaLabel={ariaLabel} />
+    </div>
+  );
 }

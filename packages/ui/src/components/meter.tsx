@@ -18,7 +18,7 @@ export function Meter({ className, tone, ...props }: MeterProps) {
       <BaseMeter.Track className="bg-secondary h-1 overflow-hidden rounded-full">
         <BaseMeter.Indicator
           className={cn(
-            "h-full rounded-full bg-muted-foreground transition-[width] duration-220 ease-out motion-reduce:transition-none",
+            "h-full origin-left rounded-full bg-muted-foreground transition-[width] duration-220 ease-out motion-safe:animate-grow-x motion-reduce:transition-none",
             tone === "critical" && "bg-critical",
             tone === "warning" && "bg-warning",
           )}

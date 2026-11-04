@@ -80,6 +80,7 @@ export {
   type MenuContentProps,
 } from "./components/menu.tsx";
 export { Meter, type MeterProps } from "./components/meter.tsx";
+export { NumberRoll, type NumberRollProps } from "./components/number-roll.tsx";
 export {
   Popover,
   PopoverClose,
@@ -112,8 +113,15 @@ export {
 } from "./components/side-panel.tsx";
 export {
   Sidebar,
+  SidebarContent,
+  SidebarFooter,
   SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInset,
   SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
   type SidebarItemProps,
 } from "./components/sidebar.tsx";
 export { Skeleton } from "./components/skeleton.tsx";

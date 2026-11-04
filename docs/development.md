@@ -10,7 +10,7 @@ apps/server/               Go module: cmd/jarvis-server, internal/{domain,app,so
 apps/api/                  Scalar API docs
 packages/openapi/          openapi.yaml, generated, committed
 apps/storybook/            Storybook for @jarvis/ui, with the stories
-apps/web/                  TanStack Start SPA, modules in src/modules/<name>
+apps/web/                  TanStack Start SPA, src/{routes,app,pages,entities,shared}
 docker/                    Dockerfile, Dockerfile.dockerignore
 docs/
 packages/charts/           @jarvis/charts: chart presets and the chart theme over TanStack Charts
@@ -105,7 +105,7 @@ To add to `ci.yml`. Every check is required before merge. Already in place: `gen
 | Go | golangci-lint v2 with gosec, gofumpt, govulncheck |
 | Web | oxlint, oxfmt, `tsc --noEmit` strict, knip, size-limit |
 | Contract | `gen` leaves no diff, Spectral with the [API rules](api.md#conventions), oasdiff against `master` |
-| Architecture | go-arch-lint for the Go layers, dependency-cruiser for front modules |
+| Architecture | go-arch-lint for the Go layers, oxlint `no-restricted-imports` for the front layers |
 | UI | Storybook builds |
 | Security | CodeQL for Go and TypeScript, gitleaks, dependency review, Trivy on the image, hadolint |
 | Workflows | actionlint, zizmor, actions, least-privilege `GITHUB_TOKEN` |

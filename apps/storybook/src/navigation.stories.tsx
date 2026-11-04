@@ -14,6 +14,7 @@ import {
   BreadcrumbSeparator,
   Link,
   Sidebar,
+  SidebarContent,
   SidebarGroupLabel,
   SidebarItem,
 } from "@jarvis/ui";
@@ -58,31 +59,33 @@ export const SidebarStory: Story = {
   name: "Sidebar",
   render: () => (
     <Sidebar className="h-64">
-      <SidebarGroupLabel>Supervision</SidebarGroupLabel>
-      <SidebarItem
-        href="#overview"
-        aria-current="page"
-        count={
-          <Badge tone="critical" dot>
-            1
-          </Badge>
-        }
-      >
-        <Icon icon={DashboardSquare01Icon} />
-        Overview
-      </SidebarItem>
-      <SidebarItem href="#guests" count={8}>
-        <Icon icon={ServerStack01Icon} />
-        Guests
-      </SidebarItem>
-      <SidebarItem href="#probes" count={21}>
-        <Icon icon={Activity01Icon} />
-        Probes
-      </SidebarItem>
-      <SidebarItem aria-disabled count="v2">
-        <Icon icon={Folder01Icon} />
-        Files
-      </SidebarItem>
+      <SidebarContent>
+        <SidebarGroupLabel>Supervision</SidebarGroupLabel>
+        <SidebarItem
+          href="#overview"
+          aria-current="page"
+          count={
+            <Badge tone="critical" dot>
+              1
+            </Badge>
+          }
+        >
+          <Icon icon={DashboardSquare01Icon} />
+          Overview
+        </SidebarItem>
+        <SidebarItem href="#guests" count={8}>
+          <Icon icon={ServerStack01Icon} />
+          Guests
+        </SidebarItem>
+        <SidebarItem href="#probes" count={21}>
+          <Icon icon={Activity01Icon} />
+          Probes
+        </SidebarItem>
+        <SidebarItem aria-disabled count="v2">
+          <Icon icon={Folder01Icon} />
+          Files
+        </SidebarItem>
+      </SidebarContent>
     </Sidebar>
   ),
 };

@@ -1,5 +1,10 @@
+import type { CSSProperties } from "react";
+
 /** A Base UI part's props with `className` narrowed to a string. */
 export type Styled<P> = Omit<P, "className"> & { className?: string };
+
+/** A `style` object that may set CSS custom properties. */
+export type CssVars = CSSProperties & Record<`--${string}`, string | number>;
 
 /**
  * 2 px focus outline, offset 2 px, on keyboard focus only. `outline-hidden`
