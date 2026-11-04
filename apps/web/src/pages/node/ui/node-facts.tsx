@@ -8,12 +8,12 @@ import {
 } from "@jarvis/ui";
 import { Fragment } from "react";
 
+import { NodeStatus } from "@/entities/node/ui/node-status.tsx";
 import { formatBytes, formatDateTime, formatDuration } from "@/shared/lib/format.ts";
 import { useNow } from "@/shared/lib/use-now.ts";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { nodeName } from "../model/node-name.ts";
-import { NodeStatus } from "./node-status.tsx";
 
 const terms = ["Name", "Status", "Cores", "Memory", "Root disk", "Uptime", "Booted"];
 

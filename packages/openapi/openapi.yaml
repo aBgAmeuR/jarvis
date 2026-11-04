@@ -698,6 +698,29 @@ components:
       required:
         - items
       type: object
+    GrafanaBody:
+      additionalProperties: false
+      properties:
+        lokiUid:
+          description: Uid of the Loki data source in Grafana.
+          examples:
+            - loki
+          type: string
+        prometheusUid:
+          description: Uid of the Prometheus data source in Grafana.
+          examples:
+            - prometheus
+          type: string
+        url:
+          description: Grafana base URL, for Explore links.
+          examples:
+            - https://monitoring.antoinejosset.fr
+          type: string
+      required:
+        - url
+        - prometheusUid
+        - lokiUid
+      type: object
     GuestBody:
       additionalProperties: false
       properties:
@@ -1286,6 +1309,9 @@ components:
           examples:
             - d13fb0c
           type: string
+        grafana:
+          $ref: "#/components/schemas/GrafanaBody"
+          description: Where Explore links point. Absent when JARVIS_GRAFANA_URL is unset.
         version:
           description: Release version.
           examples:
@@ -1743,6 +1769,41 @@ components:
         - declared
         - actual
       type: object
+    SearchHitBody:
+      additionalProperties: false
+      properties:
+        detail:
+          description: "What tells it apart from objects of the same name: a VMID, a guest, a target, an IP. May be empty."
+          examples:
+            - monitoring
+          type: string
+        id:
+          description: Id of the object, as in its URL.
+          examples:
+            - grafana
+          type: string
+        kind:
+          description: Kind of object.
+          enum:
+            - guest
+            - service
+            - probe
+            - client
+            - peer
+          examples:
+            - service
+          type: string
+        name:
+          description: Name of the object.
+          examples:
+            - grafana
+          type: string
+      required:
+        - kind
+        - id
+        - name
+        - detail
+      type: object
     SearchLogsOutputBody:
       additionalProperties: false
       properties:
@@ -1758,8 +1819,38 @@ components:
           items:
             $ref: "#/components/schemas/EntryBody"
           type: array
+        query:
+          description: LogQL that selects these lines, for a Grafana Explore link.
+          examples:
+            - "{vmid=\"116\"} |= \"timeout\""
+          type: string
       required:
         - items
+        - query
+      type: object
+    SearchOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/SearchOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        degraded:
+          description: Sources that failed. Their objects are left out.
+          items:
+            $ref: "#/components/schemas/DegradedBody"
+          type: array
+        items:
+          description: Hits, best match first.
+          items:
+            $ref: "#/components/schemas/SearchHitBody"
+          type: array
+      required:
+        - items
+        - degraded
       type: object
     SeriesBody:
       additionalProperties: false
@@ -1768,6 +1859,11 @@ components:
           description: Series name.
           examples:
             - cpuUsageRatio
+          type: string
+        query:
+          description: PromQL that produced the series, for a Grafana Explore link.
+          examples:
+            - max(pve_cpu_usage_ratio{id="node/pve"})
           type: string
         timestamps:
           description: Sample times, RFC 3339 in UTC. A gap is a missing timestamp.
@@ -1797,6 +1893,7 @@ components:
       required:
         - name
         - unit
+        - query
         - timestamps
         - values
       type: object
@@ -3503,6 +3600,50 @@ paths:
       summary: Get the metrics of a probe
       tags:
         - availability
+  /search:
+    get:
+      description: Guests, services, probes, network clients and VPN peers, for ⌘K.
+      operationId: search
+      parameters:
+        - description: Text to find in names, ids and details, case-insensitive.
+          explode: false
+          in: query
+          name: q
+          required: true
+          schema:
+            description: Text to find in names, ids and details, case-insensitive.
+            examples:
+              - graf
+            maxLength: 100
+            minLength: 1
+            type: string
+        - description: Maximum number of hits.
+          explode: false
+          in: query
+          name: limit
+          schema:
+            default: 20
+            description: Maximum number of hits.
+            format: int64
+            maximum: 50
+            minimum: 1
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Search every object
+      tags:
+        - common
   /services:
     get:
       operationId: listServices

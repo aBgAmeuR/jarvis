@@ -10,6 +10,8 @@ import type { SeriesBodyUnit } from './seriesBodyUnit.ts';
 export interface SeriesBody {
   /** Series name. */
   name: string;
+  /** PromQL that produced the series, for a Grafana Explore link. */
+  query: string;
   /** Sample times, RFC 3339 in UTC. A gap is a missing timestamp. */
   timestamps: string[];
   /** Unit of the values. */

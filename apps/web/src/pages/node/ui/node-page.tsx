@@ -1,11 +1,11 @@
 import { useGetNode } from "@jarvis/api-client";
 
+import { NodeStatus } from "@/entities/node/ui/node-status.tsx";
 import { TimeWindowProvider } from "@/shared/lib/time-window.tsx";
 import { TimeRangeSelect } from "@/shared/ui/time-range-select.tsx";
 
 import { nodeName } from "../model/node-name.ts";
 import { useNodeSearch } from "../model/use-node-search.ts";
-import { NodeStatus } from "./node-status.tsx";
 import { NodeTabs } from "./node-tabs.tsx";
 
 export function NodePage() {

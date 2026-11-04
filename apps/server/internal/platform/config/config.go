@@ -20,21 +20,24 @@ func (Secret) String() string { return "***" }
 func (Secret) MarshalText() ([]byte, error) { return []byte("***"), nil }
 
 type Config struct {
-	ListenAddr      string        `env:"JARVIS_LISTEN_ADDR" envDefault:":8080"`
-	PrometheusURL   string        `env:"JARVIS_PROMETHEUS_URL" envDefault:"http://prometheus:9090"`
-	LokiURL         string        `env:"JARVIS_LOKI_URL" envDefault:"http://loki:3100"`
-	TempoURL        string        `env:"JARVIS_TEMPO_URL" envDefault:"http://tempo:3200"`
-	AlertmanagerURL string        `env:"JARVIS_ALERTMANAGER_URL" envDefault:"http://alertmanager:9093"`
-	ProxmoxURL      string        `env:"JARVIS_PROXMOX_URL,required"`
-	ProxmoxToken    Secret        `env:"JARVIS_PROXMOX_TOKEN_FILE,required,file"`
-	ProxmoxCAFile   string        `env:"JARVIS_PROXMOX_CA_FILE"`
-	CatalogPath     string        `env:"JARVIS_CATALOG_PATH" envDefault:"/etc/jarvis/catalog.json"`
-	TrustedProxy    netip.Addr    `env:"JARVIS_TRUSTED_PROXY,required"`
-	FilesRoot       string        `env:"JARVIS_FILES_ROOT"`
-	RequestTimeout  time.Duration `env:"JARVIS_REQUEST_TIMEOUT" envDefault:"5s"`
-	CacheTTL        time.Duration `env:"JARVIS_CACHE_TTL" envDefault:"2s"`
-	LogLevel        slog.Level    `env:"JARVIS_LOG_LEVEL" envDefault:"info"`
-	OTLPEndpoint    string        `env:"JARVIS_OTLP_ENDPOINT"`
+	ListenAddr           string        `env:"JARVIS_LISTEN_ADDR" envDefault:":8080"`
+	PrometheusURL        string        `env:"JARVIS_PROMETHEUS_URL" envDefault:"http://prometheus:9090"`
+	LokiURL              string        `env:"JARVIS_LOKI_URL" envDefault:"http://loki:3100"`
+	TempoURL             string        `env:"JARVIS_TEMPO_URL" envDefault:"http://tempo:3200"`
+	AlertmanagerURL      string        `env:"JARVIS_ALERTMANAGER_URL" envDefault:"http://alertmanager:9093"`
+	ProxmoxURL           string        `env:"JARVIS_PROXMOX_URL,required"`
+	ProxmoxToken         Secret        `env:"JARVIS_PROXMOX_TOKEN_FILE,required,file"`
+	ProxmoxCAFile        string        `env:"JARVIS_PROXMOX_CA_FILE"`
+	CatalogPath          string        `env:"JARVIS_CATALOG_PATH" envDefault:"/etc/jarvis/catalog.json"`
+	TrustedProxy         netip.Addr    `env:"JARVIS_TRUSTED_PROXY,required"`
+	FilesRoot            string        `env:"JARVIS_FILES_ROOT"`
+	RequestTimeout       time.Duration `env:"JARVIS_REQUEST_TIMEOUT" envDefault:"5s"`
+	CacheTTL             time.Duration `env:"JARVIS_CACHE_TTL" envDefault:"2s"`
+	LogLevel             slog.Level    `env:"JARVIS_LOG_LEVEL" envDefault:"info"`
+	OTLPEndpoint         string        `env:"JARVIS_OTLP_ENDPOINT"`
+	GrafanaURL           string        `env:"JARVIS_GRAFANA_URL"`
+	GrafanaPrometheusUID string        `env:"JARVIS_GRAFANA_PROMETHEUS_UID" envDefault:"prometheus"`
+	GrafanaLokiUID       string        `env:"JARVIS_GRAFANA_LOKI_UID" envDefault:"loki"`
 }
 
 func Load() (Config, error) {
@@ -43,6 +46,7 @@ func Load() (Config, error) {
 		return Config{}, fmt.Errorf("read environment: %w", err)
 	}
 	c.ProxmoxToken = Secret(strings.TrimSpace(string(c.ProxmoxToken)))
+	c.GrafanaURL = strings.TrimRight(c.GrafanaURL, "/")
 	if err := c.validate(); err != nil {
 		return Config{}, err
 	}
@@ -61,6 +65,9 @@ func (c Config) validate() error {
 	}
 	if c.OTLPEndpoint != "" {
 		urls = append(urls, struct{ name, value string }{"JARVIS_OTLP_ENDPOINT", c.OTLPEndpoint})
+	}
+	if c.GrafanaURL != "" {
+		urls = append(urls, struct{ name, value string }{"JARVIS_GRAFANA_URL", c.GrafanaURL})
 	}
 	for _, u := range urls {
 		parsed, err := url.Parse(u.value)

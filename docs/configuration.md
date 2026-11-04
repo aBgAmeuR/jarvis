@@ -21,5 +21,8 @@ Variables are loaded into one Go struct and validated at startup. Defaults are `
 | `JARVIS_CACHE_TTL` | `2s` | how long an identical read of a data source is replayed; `0` turns the cache off |
 | `JARVIS_LOG_LEVEL` | `info` | `debug`, `info`, `warn` or `error` |
 | `JARVIS_OTLP_ENDPOINT` | none, no traces exported when unset | OTLP HTTP collector base URL, such as `http://192.168.1.111:4318` |
+| `JARVIS_GRAFANA_URL` | none, no Explore links when unset | Grafana base URL the Explore links open, such as `https://monitoring.antoinejosset.fr` |
+| `JARVIS_GRAFANA_PROMETHEUS_UID` | `prometheus` | uid of the Prometheus data source in Grafana |
+| `JARVIS_GRAFANA_LOKI_UID` | `loki` | uid of the Loki data source in Grafana |
 
 `JARVIS_TRUSTED_PROXY` has no default because a wrong one would let any client choose its identity.

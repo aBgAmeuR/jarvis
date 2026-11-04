@@ -1,13 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({
-  component: Page,
-});
+import { OverviewPage } from "@/pages/overview";
 
-function Page() {
-  return (
-    <div className="flex flex-col gap-4">
-      <h1>Overview</h1>
-    </div>
-  );
-}
+export const Route = createFileRoute("/")({
+  component: OverviewPage,
+});

@@ -16,8 +16,10 @@ const (
 
 // A gap is a missing timestamp.
 type Series struct {
-	Name       string
-	Unit       Unit
+	Name string
+	Unit Unit
+	// Query is the PromQL that produced the series, for Grafana Explore.
+	Query      string
 	Timestamps []time.Time
 	Values     []float64
 }

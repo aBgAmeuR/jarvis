@@ -5,6 +5,7 @@
  * Read-only console over the homelab observability stack.
  * OpenAPI spec version: 1.0.0
  */
+import type { GrafanaBody } from './grafanaBody.ts';
 
 export interface MetaBody {
   /** A URL to the JSON Schema for this object. */
@@ -13,6 +14,8 @@ export interface MetaBody {
   buildDate: string;
   /** Git commit the binary was built from. */
   commit: string;
+  /** Where Explore links point. Absent when JARVIS_GRAFANA_URL is unset. */
+  grafana?: GrafanaBody;
   /** Release version. */
   version: string;
 }

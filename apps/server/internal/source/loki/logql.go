@@ -7,6 +7,8 @@ import (
 	"jarvis/server/internal/domain/logs"
 )
 
+func (c *Client) LogQuery(q logs.Query) string { return logQL(q) }
+
 // Loki wants at least one matcher, so a query with none selects every stream with a service name.
 func logQL(q logs.Query) string {
 	var matchers []string

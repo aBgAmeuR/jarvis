@@ -16,6 +16,7 @@ import (
 	"jarvis/server/internal/httpapi/network"
 	"jarvis/server/internal/httpapi/overview"
 	"jarvis/server/internal/httpapi/problem"
+	"jarvis/server/internal/httpapi/search"
 	"jarvis/server/internal/httpapi/services"
 	"jarvis/server/internal/httpapi/supervision"
 )
@@ -25,9 +26,10 @@ func NewAPI(mux *http.ServeMux, deps Deps) huma.API {
 	api.UseMiddleware(middleware.Identity(api, deps.Logger, deps.Identity))
 	problems := problem.NewMapper(deps.Logger)
 
-	meta.Register(api, deps.Meta)
+	meta.Register(api, deps.Meta, deps.Grafana)
 	identity.Register(api)
 	health.Register(api, deps.Health)
+	search.Register(api, problems, deps.Search)
 	overview.Register(api, deps.Overview)
 	logs.Register(api, problems, deps.Logs)
 	services.Register(api, problems, deps.Services)

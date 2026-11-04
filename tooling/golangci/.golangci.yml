@@ -107,6 +107,8 @@ linters:
               desc: domain/availability must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/availability must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/availability must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/availability must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
@@ -127,6 +129,8 @@ linters:
               desc: domain/health must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/health must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/health must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/health must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
@@ -147,6 +151,8 @@ linters:
               desc: domain/identity must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/identity must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/identity must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/identity must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
@@ -167,6 +173,8 @@ linters:
               desc: domain/logs must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/logs must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/logs must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/logs must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
@@ -187,6 +195,8 @@ linters:
               desc: domain/maintenance must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/maintenance must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/maintenance must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/maintenance must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
@@ -207,6 +217,8 @@ linters:
               desc: domain/network must not import the feature maintenance
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/network must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/network must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/network must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
@@ -227,10 +239,34 @@ linters:
               desc: domain/overview must not import the feature maintenance
             - pkg: jarvis/server/internal/domain/network
               desc: domain/overview must not import the feature network
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/overview must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/overview must not import the feature services
             - pkg: jarvis/server/internal/domain/supervision
               desc: domain/overview must not import the feature supervision
+        feature-domain-search:
+          files:
+            - "**/internal/domain/search/**"
+          deny:
+            - pkg: jarvis/server/internal/domain/availability
+              desc: domain/search must not import the feature availability
+            - pkg: jarvis/server/internal/domain/health
+              desc: domain/search must not import the feature health
+            - pkg: jarvis/server/internal/domain/identity
+              desc: domain/search must not import the feature identity
+            - pkg: jarvis/server/internal/domain/logs
+              desc: domain/search must not import the feature logs
+            - pkg: jarvis/server/internal/domain/maintenance
+              desc: domain/search must not import the feature maintenance
+            - pkg: jarvis/server/internal/domain/network
+              desc: domain/search must not import the feature network
+            - pkg: jarvis/server/internal/domain/overview
+              desc: domain/search must not import the feature overview
+            - pkg: jarvis/server/internal/domain/services
+              desc: domain/search must not import the feature services
+            - pkg: jarvis/server/internal/domain/supervision
+              desc: domain/search must not import the feature supervision
         feature-domain-services:
           files:
             - "**/internal/domain/services/**"
@@ -249,6 +285,8 @@ linters:
               desc: domain/services must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/services must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/services must not import the feature search
             - pkg: jarvis/server/internal/domain/supervision
               desc: domain/services must not import the feature supervision
         feature-domain-supervision:
@@ -269,6 +307,8 @@ linters:
               desc: domain/supervision must not import the feature network
             - pkg: jarvis/server/internal/domain/overview
               desc: domain/supervision must not import the feature overview
+            - pkg: jarvis/server/internal/domain/search
+              desc: domain/supervision must not import the feature search
             - pkg: jarvis/server/internal/domain/services
               desc: domain/supervision must not import the feature services
         feature-app-availability:
@@ -287,6 +327,8 @@ linters:
               desc: app/availability must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/availability must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/availability must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/availability must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
@@ -307,6 +349,8 @@ linters:
               desc: app/health must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/health must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/health must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/health must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
@@ -327,6 +371,8 @@ linters:
               desc: app/identity must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/identity must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/identity must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/identity must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
@@ -347,6 +393,8 @@ linters:
               desc: app/logs must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/logs must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/logs must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/logs must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
@@ -367,6 +415,8 @@ linters:
               desc: app/maintenance must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/maintenance must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/maintenance must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/maintenance must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
@@ -387,6 +437,8 @@ linters:
               desc: app/network must not import the feature maintenance
             - pkg: jarvis/server/internal/app/overview
               desc: app/network must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/network must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/network must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
@@ -407,10 +459,34 @@ linters:
               desc: app/overview must not import the feature maintenance
             - pkg: jarvis/server/internal/app/network
               desc: app/overview must not import the feature network
+            - pkg: jarvis/server/internal/app/search
+              desc: app/overview must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/overview must not import the feature services
             - pkg: jarvis/server/internal/app/supervision
               desc: app/overview must not import the feature supervision
+        feature-app-search:
+          files:
+            - "**/internal/app/search/**"
+          deny:
+            - pkg: jarvis/server/internal/app/availability
+              desc: app/search must not import the feature availability
+            - pkg: jarvis/server/internal/app/health
+              desc: app/search must not import the feature health
+            - pkg: jarvis/server/internal/app/identity
+              desc: app/search must not import the feature identity
+            - pkg: jarvis/server/internal/app/logs
+              desc: app/search must not import the feature logs
+            - pkg: jarvis/server/internal/app/maintenance
+              desc: app/search must not import the feature maintenance
+            - pkg: jarvis/server/internal/app/network
+              desc: app/search must not import the feature network
+            - pkg: jarvis/server/internal/app/overview
+              desc: app/search must not import the feature overview
+            - pkg: jarvis/server/internal/app/services
+              desc: app/search must not import the feature services
+            - pkg: jarvis/server/internal/app/supervision
+              desc: app/search must not import the feature supervision
         feature-app-services:
           files:
             - "**/internal/app/services/**"
@@ -429,6 +505,8 @@ linters:
               desc: app/services must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/services must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/services must not import the feature search
             - pkg: jarvis/server/internal/app/supervision
               desc: app/services must not import the feature supervision
         feature-app-supervision:
@@ -449,6 +527,8 @@ linters:
               desc: app/supervision must not import the feature network
             - pkg: jarvis/server/internal/app/overview
               desc: app/supervision must not import the feature overview
+            - pkg: jarvis/server/internal/app/search
+              desc: app/supervision must not import the feature search
             - pkg: jarvis/server/internal/app/services
               desc: app/supervision must not import the feature services
         feature-httpapi-availability:
@@ -469,6 +549,8 @@ linters:
               desc: httpapi/availability must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/availability must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/availability must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/availability must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -491,6 +573,8 @@ linters:
               desc: httpapi/health must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/health must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/health must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/health must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -513,6 +597,8 @@ linters:
               desc: httpapi/identity must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/identity must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/identity must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/identity must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -535,6 +621,8 @@ linters:
               desc: httpapi/logs must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/logs must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/logs must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/logs must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -557,6 +645,8 @@ linters:
               desc: httpapi/maintenance must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/maintenance must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/maintenance must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/maintenance must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -579,6 +669,8 @@ linters:
               desc: httpapi/meta must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/meta must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/meta must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/meta must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -601,6 +693,8 @@ linters:
               desc: httpapi/network must not import the feature meta
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/network must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/network must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/network must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
@@ -623,10 +717,36 @@ linters:
               desc: httpapi/overview must not import the feature meta
             - pkg: jarvis/server/internal/httpapi/network
               desc: httpapi/overview must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/overview must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/overview must not import the feature services
             - pkg: jarvis/server/internal/httpapi/supervision
               desc: httpapi/overview must not import the feature supervision
+        feature-httpapi-search:
+          files:
+            - "**/internal/httpapi/search/**"
+          deny:
+            - pkg: jarvis/server/internal/httpapi/availability
+              desc: httpapi/search must not import the feature availability
+            - pkg: jarvis/server/internal/httpapi/health
+              desc: httpapi/search must not import the feature health
+            - pkg: jarvis/server/internal/httpapi/identity
+              desc: httpapi/search must not import the feature identity
+            - pkg: jarvis/server/internal/httpapi/logs
+              desc: httpapi/search must not import the feature logs
+            - pkg: jarvis/server/internal/httpapi/maintenance
+              desc: httpapi/search must not import the feature maintenance
+            - pkg: jarvis/server/internal/httpapi/meta
+              desc: httpapi/search must not import the feature meta
+            - pkg: jarvis/server/internal/httpapi/network
+              desc: httpapi/search must not import the feature network
+            - pkg: jarvis/server/internal/httpapi/overview
+              desc: httpapi/search must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/services
+              desc: httpapi/search must not import the feature services
+            - pkg: jarvis/server/internal/httpapi/supervision
+              desc: httpapi/search must not import the feature supervision
         feature-httpapi-services:
           files:
             - "**/internal/httpapi/services/**"
@@ -647,6 +767,8 @@ linters:
               desc: httpapi/services must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/services must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/services must not import the feature search
             - pkg: jarvis/server/internal/httpapi/supervision
               desc: httpapi/services must not import the feature supervision
         feature-httpapi-supervision:
@@ -669,6 +791,8 @@ linters:
               desc: httpapi/supervision must not import the feature network
             - pkg: jarvis/server/internal/httpapi/overview
               desc: httpapi/supervision must not import the feature overview
+            - pkg: jarvis/server/internal/httpapi/search
+              desc: httpapi/supervision must not import the feature search
             - pkg: jarvis/server/internal/httpapi/services
               desc: httpapi/supervision must not import the feature services
         feature-source-alertmanager:

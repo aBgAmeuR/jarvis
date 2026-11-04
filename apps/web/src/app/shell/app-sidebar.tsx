@@ -1,4 +1,3 @@
-import { useGetMe } from "@jarvis/api-client";
 import { Icon, Logo } from "@jarvis/icons";
 import {
   Sidebar,
@@ -7,21 +6,26 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarItem,
-  Skeleton,
 } from "@jarvis/ui";
 import { Link } from "@tanstack/react-router";
 
+import { ThemeToggle } from "@/app/theme/theme-toggle.tsx";
+
+import { BuildInfo } from "./build-info.tsx";
+import { ConfigBadge } from "./config-badge.tsx";
 import { navGroups } from "./nav.ts";
+import { ProfileBadge } from "./profile-badge.tsx";
 
 export function AppSidebar() {
-  const { data: account } = useGetMe({ query: { staleTime: Infinity, refetchInterval: false } });
-
   return (
     <Sidebar aria-label="Main">
-      <SidebarHeader className="text-foreground gap-2">
+      <SidebarHeader className="text-foreground gap-2 pe-1.5">
         <Logo className="size-5 shrink-0" />
         <div className="flex min-w-0 flex-col leading-tight">
           <span className="text-sm font-semibold">Jarvis</span>
+        </div>
+        <div className="ml-auto">
+          <ThemeToggle />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -40,33 +44,10 @@ export function AppSidebar() {
           </div>
         ))}
       </SidebarContent>
-      <SidebarFooter>
-        <div className="flex items-center gap-2 px-1.5 py-1">
-          {account ? (
-            <>
-              <span
-                aria-hidden
-                className="bg-sidebar-accent text-sidebar-accent-foreground flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold uppercase"
-              >
-                {account.user.slice(0, 2)}
-              </span>
-              <div className="flex min-w-0 flex-col leading-tight">
-                <span className="text-foreground truncate text-sm font-medium">{account.user}</span>
-                <span className="text-2xs text-muted-foreground">
-                  {account.isAdmin ? "Administrator" : "Member"}
-                </span>
-              </div>
-            </>
-          ) : (
-            <>
-              <Skeleton className="size-6 shrink-0 rounded-full" />
-              <div className="flex flex-col leading-tight">
-                <Skeleton className="h-lh w-20 text-sm" />
-                <Skeleton className="text-2xs mt-px h-lh w-14" />
-              </div>
-            </>
-          )}
-        </div>
+      <SidebarFooter className="flex-row items-center gap-1 px-1.5">
+        <ProfileBadge />
+        <ConfigBadge />
+        <BuildInfo />
       </SidebarFooter>
     </Sidebar>
   );

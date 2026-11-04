@@ -24,6 +24,8 @@ A resource built from several sources carries `degraded: [{ "source": "loki", "r
 
 Each object has `links` with `webUrl`, `grafanaUrl` and `repoUrl` where they apply.
 
+Each series carries its PromQL in `query`, and `GET /logs` its LogQL. The front builds the Grafana Explore link from them and the `grafana` block of `GET /meta`, which is absent when `JARVIS_GRAFANA_URL` is unset.
+
 Errors are `application/problem+json` (RFC 9457).
 
 ## Identifiers
@@ -80,10 +82,12 @@ Paths are relative to `/api/v1`. The Spec column points to [requirements.md](req
 
 | Method | Path | Spec |
 |---|---|---|
-| GET | `/meta` | version, commit, build date |
+| GET | `/meta` | version, commit, build date, Grafana URL and data source uids for Explore links |
 | GET | `/me` | user, groups, `isAdmin` |
 | GET | `/sources` | status of each data source |
 | GET | `/search?q=` | ⌘K, typed hits: guest, service, probe, client, peer, file |
+
+`/search` matches names, ids and details without case, best match first: exact name, name prefix, word prefix, inside the name, inside the id or detail. A source that fails leaves its kind out and appears in `degraded`. Files join the hits with v2.
 
 ### Supervision
 

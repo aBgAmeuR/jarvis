@@ -7,7 +7,7 @@ import {
 } from "@jarvis/ui";
 import { Link } from "@tanstack/react-router";
 
-import { ThemeToggle } from "@/app/theme/theme-toggle.tsx";
+import { SearchButton } from "@/app/search/search-button.tsx";
 
 import { useBreadcrumb } from "./use-breadcrumb.ts";
 
@@ -41,7 +41,7 @@ export function AppHeader() {
         </Breadcrumb>
       )}
       <div className="ml-auto">
-        <ThemeToggle />
+        <SearchButton />
       </div>
     </header>
   );

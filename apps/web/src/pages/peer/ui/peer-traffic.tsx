@@ -4,6 +4,7 @@ import { CardContent, EmptyState, Skeleton } from "@jarvis/ui";
 import { keepPreviousData } from "@tanstack/react-query";
 
 import { formatBytes } from "@/shared/lib/format.ts";
+import { seriesExplore } from "@/shared/lib/grafana-explore.ts";
 import { useTimeWindow } from "@/shared/lib/time-window.tsx";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
@@ -27,6 +28,7 @@ export function PeerTraffic() {
       title="Traffic"
       query={traffic}
       source="Prometheus"
+      explore={seriesExplore}
       skeleton={skeleton}
       isEmpty={(lines) => lines.every((line) => line.values.length === 0)}
       empty={<EmptyState title="No data" description="Prometheus has no sample in this range." />}

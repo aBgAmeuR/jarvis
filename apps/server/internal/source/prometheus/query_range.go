@@ -65,7 +65,7 @@ func (c *Client) queryRange(ctx context.Context, expr string, unit domain.Unit, 
 	if err != nil {
 		return domain.Series{}, err
 	}
-	series := domain.Series{Name: seriesName, Unit: unit, Timestamps: []time.Time{}, Values: []float64{}}
+	series := domain.Series{Name: seriesName, Unit: unit, Query: expr, Timestamps: []time.Time{}, Values: []float64{}}
 	if len(matrix) > 0 {
 		for _, s := range matrix[0].samples {
 			series.Timestamps = append(series.Timestamps, s.at)

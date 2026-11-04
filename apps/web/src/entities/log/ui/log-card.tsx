@@ -14,6 +14,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { useTimeWindow } from "@/shared/lib/time-window.tsx";
+import { ExploreLink } from "@/shared/ui/explore-link.tsx";
 import { QueryView } from "@/shared/ui/query-view.tsx";
 
 import { cleanLine } from "../model/clean-line.ts";
@@ -44,7 +45,7 @@ export function LogCard({ scope, query, onQueryChange }: LogCardProps) {
     {
       query: {
         placeholderData: keepPreviousData,
-        select: (data) => data.items.toReversed(),
+        select: (data) => ({ lines: data.items.toReversed(), query: data.query }),
       },
     },
   );
@@ -53,7 +54,7 @@ export function LogCard({ scope, query, onQueryChange }: LogCardProps) {
     setSelected(timestamp);
     setOpen(true);
   };
-  const entry = logs.data?.find((line) => line.timestamp === selected);
+  const entry = logs.data?.lines.find((line) => line.timestamp === selected);
   const filtered = query.level !== undefined || query.q !== undefined;
 
   return (
@@ -61,8 +62,11 @@ export function LogCard({ scope, query, onQueryChange }: LogCardProps) {
       <Card className="min-w-0 flex-1">
         <CardHeader className="flex-wrap gap-2">
           <CardTitle>Logs</CardTitle>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <LogToolbar value={query} onChange={onQueryChange} />
+            {logs.data && (
+              <ExploreLink target={{ datasource: "loki", queries: [logs.data.query] }} />
+            )}
           </div>
         </CardHeader>
         <LogVolume filter={{ ...scope, ...query }} />
@@ -71,10 +75,10 @@ export function LogCard({ scope, query, onQueryChange }: LogCardProps) {
           query={logs}
           source="Loki"
           skeleton={<Skeleton className="m-2.5 h-40" />}
-          isEmpty={(lines) => lines.length === 0}
+          isEmpty={({ lines }) => lines.length === 0}
           empty={<EmptyState title={filtered ? "No matching line" : "No log"} />}
         >
-          {(lines) => (
+          {({ lines }) => (
             <div className="flex flex-col gap-2 px-2.5 pb-2.5">
               <LogViewer
                 ref={scroll.ref}

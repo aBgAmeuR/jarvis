@@ -12,4 +12,6 @@ export interface SearchLogsOutputBody {
   readonly $schema?: string;
   /** Log lines, newest first. */
   items: EntryBody[];
+  /** LogQL that selects these lines, for a Grafana Explore link. */
+  query: string;
 }

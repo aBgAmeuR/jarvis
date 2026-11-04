@@ -31,6 +31,7 @@ type searchLogsOutput struct {
 	Link string `header:"Link" doc:"The URL of the next page with rel=next, when more lines may follow."`
 	Body struct {
 		Items []entryBody `json:"items" nullable:"false" doc:"Log lines, newest first."`
+		Query string      `json:"query" doc:"LogQL that selects these lines, for a Grafana Explore link." example:"{vmid=\"116\"} |= \"timeout\""`
 	}
 }
 
@@ -58,6 +59,7 @@ func registerSearchLogs(api huma.API, problems *problem.Mapper, logs *applogs.Lo
 			return nil, problems.Error(ctx, err)
 		}
 		out := &searchLogsOutput{}
+		out.Body.Query = page.Query
 		out.Body.Items = make([]entryBody, 0, len(page.Entries))
 		for _, e := range page.Entries {
 			out.Body.Items = append(out.Body.Items, newEntryBody(e))

@@ -3,6 +3,7 @@ import { TimeSeriesChart } from "@jarvis/charts";
 import { CardContent, EmptyState, Skeleton } from "@jarvis/ui";
 
 import { formatNumber, formatRatio } from "@/shared/lib/format.ts";
+import { seriesExplore } from "@/shared/lib/grafana-explore.ts";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { useSlug } from "../model/use-service-search.ts";
@@ -38,6 +39,7 @@ function ServiceChart({ title, name, format }: Chart) {
       title={title}
       query={series}
       source="Prometheus"
+      explore={seriesExplore}
       skeleton={chartSkeleton}
       isEmpty={(lines) => lines.every((line) => line.values.length === 0)}
       empty={<EmptyState title="No data" description="Prometheus has no sample in this range." />}

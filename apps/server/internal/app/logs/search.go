@@ -12,6 +12,8 @@ import (
 type Page struct {
 	Entries []logs.Entry
 	Next    *time.Time
+	// Query selects the same lines in Grafana Explore.
+	Query string
 }
 
 // Search takes the Next of the previous page as end to read the following one.
@@ -39,7 +41,7 @@ func (l *Logs) Search(ctx context.Context, q logs.Query) (Page, error) {
 	if err != nil {
 		return Page{}, fmt.Errorf("search logs: %w", err)
 	}
-	page := Page{Entries: entries}
+	page := Page{Entries: entries, Query: l.source.LogQuery(q)}
 	if len(entries) == q.Limit {
 		next := entries[len(entries)-1].Timestamp
 		page.Next = &next
