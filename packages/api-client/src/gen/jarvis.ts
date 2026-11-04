@@ -29,6 +29,7 @@ import type {
   GetClientMetricsParams,
   GetDnsMetricsParams,
   GetGuestMetricsParams,
+  GetLogVolumeParams,
   GetNodeMetricsParams,
   GetProbeAvailabilityOutputBody,
   GetProbeAvailabilityParams,
@@ -71,7 +72,8 @@ import type {
   SearchLogsOutputBody,
   SearchLogsParams,
   ServiceBody,
-  SilenceBody
+  SilenceBody,
+  VolumeLogsOutputBody
 } from './model';
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
@@ -2234,6 +2236,128 @@ export function useSearchLogs<TData = Awaited<ReturnType<typeof searchLogs>>, TE
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSearchLogsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetLogVolumeUrl = (params?: GetLogVolumeParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/logs/volume?${stringifiedParams}` : `/api/v1/logs/volume`
+}
+
+/**
+ * @summary Count logs over time
+ */
+export const getLogVolume = async (params?: GetLogVolumeParams, options?: RequestInit): Promise<VolumeLogsOutputBody> => {
+
+  const res = await fetch(getGetLogVolumeUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+  if (!res.ok) {
+
+    const err: globalThis.Error & {info?: VolumeLogsOutputBody, status?: number} = new globalThis.Error();
+    const data : VolumeLogsOutputBody = body ? JSON.parse(body) : {}
+    err.info = data;
+    err.status = res.status;
+    throw err;
+  }
+  const data: VolumeLogsOutputBody = body ? JSON.parse(body) : {}
+  return data
+}
+
+
+
+
+
+export const getGetLogVolumeQueryKey = (params?: GetLogVolumeParams,) => {
+    return [
+    `/api/v1/logs/volume`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetLogVolumeQueryOptions = <TData = Awaited<ReturnType<typeof getLogVolume>>, TError = globalThis.Error & { info?: ErrorModel; status?: number }>(params?: GetLogVolumeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLogVolume>>, TError, TData>>, fetch?: RequestInit}
+) => {
+
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLogVolumeQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLogVolume>>> = ({ signal }) => getLogVolume(params, { signal, ...fetchOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLogVolume>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetLogVolumeQueryResult = NonNullable<Awaited<ReturnType<typeof getLogVolume>>>
+export type GetLogVolumeQueryError = globalThis.Error & { info?: ErrorModel; status?: number }
+
+
+export function useGetLogVolume<TData = Awaited<ReturnType<typeof getLogVolume>>, TError = globalThis.Error & { info?: ErrorModel; status?: number }>(
+ params: undefined |  GetLogVolumeParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLogVolume>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getLogVolume>>,
+          TError,
+          Awaited<ReturnType<typeof getLogVolume>>
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetLogVolume<TData = Awaited<ReturnType<typeof getLogVolume>>, TError = globalThis.Error & { info?: ErrorModel; status?: number }>(
+ params?: GetLogVolumeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLogVolume>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getLogVolume>>,
+          TError,
+          Awaited<ReturnType<typeof getLogVolume>>
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetLogVolume<TData = Awaited<ReturnType<typeof getLogVolume>>, TError = globalThis.Error & { info?: ErrorModel; status?: number }>(
+ params?: GetLogVolumeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLogVolume>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Count logs over time
+ */
+
+export function useGetLogVolume<TData = Awaited<ReturnType<typeof getLogVolume>>, TError = globalThis.Error & { info?: ErrorModel; status?: number }>(
+ params?: GetLogVolumeParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getLogVolume>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetLogVolumeQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

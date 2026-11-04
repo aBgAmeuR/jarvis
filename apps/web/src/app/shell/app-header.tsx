@@ -1,4 +1,11 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbPage, SidebarTrigger } from "@jarvis/ui";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  SidebarTrigger,
+} from "@jarvis/ui";
+import { Link } from "@tanstack/react-router";
 
 import { ThemeToggle } from "@/app/theme/theme-toggle.tsx";
 
@@ -17,8 +24,20 @@ export function AppHeader() {
             <span aria-hidden className="text-muted-foreground">
               /
             </span>
-            <BreadcrumbPage>{trail.page}</BreadcrumbPage>
+            {trail.detail ? (
+              <BreadcrumbLink render={<Link to={trail.to} />}>{trail.page}</BreadcrumbLink>
+            ) : (
+              <BreadcrumbPage>{trail.page}</BreadcrumbPage>
+            )}
           </BreadcrumbItem>
+          {trail.detail && (
+            <BreadcrumbItem>
+              <span aria-hidden className="text-muted-foreground">
+                /
+              </span>
+              <BreadcrumbPage>{trail.detail}</BreadcrumbPage>
+            </BreadcrumbItem>
+          )}
         </Breadcrumb>
       )}
       <div className="ml-auto">

@@ -54,6 +54,15 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./components/dialog.tsx";
+export {
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "./components/drawer.tsx";
 export { DropZone, type DropZoneProps } from "./components/drop-zone.tsx";
 export { EmptyState, type EmptyStateProps } from "./components/empty-state.tsx";
 export {

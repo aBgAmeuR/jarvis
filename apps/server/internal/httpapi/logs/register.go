@@ -9,4 +9,5 @@ import (
 
 func Register(api huma.API, problems *problem.Mapper, logs *applogs.Logs) {
 	registerSearchLogs(api, problems, logs)
+	registerVolumeLogs(api, problems, logs)
 }

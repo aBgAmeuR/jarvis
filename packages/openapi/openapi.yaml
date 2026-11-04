@@ -2107,6 +2107,69 @@ components:
         - diskTotalBytes
         - uptimeSeconds
       type: object
+    VolumeCountBody:
+      additionalProperties: false
+      properties:
+        count:
+          description: Lines in the bucket.
+          examples:
+            - 42
+          format: int64
+          type: integer
+        level:
+          description: Journal priority. Absent when the stream has none.
+          examples:
+            - info
+          type: string
+        time:
+          description: Start of the bucket, RFC 3339 in UTC.
+          examples:
+            - "2026-10-31T10:00:00Z"
+          format: date-time
+          type: string
+      required:
+        - time
+        - count
+      type: object
+    VolumeLogsOutputBody:
+      additionalProperties: false
+      properties:
+        $schema:
+          description: A URL to the JSON Schema for this object.
+          examples:
+            - /api/v1/schemas/VolumeLogsOutputBody.json
+          format: uri
+          readOnly: true
+          type: string
+        end:
+          description: End of the window actually read, aligned on its step.
+          examples:
+            - "2026-10-31T10:00:00Z"
+          format: date-time
+          type: string
+        items:
+          description: Lines per bucket and level. Empty buckets are left out.
+          items:
+            $ref: "#/components/schemas/VolumeCountBody"
+          type: array
+        start:
+          description: Start of the window actually read, aligned on its step.
+          examples:
+            - "2026-10-30T10:00:00Z"
+          format: date-time
+          type: string
+        stepSeconds:
+          description: Width of a bucket.
+          examples:
+            - 120
+          format: int64
+          type: integer
+      required:
+        - start
+        - end
+        - stepSeconds
+        - items
+      type: object
     ZpoolBody:
       additionalProperties: false
       properties:
@@ -2940,6 +3003,90 @@ paths:
                 $ref: "#/components/schemas/ErrorModel"
           description: Error
       summary: Search logs
+      tags:
+        - supervision
+  /logs/volume:
+    get:
+      operationId: getLogVolume
+      parameters:
+        - description: Only lines of this guest VMID.
+          explode: false
+          in: query
+          name: guest
+          schema:
+            description: Only lines of this guest VMID.
+            examples:
+              - 116
+            format: int64
+            type: integer
+        - description: Only lines of this unit or container.
+          explode: false
+          in: query
+          name: service
+          schema:
+            description: Only lines of this unit or container.
+            examples:
+              - blocky
+            type: string
+        - description: Only lines of this journal priority.
+          explode: false
+          in: query
+          name: level
+          schema:
+            description: Only lines of this journal priority.
+            enum:
+              - emerg
+              - alert
+              - crit
+              - error
+              - warning
+              - notice
+              - info
+              - debug
+            type: string
+        - description: Only lines containing this text, case-sensitive.
+          explode: false
+          in: query
+          name: q
+          schema:
+            description: Only lines containing this text, case-sensitive.
+            examples:
+              - timeout
+            type: string
+        - description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+          explode: false
+          in: query
+          name: start
+          schema:
+            description: Start of the window, RFC 3339. Defaults to 24 hours before end.
+            examples:
+              - "2026-10-30T10:00:00Z"
+            format: date-time
+            type: string
+        - description: End of the window, RFC 3339. Defaults to now.
+          explode: false
+          in: query
+          name: end
+          schema:
+            description: End of the window, RFC 3339. Defaults to now.
+            examples:
+              - "2026-10-31T10:00:00Z"
+            format: date-time
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolumeLogsOutputBody"
+          description: OK
+        default:
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+          description: Error
+      summary: Count logs over time
       tags:
         - supervision
   /me:

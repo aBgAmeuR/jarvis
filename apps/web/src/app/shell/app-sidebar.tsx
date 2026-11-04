@@ -18,7 +18,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar aria-label="Main">
-      <SidebarHeader className="gap-2">
+      <SidebarHeader className="text-foreground gap-2">
         <Logo className="size-5 shrink-0" />
         <div className="flex min-w-0 flex-col leading-tight">
           <span className="text-sm font-semibold">Jarvis</span>

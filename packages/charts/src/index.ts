@@ -7,6 +7,8 @@ export {
   type TimeSeriesChartProps,
 } from "./time-series-chart.tsx";
 
+export { VolumeChart, type VolumeChartProps, type VolumeRow } from "./volume-chart.tsx";
+
 // For charts the presets do not cover. Import marks from here, not from
 // @tanstack/charts, so every chart gets the Jarvis theme.
 export * from "@tanstack/charts";
