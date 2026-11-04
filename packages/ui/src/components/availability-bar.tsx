@@ -2,6 +2,7 @@ import { cn } from "cn";
 import type { ComponentProps } from "react";
 
 import type { CssVars } from "../lib/styles.ts";
+import { Tooltip } from "./tooltip.tsx";
 
 /** One day: up all day, degraded, down at some point, or no data. */
 export type AvailabilityDay = "up" | "degraded" | "down" | "unknown";
@@ -16,6 +17,8 @@ const dayStyles: Record<AvailabilityDay, string> = {
 export type AvailabilityBarProps = Omit<ComponentProps<"div">, "children"> & {
   /** Oldest first, usually 90 days. */
   days: readonly AvailabilityDay[];
+  /** Tooltip of each day, same order as `days`. */
+  labels?: readonly string[];
   /** Read by screen readers, such as "90 days: 2 degraded days, 1 outage day". */
   "aria-label": string;
 };
@@ -24,7 +27,7 @@ export type AvailabilityBarProps = Omit<ComponentProps<"div">, "children"> & {
  * Daily availability bars. Height encodes availability (100, 70, 40 %),
  * color the worst state of the day; a hollow bar means no data.
  */
-export function AvailabilityBar({ days, className, ...props }: AvailabilityBarProps) {
+export function AvailabilityBar({ days, labels, className, ...props }: AvailabilityBarProps) {
   return (
     // The bars are drawn in CSS, so an <img> cannot replace this element.
     // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
@@ -35,14 +38,15 @@ export function AvailabilityBar({ days, className, ...props }: AvailabilityBarPr
         return (
           // Days have no id; the position in the window is the identity.
           // oxlint-disable-next-line react/no-array-index-key
-          <i
-            key={index}
-            className={cn(
-              "min-w-px flex-1 origin-bottom rounded-[1px] motion-safe:animate-grow-y motion-safe:[animation-delay:calc(var(--i)*4ms)]",
-              dayStyles[day],
-            )}
-            style={style}
-          />
+          <Tooltip key={index} content={labels?.[index]} disabled={!labels?.[index]}>
+            <i
+              className={cn(
+                "min-w-px flex-1 origin-bottom rounded-[1px] motion-safe:animate-grow-y motion-safe:[animation-delay:calc(var(--i)*4ms)]",
+                dayStyles[day],
+              )}
+              style={style}
+            />
+          </Tooltip>
         );
       })}
     </div>

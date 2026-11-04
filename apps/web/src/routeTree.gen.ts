@@ -10,28 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as BackupsRouteImport } from './routes/backups'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as DnsRouteImport } from './routes/dns'
 import { Route as NodeRouteImport } from './routes/node'
-import { Route as ProbesRouteImport } from './routes/probes'
 import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as VpnRouteImport } from './routes/vpn'
+import { Route as AlertsIndexRouteImport } from './routes/alerts.index'
+import { Route as AlertsFingerprintRouteImport } from './routes/alerts.$fingerprint'
 import { Route as GuestsIndexRouteImport } from './routes/guests.index'
 import { Route as GuestsVmidRouteImport } from './routes/guests.$vmid'
+import { Route as ProbesIndexRouteImport } from './routes/probes.index'
+import { Route as ProbesProbeRouteImport } from './routes/probes.$probe'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesServiceRouteImport } from './routes/services.$service'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlertsRoute = AlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BackupsRoute = BackupsRouteImport.update({
@@ -59,11 +56,6 @@ const NodeRoute = NodeRouteImport.update({
   path: '/node',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProbesRoute = ProbesRouteImport.update({
-  id: '/probes',
-  path: '/probes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UpdatesRoute = UpdatesRouteImport.update({
   id: '/updates',
   path: '/updates',
@@ -74,6 +66,16 @@ const VpnRoute = VpnRouteImport.update({
   path: '/vpn',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlertsIndexRoute = AlertsIndexRouteImport.update({
+  id: '/alerts/',
+  path: '/alerts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertsFingerprintRoute = AlertsFingerprintRouteImport.update({
+  id: '/alerts/$fingerprint',
+  path: '/alerts/$fingerprint',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuestsIndexRoute = GuestsIndexRouteImport.update({
   id: '/guests/',
   path: '/guests/',
@@ -82,6 +84,16 @@ const GuestsIndexRoute = GuestsIndexRouteImport.update({
 const GuestsVmidRoute = GuestsVmidRouteImport.update({
   id: '/guests/$vmid',
   path: '/guests/$vmid',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProbesIndexRoute = ProbesIndexRouteImport.update({
+  id: '/probes/',
+  path: '/probes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProbesProbeRoute = ProbesProbeRouteImport.update({
+  id: '/probes/$probe',
+  path: '/probes/$probe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
@@ -97,118 +109,132 @@ const ServicesServiceRoute = ServicesServiceRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/alerts': typeof AlertsRoute
   '/backups': typeof BackupsRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/dns': typeof DnsRoute
   '/node': typeof NodeRoute
-  '/probes': typeof ProbesRoute
   '/updates': typeof UpdatesRoute
   '/vpn': typeof VpnRoute
+  '/alerts/$fingerprint': typeof AlertsFingerprintRoute
   '/guests/$vmid': typeof GuestsVmidRoute
+  '/probes/$probe': typeof ProbesProbeRoute
   '/services/$service': typeof ServicesServiceRoute
+  '/alerts/': typeof AlertsIndexRoute
   '/guests/': typeof GuestsIndexRoute
+  '/probes/': typeof ProbesIndexRoute
   '/services/': typeof ServicesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/alerts': typeof AlertsRoute
   '/backups': typeof BackupsRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/dns': typeof DnsRoute
   '/node': typeof NodeRoute
-  '/probes': typeof ProbesRoute
   '/updates': typeof UpdatesRoute
   '/vpn': typeof VpnRoute
+  '/alerts/$fingerprint': typeof AlertsFingerprintRoute
   '/guests/$vmid': typeof GuestsVmidRoute
+  '/probes/$probe': typeof ProbesProbeRoute
   '/services/$service': typeof ServicesServiceRoute
+  '/alerts': typeof AlertsIndexRoute
   '/guests': typeof GuestsIndexRoute
+  '/probes': typeof ProbesIndexRoute
   '/services': typeof ServicesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/alerts': typeof AlertsRoute
   '/backups': typeof BackupsRoute
   '/certificates': typeof CertificatesRoute
   '/clients': typeof ClientsRoute
   '/dns': typeof DnsRoute
   '/node': typeof NodeRoute
-  '/probes': typeof ProbesRoute
   '/updates': typeof UpdatesRoute
   '/vpn': typeof VpnRoute
+  '/alerts/$fingerprint': typeof AlertsFingerprintRoute
   '/guests/$vmid': typeof GuestsVmidRoute
+  '/probes/$probe': typeof ProbesProbeRoute
   '/services/$service': typeof ServicesServiceRoute
+  '/alerts/': typeof AlertsIndexRoute
   '/guests/': typeof GuestsIndexRoute
+  '/probes/': typeof ProbesIndexRoute
   '/services/': typeof ServicesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/alerts'
     | '/backups'
     | '/certificates'
     | '/clients'
     | '/dns'
     | '/node'
-    | '/probes'
     | '/updates'
     | '/vpn'
+    | '/alerts/$fingerprint'
     | '/guests/$vmid'
+    | '/probes/$probe'
     | '/services/$service'
+    | '/alerts/'
     | '/guests/'
+    | '/probes/'
     | '/services/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/alerts'
     | '/backups'
     | '/certificates'
     | '/clients'
     | '/dns'
     | '/node'
-    | '/probes'
     | '/updates'
     | '/vpn'
+    | '/alerts/$fingerprint'
     | '/guests/$vmid'
+    | '/probes/$probe'
     | '/services/$service'
+    | '/alerts'
     | '/guests'
+    | '/probes'
     | '/services'
   id:
     | '__root__'
     | '/'
-    | '/alerts'
     | '/backups'
     | '/certificates'
     | '/clients'
     | '/dns'
     | '/node'
-    | '/probes'
     | '/updates'
     | '/vpn'
+    | '/alerts/$fingerprint'
     | '/guests/$vmid'
+    | '/probes/$probe'
     | '/services/$service'
+    | '/alerts/'
     | '/guests/'
+    | '/probes/'
     | '/services/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AlertsRoute: typeof AlertsRoute
   BackupsRoute: typeof BackupsRoute
   CertificatesRoute: typeof CertificatesRoute
   ClientsRoute: typeof ClientsRoute
   DnsRoute: typeof DnsRoute
   NodeRoute: typeof NodeRoute
-  ProbesRoute: typeof ProbesRoute
   UpdatesRoute: typeof UpdatesRoute
   VpnRoute: typeof VpnRoute
+  AlertsFingerprintRoute: typeof AlertsFingerprintRoute
   GuestsVmidRoute: typeof GuestsVmidRoute
+  ProbesProbeRoute: typeof ProbesProbeRoute
   ServicesServiceRoute: typeof ServicesServiceRoute
+  AlertsIndexRoute: typeof AlertsIndexRoute
   GuestsIndexRoute: typeof GuestsIndexRoute
+  ProbesIndexRoute: typeof ProbesIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
 }
 
@@ -219,13 +245,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/alerts': {
-      id: '/alerts'
-      path: '/alerts'
-      fullPath: '/alerts'
-      preLoaderRoute: typeof AlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/backups': {
@@ -263,13 +282,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NodeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/probes': {
-      id: '/probes'
-      path: '/probes'
-      fullPath: '/probes'
-      preLoaderRoute: typeof ProbesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/updates': {
       id: '/updates'
       path: '/updates'
@@ -284,6 +296,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VpnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alerts/': {
+      id: '/alerts/'
+      path: '/alerts'
+      fullPath: '/alerts/'
+      preLoaderRoute: typeof AlertsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alerts/$fingerprint': {
+      id: '/alerts/$fingerprint'
+      path: '/alerts/$fingerprint'
+      fullPath: '/alerts/$fingerprint'
+      preLoaderRoute: typeof AlertsFingerprintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guests/': {
       id: '/guests/'
       path: '/guests'
@@ -296,6 +322,20 @@ declare module '@tanstack/react-router' {
       path: '/guests/$vmid'
       fullPath: '/guests/$vmid'
       preLoaderRoute: typeof GuestsVmidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/probes/': {
+      id: '/probes/'
+      path: '/probes'
+      fullPath: '/probes/'
+      preLoaderRoute: typeof ProbesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/probes/$probe': {
+      id: '/probes/$probe'
+      path: '/probes/$probe'
+      fullPath: '/probes/$probe'
+      preLoaderRoute: typeof ProbesProbeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/': {
@@ -317,18 +357,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AlertsRoute: AlertsRoute,
   BackupsRoute: BackupsRoute,
   CertificatesRoute: CertificatesRoute,
   ClientsRoute: ClientsRoute,
   DnsRoute: DnsRoute,
   NodeRoute: NodeRoute,
-  ProbesRoute: ProbesRoute,
   UpdatesRoute: UpdatesRoute,
   VpnRoute: VpnRoute,
+  AlertsFingerprintRoute: AlertsFingerprintRoute,
   GuestsVmidRoute: GuestsVmidRoute,
+  ProbesProbeRoute: ProbesProbeRoute,
   ServicesServiceRoute: ServicesServiceRoute,
+  AlertsIndexRoute: AlertsIndexRoute,
   GuestsIndexRoute: GuestsIndexRoute,
+  ProbesIndexRoute: ProbesIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -6,6 +6,8 @@ const number = new Intl.NumberFormat(undefined, numberOptions);
 const integer = new Intl.NumberFormat(undefined, integerOptions);
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 
+const utcDate = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" });
+
 const byteUnits = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"] as const;
 
 /** 1 536 → { value: 1.5, unit: "KiB" }. */
@@ -57,4 +59,9 @@ export function formatDateTime(value: Date | string | number): string {
 export function formatAge(value: Date | string | number, now = Date.now()): string {
   const seconds = Math.max(0, (now - new Date(value).getTime()) / 1000);
   return `${formatDuration(seconds)} ago`;
+}
+
+/** A UTC day, such as the start of an availability bucket. */
+export function formatUtcDate(value: Date | string | number): string {
+  return utcDate.format(new Date(value));
 }

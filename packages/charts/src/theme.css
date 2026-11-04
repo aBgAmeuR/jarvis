@@ -5,3 +5,28 @@
  */
 
 @source './';
+
+.ts-chart-host {
+  color: var(--muted-foreground);
+  --ts-chart-1: var(--chart-1);
+  --ts-chart-2: var(--chart-2);
+  --ts-chart-3: var(--chart-3);
+  --ts-chart-4: var(--chart-4);
+  --ts-chart-5: var(--chart-5);
+  --ts-chart-6: var(--chart-6);
+
+  --ts-chart-crosshair-label-halo: var(--card);
+
+  --ts-chart-tooltip-background: var(--foreground);
+  --ts-chart-tooltip-color: var(--background);
+  --ts-chart-tooltip-border: none;
+  --ts-chart-tooltip-border-radius: calc(var(--radius) - 6px);
+  --ts-chart-tooltip-shadow: none;
+  --ts-chart-tooltip-padding: 4px 7px;
+  --ts-chart-tooltip-font: 400 11px/14px var(--font-sans);
+}
+
+/* A bucket with no data renders a tooltip with no row: hide the empty pill. */
+.ts-chart-tooltip:empty {
+  display: none;
+}

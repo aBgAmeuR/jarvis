@@ -3,7 +3,7 @@ import { z } from "zod";
 import { logSearchShape } from "@/entities/log/model/log-search.ts";
 import { timeRangeSchema } from "@/shared/lib/time-range.ts";
 
-export const guestTabs = ["overview", "services", "logs"] as const;
+export const guestTabs = ["overview", "services", "alerts", "logs"] as const;
 
 export type GuestTab = (typeof guestTabs)[number];
 

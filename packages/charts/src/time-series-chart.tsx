@@ -119,7 +119,12 @@ export function TimeSeriesChart({
   // between two lengths, and a fade costs the browser nothing per frame.
   return (
     <div key={epoch}>
-      <Chart definition={definition} height={height} ariaLabel={ariaLabel} />
+      <Chart
+        definition={definition}
+        height={height}
+        ariaLabel={ariaLabel}
+        className="cursor-crosshair"
+      />
     </div>
   );
 }

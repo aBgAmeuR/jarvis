@@ -20,7 +20,13 @@ export function GuestPage() {
           {guest.data && (
             <>
               <GuestStatus status={guest.data.status} />
-              <GuestHealth guest={guest.data} />
+              {guest.data.alertCount > 0 ? (
+                <button type="button" onClick={() => setSearch({ tab: "alerts" })}>
+                  <GuestHealth guest={guest.data} />
+                </button>
+              ) : (
+                <GuestHealth guest={guest.data} />
+              )}
             </>
           )}
           {tab !== "services" && (

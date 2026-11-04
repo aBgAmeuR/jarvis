@@ -1,4 +1,4 @@
-import { barY, defineChart, stack } from "@tanstack/charts";
+import { barY, crosshair, defineChart, stack } from "@tanstack/charts";
 import { Chart } from "@tanstack/charts/react";
 import { scaleBand } from "@tanstack/charts/scales/band";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
@@ -47,6 +47,22 @@ export function VolumeChart({ times, rows, colors, ariaLabel, height = 96 }: Vol
 
     return defineChart({
       marks: [
+        // The indicator: a band behind the hovered bucket, its time on the x axis.
+        // Declared before the bars so it is painted underneath.
+        crosshair<number, number>({
+          x: {
+            band: { fill: "var(--foreground)", fillOpacity: 0.08, radius: 2, inset: 0 },
+            // The halo, in the card color, erases the tick label underneath.
+            label: {
+              format: (time) => dayMonthTime.format(time),
+              fill: "var(--foreground)",
+              fontSize: 10,
+              fontWeight: 500,
+              strokeWidth: 8,
+            },
+          },
+          y: false,
+        }),
         barY(data, {
           x: "time",
           y: "value",
@@ -72,10 +88,12 @@ export function VolumeChart({ times, rows, colors, ariaLabel, height = 96 }: Vol
       svgAnimation: dataTransition,
       focus: "group-x",
       maxFocusDistance: Number.POSITIVE_INFINITY,
+      // The band is the indicator; no ring on the bars.
+      focusRing: false,
       tooltip: {
         use: tooltip,
+        // No title: the time is already on the axis. One row per series.
         content: (focused) => ({
-          title: dayMonthTime.format(focused[0]?.xValue),
           rows: focused
             .filter((point) => point.datum.value > 0)
             .map((point) => ({
@@ -91,5 +109,12 @@ export function VolumeChart({ times, rows, colors, ariaLabel, height = 96 }: Vol
     });
   }, [times, rows, colors]);
 
-  return <Chart definition={definition} height={height} ariaLabel={ariaLabel} />;
+  return (
+    <Chart
+      definition={definition}
+      height={height}
+      ariaLabel={ariaLabel}
+      className="cursor-crosshair"
+    />
+  );
 }
