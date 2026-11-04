@@ -14,6 +14,12 @@ export default defineConfig({
     "import/no-cycle": "error",
     "import/no-unassigned-import": ["warn", { allow: ["**/*.css"] }],
     "no-console": "error",
+    // Size and complexity.
+    "max-lines": ["error", { max: 200, skipBlankLines: true, skipComments: true }],
+    "max-lines-per-function": ["error", { max: 80, skipBlankLines: true, skipComments: true }],
+    complexity: ["error", 15],
+    "max-depth": ["error", 4],
+    "max-params": ["error", 4],
   },
   ignorePatterns: ["dist", "storybook-static", "**/gen/**", "routeTree.gen.ts"],
 });

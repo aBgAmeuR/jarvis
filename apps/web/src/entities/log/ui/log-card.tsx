@@ -1,15 +1,5 @@
 import { useSearchLogs, type SearchLogsParams } from "@jarvis/api-client";
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  LogLine,
-  LogViewer,
-  Skeleton,
-  cn,
-} from "@jarvis/ui";
+import { Button, Card, CardHeader, CardTitle, EmptyState, Skeleton } from "@jarvis/ui";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -17,12 +7,10 @@ import { useTimeWindow } from "@/shared/lib/time-window.tsx";
 import { ExploreLink } from "@/shared/ui/explore-link.tsx";
 import { QueryView } from "@/shared/ui/query-view.tsx";
 
-import { cleanLine } from "../model/clean-line.ts";
-import { formatLogTime } from "../model/format-log-time.ts";
-import { logLevel } from "../model/log-level.ts";
 import type { LogQuery } from "../model/log-search.ts";
 import { useStickToBottom } from "../model/use-stick-to-bottom.ts";
 import { LogDetail } from "./log-detail.tsx";
+import { LogLines } from "./log-lines.tsx";
 import { LogToolbar } from "./log-toolbar.tsx";
 import { LogVolume } from "./log-volume.tsx";
 
@@ -80,31 +68,14 @@ export function LogCard({ scope, query, onQueryChange }: LogCardProps) {
         >
           {({ lines }) => (
             <div className="flex flex-col gap-2 px-2.5 pb-2.5">
-              <LogViewer
-                ref={scroll.ref}
+              <LogLines
+                lines={lines}
+                selected={selected}
+                onSelect={select}
+                withService={!scope.service}
+                scrollRef={scroll.ref}
                 onScroll={scroll.onScroll}
-                className="max-h-112 rounded-sm border"
-              >
-                {lines.map((line) => (
-                  <LogLine
-                    key={`${line.timestamp}-${line.service}-${line.line}`}
-                    tabIndex={0}
-                    aria-pressed={line.timestamp === selected}
-                    className={cn("cursor-pointer", line.timestamp === selected && "bg-accent")}
-                    onClick={() => select(line.timestamp)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") select(line.timestamp);
-                    }}
-                    time={formatLogTime(line.timestamp)}
-                    level={logLevel(line.level)}
-                    message={
-                      scope.service
-                        ? cleanLine(line.line)
-                        : `${line.service} ${cleanLine(line.line)}`
-                    }
-                  />
-                ))}
-              </LogViewer>
+              />
               <div className="text-muted-foreground flex items-center justify-between text-xs">
                 {lines.length} lines
                 {lines.length >= limit && limit < maxLimit && (

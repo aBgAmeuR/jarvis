@@ -29,8 +29,8 @@ Go:
 
 - Handlers only map HTTP to `internal/app`. Logic lives in `internal/app`, types in `internal/domain`.
 - Sources return domain types. A Prometheus, Loki or Proxmox type never leaves `internal/source`.
-- Layers: `httpapi` → `app` → `domain`; `source` implements the interfaces `app` defines; only `internal/bootstrap` sees them all. Each layer has one package per feature, and a feature never imports another feature of its layer. `depguard` enforces it.
-- Small files: one noun or one route per file. Huma schema names are global, so every body and output type has a unique name.
+- Layers: `httpapi` → `app` → `domain`; `source` implements the interfaces `app` defines; only `internal/bootstrap` sees them all. Each layer has one package per feature, and a feature never imports another feature of its layer. No linter checks it: keep it in review.
+- Small files: one noun or one route per file. `funlen`, `gocognit` and `nestif` bound functions. Huma schema names are global, so every body and output type has a unique name.
 - Every outbound call takes the request `context.Context` and its own timeout.
 - Dependencies are passed to constructors and wired in `main`. No package-level state, no `init()`.
 - Wrap errors with `%w`. Turn them into Huma errors only in `internal/httpapi`.
@@ -47,6 +47,7 @@ Web:
 - Segments: `ui` renders, `model` holds pure logic and URL state. Components call the Orval hooks directly; a hook in `model` exists only when it adds logic. `router.tsx` sets the inventory interval as the default refetch; a query with another rhythm sets its own.
 - Each component fetches what it shows. A page puts one `TimeWindowProvider` above its queries, so they share one `end`. Only the open tab is mounted.
 - Lists that can pass 200 rows are virtualized.
+- oxlint caps files at 200 lines and functions at 80.
 - No `any`, no `as` on API data, no `!`, no `@ts-ignore`.
 
 ## Ask first

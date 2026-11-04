@@ -41,7 +41,7 @@ The Go code is split by layer, then by feature (`supervision`, `availability`, `
 | `internal/platform` | infrastructure without business rules: config, logging, telemetry, the HTTP client with its cache, the server | the standard library |
 | `internal/bootstrap` | builds every adapter and use case and wires them; the only package that sees them all | everything |
 
-A feature package never imports another feature of the same layer: when `supervision` needs the firing alerts, it defines the small interface it needs and `bootstrap` provides an adapter on `availability`. The `overview` feature works the same way for the alerts, the Proxmox inventory and the probes. golangci-lint enforces these rules with `depguard` (`tooling/golangci/.golangci.yml`).
+A feature package never imports another feature of the same layer: when `supervision` needs the firing alerts, it defines the small interface it needs and `bootstrap` provides an adapter on `availability`. The `overview` feature works the same way for the alerts, the Proxmox inventory and the probes. No linter enforces these rules; they are checked in review.
 
 Outgoing calls go through one HTTP client per source: a context deadline on every call, a cap on the body size, TLS 1.2 at least, and a short cache that sends one request for identical concurrent reads (`JARVIS_CACHE_TTL`). A source failure is a `SourceError` with a kind (`timeout`, `unreachable`, `bad_status`, `invalid_response`, `unavailable`); clients see the kind, never the URL or the cause, which go to the logs.
 

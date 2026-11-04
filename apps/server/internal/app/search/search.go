@@ -52,10 +52,6 @@ func (s *Service) Search(ctx context.Context, q string, limit int) (Result, erro
 	}
 	wg.Wait()
 
-	type scored struct {
-		hit   search.Hit
-		score int
-	}
 	var result Result
 	var matches []scored
 	for i, list := range lists {
@@ -66,11 +62,7 @@ func (s *Service) Search(ctx context.Context, q string, limit int) (Result, erro
 			}
 			continue
 		}
-		for _, hit := range list {
-			if score, ok := match(hit, q); ok {
-				matches = append(matches, scored{hit: hit, score: score})
-			}
-		}
+		matches = append(matches, matchAll(list, q)...)
 	}
 	slices.SortStableFunc(matches, func(a, b scored) int {
 		return cmp.Or(cmp.Compare(a.score, b.score), cmp.Compare(a.hit.Name, b.hit.Name))

@@ -7,6 +7,21 @@ import (
 	"jarvis/server/internal/domain/search"
 )
 
+type scored struct {
+	hit   search.Hit
+	score int
+}
+
+func matchAll(hits []search.Hit, q string) []scored {
+	var matches []scored
+	for _, hit := range hits {
+		if score, ok := match(hit, q); ok {
+			matches = append(matches, scored{hit: hit, score: score})
+		}
+	}
+	return matches
+}
+
 // match scores a hit, lower is better. The name ranks first, then the id and the detail:
 // whole text, prefix, word prefix, anywhere.
 func match(hit search.Hit, q string) (int, bool) {

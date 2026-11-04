@@ -38,46 +38,61 @@ func (c *Client) Probes(ctx context.Context) ([]availability.Probe, error) {
 		}
 	}
 
-	byKey := func(entries []entry) map[string]float64 {
-		out := make(map[string]float64, len(entries))
-		for _, e := range entries {
-			out[probeKey(e.labels)] = e.value
-		}
-		return out
+	series := probeSeries{
+		duration: byProbeKey(results[1]),
+		status:   byProbeKey(results[2]),
+		day:      byProbeKey(results[3]),
+		week:     byProbeKey(results[4]),
+		month:    byProbeKey(results[5]),
 	}
-	duration, status := byKey(results[1]), byKey(results[2])
-	day, week, month := byKey(results[3]), byKey(results[4]), byKey(results[5])
-	ratio := func(values map[string]float64, key string) *float64 {
-		if v, ok := values[key]; ok {
-			return &v
-		}
-		return nil
-	}
-
 	probes := make([]availability.Probe, 0, len(results[0]))
 	for _, e := range results[0] {
-		key := probeKey(e.labels)
-		kind := availability.ProbeKind(strings.TrimPrefix(e.labels["job"], "probe_"))
-		probe := availability.Probe{
-			ID:              probeID(kind, e.labels),
-			Kind:            kind,
-			Name:            e.labels["instance"],
-			Target:          e.labels["target"],
-			Up:              e.value == 1,
-			Duration:        duration[key],
-			Availability24h: ratio(day, key),
-			Availability7d:  ratio(week, key),
-			Availability30d: ratio(month, key),
-		}
-		if vmid, err := strconv.Atoi(e.labels["vmid"]); err == nil {
-			probe.VMID = &vmid
-		}
-		if code, ok := status[key]; ok {
-			n := int(code)
-			probe.HTTPStatus = &n
-		}
-		probes = append(probes, probe)
+		probes = append(probes, newProbe(e, series))
 	}
 	slices.SortFunc(probes, func(a, b availability.Probe) int { return strings.Compare(a.ID, b.ID) })
 	return probes, nil
+}
+
+// probeSeries holds the series joined to probe_success, keyed by probeKey.
+type probeSeries struct {
+	duration, status, day, week, month map[string]float64
+}
+
+func byProbeKey(entries []entry) map[string]float64 {
+	out := make(map[string]float64, len(entries))
+	for _, e := range entries {
+		out[probeKey(e.labels)] = e.value
+	}
+	return out
+}
+
+func newProbe(success entry, series probeSeries) availability.Probe {
+	key := probeKey(success.labels)
+	kind := availability.ProbeKind(strings.TrimPrefix(success.labels["job"], "probe_"))
+	probe := availability.Probe{
+		ID:              probeID(kind, success.labels),
+		Kind:            kind,
+		Name:            success.labels["instance"],
+		Target:          success.labels["target"],
+		Up:              success.value == 1,
+		Duration:        series.duration[key],
+		Availability24h: probeRatio(series.day, key),
+		Availability7d:  probeRatio(series.week, key),
+		Availability30d: probeRatio(series.month, key),
+	}
+	if vmid, err := strconv.Atoi(success.labels["vmid"]); err == nil {
+		probe.VMID = &vmid
+	}
+	if code, ok := series.status[key]; ok {
+		n := int(code)
+		probe.HTTPStatus = &n
+	}
+	return probe
+}
+
+func probeRatio(values map[string]float64, key string) *float64 {
+	if v, ok := values[key]; ok {
+		return &v
+	}
+	return nil
 }
