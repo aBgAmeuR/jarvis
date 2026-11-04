@@ -4,6 +4,7 @@ export const integerOptions = { maximumFractionDigits: 0 } satisfies Intl.Number
 
 const number = new Intl.NumberFormat(undefined, numberOptions);
 const integer = new Intl.NumberFormat(undefined, integerOptions);
+const rate = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 
 const utcDate = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeZone: "UTC" });
@@ -38,6 +39,11 @@ export function formatNumber(value: number): string {
 
 export function formatInteger(value: number): string {
   return integer.format(value);
+}
+
+/** 0.256 → "0.26 /s". Two digits: a home resolver idles under one query per second. */
+export function formatPerSecond(value: number): string {
+  return `${rate.format(value)} /s`;
 }
 
 /** 93 784 s → "1d 2h", 3 700 s → "1h 1m", 40 s → "40s". */

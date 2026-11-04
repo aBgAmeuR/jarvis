@@ -1,13 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/dns")({
-  component: Page,
-});
+import { DnsPage } from "@/pages/dns";
+import { dnsSearchSchema } from "@/pages/dns/search.ts";
 
-function Page() {
-  return (
-    <div className="flex flex-col gap-4">
-      <h1>DNS</h1>
-    </div>
-  );
-}
+export const Route = createFileRoute("/dns")({
+  validateSearch: dnsSearchSchema,
+  component: DnsPage,
+});
