@@ -15,18 +15,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - uses: actions/setup-go@v7
         with:
-          context: .
-          file: docker/Dockerfile
-          tags: jarvis:ci
-          outputs: type=docker,dest=${{ runner.temp }}/jarvis.tar
-          build-args: |
-            VERSION=${{ inputs.version }}
-            COMMIT=${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          go-version-file: go.work
+          cache-dependency-path: |
+            go.work.sum
+            apps/server/go.sum
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter "@jarvis/web..." build
+
+      # Same build as docker/Dockerfile, with the runner caches instead of a Docker build.
+      - run: cp -r apps/web/dist/client/. apps/server/internal/platform/webui/static/
+      - working-directory: apps/server
+        run: |
+          go build -trimpath -buildvcs=false \
+            -ldflags "-s -w -X main.version=$VERSION -X main.commit=$COMMIT -X main.buildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -o "$RUNNER_TEMP/image/jarvis" ./cmd/jarvis-server
+        env:
+          CGO_ENABLED: "0"
+          VERSION: ${{ inputs.version }}
+          COMMIT: ${{ github.sha }}
+      - run: |
+          docker build -f docker/Dockerfile.prebuilt -t jarvis:ci "$RUNNER_TEMP/image"
+          docker save jarvis:ci -o "$RUNNER_TEMP/jarvis.tar"
       - uses: actions/upload-artifact@v7
         with:
           name: image-${{ inputs.version }}

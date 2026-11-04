@@ -11,7 +11,7 @@ apps/api/                  Scalar API docs
 packages/openapi/          openapi.yaml, generated, committed
 apps/storybook/            Storybook for @jarvis/ui, with the stories
 apps/web/                  TanStack Start SPA, src/{routes,app,pages,entities,shared}
-docker/                    Dockerfile, Dockerfile.dockerignore
+docker/                    Dockerfile, Dockerfile.dockerignore, Dockerfile.prebuilt (CI)
 docs/
 packages/charts/           @jarvis/charts: chart presets and the chart theme over TanStack Charts
 packages/icons/            @jarvis/icons: the Icon component and the Hugeicons free set
@@ -85,14 +85,14 @@ A machine needs any `go`, any `pnpm` and Node 24 or later. CI reads the same fil
 | File | Runs on | Does |
 |---|---|---|
 | `ci.yml` | pull request, `workflow_call` | `server` (lint, build, `gen` leaves no diff), `web`, `storybook` and `image` in parallel, then `ci-ok` (`re-actors/alls-green`), the only required check |
-| `image.yml` | `workflow_call` | `build`, then `test` and `scan` (Trivy, HIGH and CRITICAL fail) in parallel. Read-only: this is what pull requests run |
+| `image.yml` | `workflow_call` | `build` (the binary on the runner, then `Dockerfile.prebuilt`), then `test` and `scan` (Trivy, HIGH and CRITICAL fail) in parallel. Read-only: this is what pull requests run |
 | `publish.yml` | `workflow_call` | `publish` pushes the image that `image.yml` tested in the same run to GHCR, then `attest` attaches the SPDX SBOM (Trivy) and the SLSA provenance, both signed with sigstore, and verifies them. Only `release.yml` calls it, so pull requests never hold a write token |
-| `release.yml` | push to `master` | `ci`, then `version`, `image`, `publish`, then `release` |
+| `release.yml` | push to `master` | `ci` alongside `version` then `image`; `publish` once all three pass, then `release` |
 | `docs.yml` | push to `master` on docs paths | builds Storybook and the API docs, deploys to Pages |
 
 ## Release
 
-`release.yml` calls `ci.yml` first, so nothing is released from a red `master`. `version` runs semantic-release in dry-run mode (`cycjimmy/semantic-release-action`) and reads `new_release_version` from its outputs; with no releasable commit the rest is skipped. `image` builds that version and `publish` ships it, and only then does `release` run semantic-release for real: the `vX.Y.Z` tag and the GitHub release exist only if the image was published. CI never commits: the version lives only in tags. There is no config file and no `CHANGELOG.md`; semantic-release runs its default plugins, and the npm one publishes nothing because the root `package.json` is private.
+`release.yml` calls `ci.yml` and `publish` needs it, so nothing is released from a red `master`. `version` and `image` run meanwhile. `version` runs semantic-release in dry-run mode (`cycjimmy/semantic-release-action`) and reads `new_release_version` from its outputs; with no releasable commit the rest is skipped. `image` builds that version and `publish` ships it, and only then does `release` run semantic-release for real: the `vX.Y.Z` tag and the GitHub release exist only if the image was published. CI never commits: the version lives only in tags. There is no config file and no `CHANGELOG.md`; semantic-release runs its default plugins, and the npm one publishes nothing because the root `package.json` is private.
 
 Check an image: `gh attestation verify oci://ghcr.io/abgameur/jarvis:<version> --repo aBgAmeuR/jarvis` for the provenance, and add `--predicate-type https://spdx.dev/Document/v2.3` for the SBOM.
 

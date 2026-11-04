@@ -15,8 +15,8 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
+  # version and image do not wait for ci: publish does.
   version:
-    needs: ci
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -42,7 +42,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
 
   publish:
-    needs: [version, image]
+    needs: [ci, version, image]
     permissions:
       contents: read
       packages: write

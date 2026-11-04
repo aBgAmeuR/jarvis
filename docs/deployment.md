@@ -6,7 +6,9 @@ How the image is built and how Jarvis runs in the homelab, with what it needs fr
 
 `docker/Dockerfile` builds from the repo root: `docker build -f docker/Dockerfile .`. BuildKit reads `docker/Dockerfile.dockerignore`, so there is no root `.dockerignore`.
 
-The build is multi-stage: the Vite build, then `go build -trimpath` with the version set by `-ldflags` and the SPA copied into `internal/platform/webui/static` for `go:embed`, then a distroless image running as non-root. The binary is `jarvis`. Compose is in `docker/compose.yaml`, its variables in `docker/.env.example`.
+The build is multi-stage: the Vite build, then `go build -trimpath` with the version, commit and build date (UTC) set by `-ldflags` and the SPA copied into `internal/platform/webui/static` for `go:embed`, then a distroless image running as non-root. The binary is `jarvis`. Compose is in `docker/compose.yaml`, its variables in `docker/.env.example`.
+
+CI does not build with this file. `image.yml` runs the same Vite and `go build` steps on the runner, where the Go and pnpm caches already exist, then `docker/Dockerfile.prebuilt` copies the binary into the same distroless base. Keep both in step.
 
 - Base images are pinned by tag in each `FROM`, with the registry spelled out so Podman accepts them.
 - The only `ARG`s are `VERSION` (default `dev`) and `COMMIT` (default `unknown`). CI sets them to the tag and the SHA.

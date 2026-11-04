@@ -18,7 +18,7 @@ COPY --from=web /src/apps/web/dist/client apps/server/internal/platform/webui/st
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     cd apps/server && CGO_ENABLED=0 go build -trimpath -buildvcs=false \
-      -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT}" \
+      -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.buildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
       -o /out/jarvis ./cmd/jarvis-server
 
 FROM gcr.io/distroless/static-debian12:nonroot

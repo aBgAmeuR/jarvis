@@ -1,0 +1,8 @@
+# syntax=docker/dockerfile:1
+
+# CI image: the context holds only the `jarvis` binary built by image.yml.
+# Keep in step with the last stage of docker/Dockerfile.
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY jarvis /usr/local/bin/jarvis
+EXPOSE 8080
+ENTRYPOINT ["jarvis"]
