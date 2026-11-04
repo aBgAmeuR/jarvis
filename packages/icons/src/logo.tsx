@@ -13,7 +13,7 @@ export function Logo(props: ComponentProps<"svg">) {
         strokeDasharray="84 35.4"
       />
       <circle cx="24" cy="24" r="6" fill="currentColor" />
-      <circle cx="37.4" cy="10.6" r="5" fill="#D4537E" />
+      <circle cx="37.4" cy="10.6" r="5" fill="var(--color-brand)" />
     </svg>
   );
 }

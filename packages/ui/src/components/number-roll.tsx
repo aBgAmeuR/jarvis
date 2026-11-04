@@ -182,16 +182,19 @@ function NumberRollDigit({ digit, dir }: { digit: number; dir: number }) {
     >
       {/* The glyphs come from ::before, so find-in-page and copy never see the strip. */}
       <span data-d={digit} className="invisible before:content-[attr(data-d)]" />
-      {digitCells.map((cell) => (
-        <span
-          key={cell}
-          data-d={cell}
-          className="absolute inset-0 text-center before:content-[attr(data-d)]"
-          style={{
-            transform: `translateY(clamp(-1lh, calc((mod(mod(${cell} - var(--number-roll-pos), 10) + 5, 10) - 5) * 1lh), 1lh))`,
-          }}
-        />
-      ))}
+      {digitCells.map((cell) => {
+        const cellStyle: CssVars = {
+          "--number-roll-y": `clamp(-1lh, calc((mod(mod(${cell} - var(--number-roll-pos), 10) + 5, 10) - 5) * 1lh), 1lh)`,
+        };
+        return (
+          <span
+            key={cell}
+            data-d={cell}
+            className="absolute inset-0 translate-y-(--number-roll-y) text-center before:content-[attr(data-d)]"
+            style={cellStyle}
+          />
+        );
+      })}
     </span>
   );
 }

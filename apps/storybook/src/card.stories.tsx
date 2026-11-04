@@ -1,5 +1,8 @@
 import { Badge, Button, Card, CardContent, CardFooter, CardHeader, CardTitle } from "@jarvis/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { CSSProperties } from "react";
+
+type BarVars = CSSProperties & Record<`--${string}`, string>;
 
 const meta = {
   title: "Components/Card",
@@ -38,25 +41,32 @@ export const StoragePools: Story = {
         </Button>
       </CardHeader>
       <CardContent className="flex flex-col gap-2.5">
-        {pools.map((pool) => (
-          <div key={pool.name} className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-xs">{pool.name}</span>
-              {pool.degraded && (
-                <Badge tone="critical" dot>
-                  Degraded
-                </Badge>
-              )}
-              <span className="ml-auto">{pool.used}</span>
+        {pools.map((pool) => {
+          const barStyle: BarVars = { "--ratio": `${pool.ratio}%` };
+          return (
+            <div key={pool.name} className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs">{pool.name}</span>
+                {pool.degraded && (
+                  <Badge tone="critical" dot>
+                    Degraded
+                  </Badge>
+                )}
+                <span className="ml-auto">{pool.used}</span>
+              </div>
+              <div className="bg-secondary h-1 overflow-hidden rounded-full">
+                <div
+                  className={
+                    pool.degraded
+                      ? "bg-critical h-full w-(--ratio)"
+                      : "bg-muted-foreground h-full w-(--ratio)"
+                  }
+                  style={barStyle}
+                />
+              </div>
             </div>
-            <div className="bg-secondary h-1 overflow-hidden rounded-full">
-              <div
-                className={pool.degraded ? "bg-critical h-full" : "bg-muted-foreground h-full"}
-                style={{ width: `${pool.ratio}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
       <CardFooter className="text-xs">Updated 4 s ago</CardFooter>
     </Card>

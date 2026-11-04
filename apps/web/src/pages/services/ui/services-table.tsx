@@ -17,6 +17,13 @@ import { Link as RouterLink } from "@tanstack/react-router";
 import { ServiceStatus } from "@/entities/service/ui/service-status.tsx";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
+const SKELETON_WIDTH: Record<number, string> = {
+  14: "w-14",
+  16: "w-16",
+  24: "w-24",
+  32: "w-32",
+};
+
 const head = (
   <TableHeader>
     <TableRow>
@@ -37,7 +44,7 @@ const skeleton = (
       <TableRow>
         {[24, 16, 14, 24, 32, 24].map((width) => (
           <TableCell key={width}>
-            <Skeleton style={{ width: `${width * 4}px` }} />
+            <Skeleton className={SKELETON_WIDTH[width]} />
           </TableCell>
         ))}
       </TableRow>

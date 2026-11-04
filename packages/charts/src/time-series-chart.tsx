@@ -118,7 +118,7 @@ export function TimeSeriesChart({
   // A new range remounts the chart and fades it in: its paths cannot tween
   // between two lengths, and a fade costs the browser nothing per frame.
   return (
-    <div key={epoch} className="ts-chart-enter">
+    <div key={epoch}>
       <Chart definition={definition} height={height} ariaLabel={ariaLabel} />
     </div>
   );

@@ -79,7 +79,7 @@ export function LogCard({ scope, query, onQueryChange }: LogCardProps) {
               <LogViewer
                 ref={scroll.ref}
                 onScroll={scroll.onScroll}
-                className="max-h-[28rem] rounded-sm border"
+                className="max-h-112 rounded-sm border"
               >
                 {lines.map((line) => (
                   <LogLine

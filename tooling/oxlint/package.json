@@ -10,6 +10,7 @@
     "./react": "./react.ts"
   },
   "devDependencies": {
+    "@shadcn/lint": "catalog:",
     "oxlint": "catalog:"
   }
 }
