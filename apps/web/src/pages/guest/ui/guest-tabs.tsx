@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsPanel, TabsTab } from "@jarvis/ui";
 import { useGuestSearch } from "../model/use-guest-search.ts";
 import { guestTabs, type GuestTab } from "../search.ts";
 import { GuestAlerts } from "./guest-alerts.tsx";
+import { GuestBackup } from "./guest-backup.tsx";
 import { GuestCharts } from "./guest-charts.tsx";
 import { GuestFacts } from "./guest-facts.tsx";
 import { GuestLogs } from "./guest-logs.tsx";
@@ -42,6 +43,7 @@ export function GuestTabs() {
         <GuestStats />
         <GuestCharts />
         <GuestFacts />
+        <GuestBackup />
       </TabsPanel>
       <TabsPanel value="services">
         <GuestServices />

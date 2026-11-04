@@ -4,6 +4,7 @@ import {
   Certificate01Icon,
   DashboardSquare01Icon,
   Database01Icon,
+  GitCompareIcon,
   Globe02Icon,
   HardDriveIcon,
   Layers01Icon,
@@ -57,6 +58,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "Updates", icon: Package01Icon, to: "/updates" },
       { label: "Backups", icon: Database01Icon, to: "/backups" },
+      { label: "Drift", icon: GitCompareIcon, to: "/drift" },
     ],
   },
 ];

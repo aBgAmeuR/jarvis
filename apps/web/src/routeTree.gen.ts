@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BackupsRouteImport } from './routes/backups'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as DnsRouteImport } from './routes/dns'
+import { Route as DriftRouteImport } from './routes/drift'
 import { Route as NodeRouteImport } from './routes/node'
 import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as AlertsIndexRouteImport } from './routes/alerts.index'
@@ -46,6 +47,11 @@ const CertificatesRoute = CertificatesRouteImport.update({
 const DnsRoute = DnsRouteImport.update({
   id: '/dns',
   path: '/dns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriftRoute = DriftRouteImport.update({
+  id: '/drift',
+  path: '/drift',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NodeRoute = NodeRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/backups': typeof BackupsRoute
   '/certificates': typeof CertificatesRoute
   '/dns': typeof DnsRoute
+  '/drift': typeof DriftRoute
   '/node': typeof NodeRoute
   '/updates': typeof UpdatesRoute
   '/alerts/$fingerprint': typeof AlertsFingerprintRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/backups': typeof BackupsRoute
   '/certificates': typeof CertificatesRoute
   '/dns': typeof DnsRoute
+  '/drift': typeof DriftRoute
   '/node': typeof NodeRoute
   '/updates': typeof UpdatesRoute
   '/alerts/$fingerprint': typeof AlertsFingerprintRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/backups': typeof BackupsRoute
   '/certificates': typeof CertificatesRoute
   '/dns': typeof DnsRoute
+  '/drift': typeof DriftRoute
   '/node': typeof NodeRoute
   '/updates': typeof UpdatesRoute
   '/alerts/$fingerprint': typeof AlertsFingerprintRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/backups'
     | '/certificates'
     | '/dns'
+    | '/drift'
     | '/node'
     | '/updates'
     | '/alerts/$fingerprint'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/backups'
     | '/certificates'
     | '/dns'
+    | '/drift'
     | '/node'
     | '/updates'
     | '/alerts/$fingerprint'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/backups'
     | '/certificates'
     | '/dns'
+    | '/drift'
     | '/node'
     | '/updates'
     | '/alerts/$fingerprint'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   BackupsRoute: typeof BackupsRoute
   CertificatesRoute: typeof CertificatesRoute
   DnsRoute: typeof DnsRoute
+  DriftRoute: typeof DriftRoute
   NodeRoute: typeof NodeRoute
   UpdatesRoute: typeof UpdatesRoute
   AlertsFingerprintRoute: typeof AlertsFingerprintRoute
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/dns'
       fullPath: '/dns'
       preLoaderRoute: typeof DnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drift': {
+      id: '/drift'
+      path: '/drift'
+      fullPath: '/drift'
+      preLoaderRoute: typeof DriftRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/node': {
@@ -400,6 +420,7 @@ const rootRouteChildren: RootRouteChildren = {
   BackupsRoute: BackupsRoute,
   CertificatesRoute: CertificatesRoute,
   DnsRoute: DnsRoute,
+  DriftRoute: DriftRoute,
   NodeRoute: NodeRoute,
   UpdatesRoute: UpdatesRoute,
   AlertsFingerprintRoute: AlertsFingerprintRoute,

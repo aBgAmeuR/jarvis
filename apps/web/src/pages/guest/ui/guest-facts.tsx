@@ -1,6 +1,5 @@
 import { useGetGuest } from "@jarvis/api-client";
 import {
-  Badge,
   CardContent,
   DescriptionDetails,
   DescriptionList,
@@ -10,6 +9,7 @@ import {
 import { Fragment } from "react";
 
 import { GuestIac } from "@/entities/guest/ui/guest-iac.tsx";
+import { GuestUpgrades } from "@/entities/guest/ui/guest-upgrades.tsx";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { useVmid } from "../model/use-guest-search.ts";
@@ -64,12 +64,8 @@ export function GuestFacts() {
             {data.upgrades && (
               <>
                 <DescriptionTerm>Upgrades</DescriptionTerm>
-                <DescriptionDetails className="flex flex-wrap gap-1">
-                  <Badge tone={data.upgrades.securityPending > 0 ? "warning" : "neutral"}>
-                    {data.upgrades.securityPending} security
-                  </Badge>
-                  <Badge>{data.upgrades.regularPending} regular</Badge>
-                  {data.upgrades.rebootRequired && <Badge tone="warning">reboot required</Badge>}
+                <DescriptionDetails>
+                  <GuestUpgrades upgrades={data.upgrades} />
                 </DescriptionDetails>
               </>
             )}

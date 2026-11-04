@@ -8,12 +8,12 @@ export function Logo(props: ComponentProps<"svg">) {
         cy="24"
         r="19"
         stroke="currentColor"
-        strokeWidth="2.5"
+        strokeWidth="4.5"
         strokeLinecap="round"
         strokeDasharray="84 35.4"
       />
-      <circle cx="24" cy="24" r="6" fill="currentColor" />
-      <circle cx="37.4" cy="10.6" r="5" fill="var(--color-brand)" />
+      <circle cx="24" cy="24" r="7" fill="currentColor" />
+      <circle cx="37.4" cy="10.6" r="6" fill="var(--brand)" />
     </svg>
   );
 }
