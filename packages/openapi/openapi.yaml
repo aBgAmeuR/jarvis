@@ -1865,6 +1865,9 @@ components:
           examples:
             - max(pve_cpu_usage_ratio{id="node/pve"})
           type: string
+        summary:
+          $ref: "#/components/schemas/SummaryBody"
+          description: Average and peak over the whole window. Absent on series without one, or with no sample.
         timestamps:
           description: Sample times, RFC 3339 in UTC. A gap is a missing timestamp.
           items:
@@ -2119,6 +2122,25 @@ components:
         - shared
         - usedBytes
         - totalBytes
+      type: object
+    SummaryBody:
+      additionalProperties: false
+      properties:
+        avg:
+          description: Average over the window.
+          examples:
+            - 0.12
+          format: double
+          type: number
+        peak:
+          description: Highest value over the window.
+          examples:
+            - 0.64
+          format: double
+          type: number
+      required:
+        - avg
+        - peak
       type: object
     UpgradesBody:
       additionalProperties: false
@@ -2835,6 +2857,7 @@ paths:
                 - queriesPerSecond
                 - blockedPerSecond
                 - upstreamLatencySeconds
+                - upstreamLatencyP99Seconds
               type: string
             type:
               - array
@@ -3579,6 +3602,8 @@ paths:
             items:
               enum:
                 - durationSeconds
+                - durationAvgSeconds
+                - durationP99Seconds
                 - success
               type: string
             type:
@@ -3749,7 +3774,9 @@ paths:
               enum:
                 - requestsPerSecond
                 - errorRatio
+                - latencyAvgSeconds
                 - latencyP95Seconds
+                - latencyP99Seconds
               type: string
             type:
               - array

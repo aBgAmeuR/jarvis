@@ -22,20 +22,19 @@ func (c *Client) NodeSeries(ctx context.Context, node string, names []supervisio
 func nodeQuery(name supervision.NodeSeries, node string) (query, bool) {
 	byID := "{id=" + strconv.Quote("node/"+node) + "}"
 	byInstance := "{instance=" + strconv.Quote(node) + "}"
-	q := query{name: string(name)}
+	n := string(name)
 	switch name {
 	case supervision.NodeCPUUsageRatio:
-		q.unit, q.expr = domain.UnitRatio, "max(pve_cpu_usage_ratio"+byID+")"
+		return gauge(n, domain.UnitRatio, "pve_cpu_usage_ratio"+byID), true
 	case supervision.NodeMemoryUsedBytes:
-		q.unit, q.expr = domain.UnitBytes, "max(pve_memory_usage_bytes"+byID+")"
+		return gauge(n, domain.UnitBytes, "pve_memory_usage_bytes"+byID), true
 	case supervision.NodeDiskUsedBytes:
-		q.unit, q.expr = domain.UnitBytes, "max(pve_disk_usage_bytes"+byID+")"
+		return gauge(n, domain.UnitBytes, "pve_disk_usage_bytes"+byID), true
 	case supervision.NodeCPUTemperature:
-		q.unit, q.expr = domain.UnitCelsius, "max(node_hwmon_temp_celsius{instance="+strconv.Quote(node)+`,chip=~"platform_coretemp.*"}`+")"
+		return gauge(n, domain.UnitCelsius, "node_hwmon_temp_celsius{instance="+strconv.Quote(node)+`,chip=~"platform_coretemp.*"}`), true
 	case supervision.NodeLoad1:
-		q.unit, q.expr = domain.UnitLoad, "max(node_load1"+byInstance+")"
+		return gauge(n, domain.UnitLoad, "node_load1"+byInstance), true
 	default:
 		return query{}, false
 	}
-	return q, true
 }

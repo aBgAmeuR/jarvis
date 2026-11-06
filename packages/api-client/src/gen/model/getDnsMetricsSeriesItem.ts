@@ -13,4 +13,5 @@ export const GetDnsMetricsSeriesItem = {
   queriesPerSecond: 'queriesPerSecond',
   blockedPerSecond: 'blockedPerSecond',
   upstreamLatencySeconds: 'upstreamLatencySeconds',
+  upstreamLatencyP99Seconds: 'upstreamLatencyP99Seconds',
 } as const;

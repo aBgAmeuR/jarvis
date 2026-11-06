@@ -15,7 +15,7 @@ import (
 type getServiceMetricsInput struct {
 	dto.WindowInput
 	Service string   `path:"service" doc:"Service slug." example:"grafana"`
-	Series  []string `query:"series" explode:"false" enum:"requestsPerSecond,errorRatio,latencyP95Seconds" doc:"Series to read, comma-separated. All when absent." example:"requestsPerSecond"`
+	Series  []string `query:"series" explode:"false" enum:"requestsPerSecond,errorRatio,latencyAvgSeconds,latencyP95Seconds,latencyP99Seconds" doc:"Series to read, comma-separated. All when absent." example:"requestsPerSecond"`
 }
 
 type getServiceMetricsOutput struct {

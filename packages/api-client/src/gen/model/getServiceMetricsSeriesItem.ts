@@ -12,5 +12,7 @@ export type GetServiceMetricsSeriesItem = typeof GetServiceMetricsSeriesItem[key
 export const GetServiceMetricsSeriesItem = {
   requestsPerSecond: 'requestsPerSecond',
   errorRatio: 'errorRatio',
+  latencyAvgSeconds: 'latencyAvgSeconds',
   latencyP95Seconds: 'latencyP95Seconds',
+  latencyP99Seconds: 'latencyP99Seconds',
 } as const;

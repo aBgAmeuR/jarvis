@@ -25,11 +25,11 @@ func guestQuery(name supervision.GuestSeries, vmid int, w domain.Window) (query,
 	q := query{name: string(name)}
 	switch name {
 	case supervision.GuestCPUUsageRatio:
-		q.unit, q.expr = domain.UnitRatio, "max(pve_cpu_usage_ratio"+selector+")"
+		q = gauge(q.name, domain.UnitRatio, "pve_cpu_usage_ratio"+selector)
 	case supervision.GuestMemoryUsedBytes:
-		q.unit, q.expr = domain.UnitBytes, "max(pve_memory_usage_bytes"+selector+")"
+		q = gauge(q.name, domain.UnitBytes, "pve_memory_usage_bytes"+selector)
 	case supervision.GuestDiskUsedBytes:
-		q.unit, q.expr = domain.UnitBytes, "max(pve_disk_usage_bytes"+selector+")"
+		q = gauge(q.name, domain.UnitBytes, "pve_disk_usage_bytes"+selector)
 	case supervision.GuestDiskReadBytesPerSec:
 		q.unit, q.expr = domain.UnitBytesPerSecond, "max(rate(pve_disk_read_bytes_total"+selector+rate+"))"
 	case supervision.GuestDiskWriteBytesPerSec:

@@ -6,12 +6,15 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { SeriesBodyUnit } from './seriesBodyUnit.ts';
+import type { SummaryBody } from './summaryBody.ts';
 
 export interface SeriesBody {
   /** Series name. */
   name: string;
   /** PromQL that produced the series, for a Grafana Explore link. */
   query: string;
+  /** Average and peak over the whole window. Absent on series without one, or with no sample. */
+  summary?: SummaryBody;
   /** Sample times, RFC 3339 in UTC. A gap is a missing timestamp. */
   timestamps: string[];
   /** Unit of the values. */

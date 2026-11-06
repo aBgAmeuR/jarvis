@@ -3,12 +3,19 @@ import { TimeSeriesChart } from "@jarvis/charts";
 import { CardContent, EmptyState, Skeleton } from "@jarvis/ui";
 import { keepPreviousData } from "@tanstack/react-query";
 
-import { formatLatency } from "@/entities/probe/model/format.ts";
+import { formatLatency } from "@/shared/lib/format.ts";
 import { seriesExplore } from "@/shared/lib/grafana-explore.ts";
+import { labelSeries } from "@/shared/lib/series-labels.ts";
 import { useTimeWindow } from "@/shared/lib/time-window.tsx";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { useProbeId } from "../model/use-probe-search.ts";
+
+const labels = {
+  durationAvgSeconds: "avg",
+  durationP99Seconds: "p99",
+} as const;
+const series = ["durationAvgSeconds", "durationP99Seconds"] as const;
 
 const skeleton = (
   <CardContent>
@@ -19,8 +26,13 @@ const skeleton = (
 export function ProbeLatency() {
   const latency = useGetProbeMetrics(
     useProbeId(),
-    { ...useTimeWindow(), series: ["durationSeconds"] },
-    { query: { select: (data) => data.series, placeholderData: keepPreviousData } },
+    { ...useTimeWindow(), series: [...series] },
+    {
+      query: {
+        select: (data) => labelSeries(data.series, labels),
+        placeholderData: keepPreviousData,
+      },
+    },
   );
 
   return (

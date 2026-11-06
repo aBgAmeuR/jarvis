@@ -14,11 +14,15 @@ type DNSSeries string
 const (
 	DNSQueriesPerSecond DNSSeries = "queriesPerSecond"
 	DNSBlockedPerSecond DNSSeries = "blockedPerSecond"
-	DNSUpstreamLatency  DNSSeries = "upstreamLatencySeconds"
+	DNSUpstreamLatency    DNSSeries = "upstreamLatencySeconds"
+	DNSUpstreamLatencyP99 DNSSeries = "upstreamLatencyP99Seconds"
 )
 
 func AllDNSSeries() []DNSSeries {
-	return []DNSSeries{DNSQueriesPerSecond, DNSBlockedPerSecond, DNSUpstreamLatency}
+	return []DNSSeries{
+		DNSQueriesPerSecond, DNSBlockedPerSecond,
+		DNSUpstreamLatency, DNSUpstreamLatencyP99,
+	}
 }
 
 type ClientSeries string

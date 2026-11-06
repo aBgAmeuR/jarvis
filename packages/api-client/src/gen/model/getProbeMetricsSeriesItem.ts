@@ -11,5 +11,7 @@ export type GetProbeMetricsSeriesItem = typeof GetProbeMetricsSeriesItem[keyof t
 
 export const GetProbeMetricsSeriesItem = {
   durationSeconds: 'durationSeconds',
+  durationAvgSeconds: 'durationAvgSeconds',
+  durationP99Seconds: 'durationP99Seconds',
   success: 'success',
 } as const;

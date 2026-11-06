@@ -120,6 +120,7 @@ export * from './silenceBody.ts';
 export * from './silenceBodyState.ts';
 export * from './sourceBody.ts';
 export * from './storageBody.ts';
+export * from './summaryBody.ts';
 export * from './upgradesBody.ts';
 export * from './usageBody.ts';
 export * from './volumeCountBody.ts';

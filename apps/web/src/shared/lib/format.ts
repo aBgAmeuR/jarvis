@@ -71,3 +71,8 @@ export function formatAge(value: Date | string | number, now = Date.now()): stri
 export function formatUtcDate(value: Date | string | number): string {
   return utcDate.format(new Date(value));
 }
+
+/** 0.0123 → "12.3 ms". */
+export function formatLatency(seconds: number): string {
+  return `${formatNumber(seconds * 1000)} ms`;
+}

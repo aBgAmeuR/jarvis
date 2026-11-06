@@ -7,8 +7,9 @@ import {
   Skeleton,
 } from "@jarvis/ui";
 
-import { formatAvailability, formatLatency } from "@/entities/probe/model/format.ts";
+import { formatAvailability } from "@/entities/probe/model/format.ts";
 import { ProbeStatus } from "@/entities/probe/ui/probe-status.tsx";
+import { formatLatency } from "@/shared/lib/format.ts";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { useSlug } from "../model/use-service-search.ts";

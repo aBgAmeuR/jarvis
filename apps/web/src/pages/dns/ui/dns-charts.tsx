@@ -3,9 +3,9 @@ import { TimeSeriesChart } from "@jarvis/charts";
 import { CardContent, EmptyState, Skeleton } from "@jarvis/ui";
 import { keepPreviousData } from "@tanstack/react-query";
 
-import { formatLatency } from "@/entities/probe/model/format.ts";
-import { formatPerSecond } from "@/shared/lib/format.ts";
+import { formatPerSecond, formatLatency } from "@/shared/lib/format.ts";
 import { seriesExplore } from "@/shared/lib/grafana-explore.ts";
+import { labelSeries } from "@/shared/lib/series-labels.ts";
 import { useTimeWindow } from "@/shared/lib/time-window.tsx";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
@@ -15,12 +15,23 @@ const charts = [
     series: ["queriesPerSecond", "blockedPerSecond"],
     format: formatPerSecond,
   },
-  { title: "Upstream latency", series: ["upstreamLatencySeconds"], format: formatLatency },
+  {
+    title: "Upstream latency",
+    series: ["upstreamLatencySeconds", "upstreamLatencyP99Seconds"],
+    format: formatLatency,
+  },
 ] as const satisfies readonly {
   title: string;
   series: GetDnsMetricsParams["series"];
   format: (value: number) => string;
 }[];
+
+const labels = {
+  queriesPerSecond: "queries",
+  blockedPerSecond: "blocked",
+  upstreamLatencySeconds: "avg",
+  upstreamLatencyP99Seconds: "p99",
+} satisfies Record<NonNullable<GetDnsMetricsParams["series"]>[number], string>;
 
 const skeleton = (
   <CardContent>
@@ -31,7 +42,12 @@ const skeleton = (
 function DnsChart({ title, series, format }: (typeof charts)[number]) {
   const metrics = useGetDnsMetrics(
     { ...useTimeWindow(), series: [...series] },
-    { query: { select: (data) => data.series, placeholderData: keepPreviousData } },
+    {
+      query: {
+        select: (data) => labelSeries(data.series, labels),
+        placeholderData: keepPreviousData,
+      },
+    },
   );
 
   return (

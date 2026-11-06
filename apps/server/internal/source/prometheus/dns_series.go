@@ -7,6 +7,11 @@ import (
 	"jarvis/server/internal/domain/network"
 )
 
+const (
+	blockyDuration = "blocky_request_duration_seconds"
+	resolved       = `{response_type="RESOLVED"}`
+)
+
 func (c *Client) DNSSeries(ctx context.Context, names []network.DNSSeries, w domain.Window) ([]domain.Series, error) {
 	rate := rateRange(w)
 	queries := make([]query, 0, len(names))
@@ -18,8 +23,9 @@ func (c *Client) DNSSeries(ctx context.Context, names []network.DNSSeries, w dom
 		case network.DNSBlockedPerSecond:
 			q.unit, q.expr = domain.UnitPerSecond, `sum(rate(blocky_response_total{response_type="BLOCKED"}`+rate+`))`
 		case network.DNSUpstreamLatency:
-			q.unit = domain.UnitSeconds
-			q.expr = `sum(rate(blocky_request_duration_seconds_sum{response_type="RESOLVED"}` + rate + `)) / sum(rate(blocky_request_duration_seconds_count{response_type="RESOLVED"}` + rate + `))`
+			q.unit, q.expr = domain.UnitSeconds, histogramAverage(blockyDuration, resolved, rate)
+		case network.DNSUpstreamLatencyP99:
+			q.unit, q.expr = domain.UnitSeconds, histogramQuantile("0.99", blockyDuration, resolved, rate)
 		default:
 			continue
 		}

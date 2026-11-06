@@ -1,4 +1,4 @@
-import { crosshair, defineChart, lineY } from "@tanstack/charts";
+import { crosshair, defineChart, lineY, ruleY, text } from "@tanstack/charts";
 import { Chart } from "@tanstack/charts/react";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { tooltip } from "@tanstack/charts/tooltip";
@@ -13,6 +13,7 @@ export type TimeSeries = {
   name: string;
   timestamps: readonly string[];
   values: readonly number[];
+  summary?: { avg: number; peak: number };
 };
 
 type Point = { series: string; time: number; value: number | null };
@@ -53,6 +54,43 @@ export type TimeSeriesChartProps = {
   formatValue?: (value: number) => string;
 };
 
+// dy places the label: the peak above its line, the average below, so close values never overlap.
+type Reference = { label: string; value: number; dy: number };
+
+function referencesOf(series: readonly TimeSeries[]): Reference[] {
+  const only = series.length === 1 ? series[0] : undefined;
+  if (!only?.summary || only.values.length === 0) return [];
+  return [
+    { label: "avg", value: only.summary.avg, dy: 11 },
+    { label: "peak", value: only.summary.peak, dy: -4 },
+  ];
+}
+
+/** A dashed line per reference, its label and value at the right end. */
+function referenceMarks(
+  references: readonly Reference[],
+  lastTime: number,
+  formatValue: (value: number) => string,
+) {
+  return [
+    ruleY(references, {
+      y: "value",
+      stroke: "var(--muted-foreground)",
+      strokeDasharray: "4 3",
+      strokeWidth: 1,
+    }),
+    text(references, {
+      x: () => lastTime,
+      y: "value",
+      text: (reference) => `${reference.label} ${formatValue(reference.value)}`,
+      anchor: "end",
+      dy: (reference) => reference.dy,
+      fill: "var(--muted-foreground)",
+      fontSize: 10,
+    }),
+  ] as const;
+}
+
 /** Lines over time for the `/metrics` endpoints, one color per series. */
 export function TimeSeriesChart({
   series,
@@ -71,6 +109,7 @@ export function TimeSeriesChart({
     return defineChart({
       marks: [
         lineY(points, { x: "time", y: "value", z: "series", color: "series", strokeWidth: 1.5 }),
+        ...referenceMarks(referencesOf(series), Math.max(...times), formatValue),
         // The indicator: a vertical rule, its time written on the x axis.
         crosshair<number, number>({
           x: {

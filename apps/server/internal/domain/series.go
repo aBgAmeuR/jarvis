@@ -22,6 +22,12 @@ type Series struct {
 	Query      string
 	Timestamps []time.Time
 	Values     []float64
+	Summary *Summary
+}
+
+type Summary struct {
+	Avg  float64
+	Peak float64
 }
 
 type TimeSeries struct {

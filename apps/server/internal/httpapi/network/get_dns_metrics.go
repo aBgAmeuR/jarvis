@@ -14,7 +14,7 @@ import (
 
 type getDNSMetricsInput struct {
 	dto.WindowInput
-	Series []string `query:"series" explode:"false" enum:"queriesPerSecond,blockedPerSecond,upstreamLatencySeconds" doc:"Series to read, comma-separated. All when absent." example:"queriesPerSecond"`
+	Series []string `query:"series" explode:"false" enum:"queriesPerSecond,blockedPerSecond,upstreamLatencySeconds,upstreamLatencyP99Seconds" doc:"Series to read, comma-separated. All when absent." example:"queriesPerSecond"`
 }
 
 type getDNSMetricsOutput struct {

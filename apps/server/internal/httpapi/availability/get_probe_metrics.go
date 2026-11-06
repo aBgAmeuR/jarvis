@@ -15,7 +15,7 @@ import (
 type getProbeMetricsInput struct {
 	dto.WindowInput
 	Probe  string   `path:"probe" doc:"Probe id." example:"icmp-116"`
-	Series []string `query:"series" explode:"false" enum:"durationSeconds,success" doc:"Series to read, comma-separated. All when absent." example:"durationSeconds"`
+	Series []string `query:"series" explode:"false" enum:"durationSeconds,durationAvgSeconds,durationP99Seconds,success" doc:"Series to read, comma-separated. All when absent." example:"durationSeconds"`
 }
 
 type getProbeMetricsOutput struct {

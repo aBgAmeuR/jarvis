@@ -2,26 +2,30 @@ import { useGetService } from "@jarvis/api-client";
 import { TimeSeriesChart } from "@jarvis/charts";
 import { CardContent, EmptyState, Skeleton } from "@jarvis/ui";
 
-import { formatNumber, formatRatio } from "@/shared/lib/format.ts";
+import { formatNumber, formatRatio, formatLatency } from "@/shared/lib/format.ts";
 import { seriesExplore } from "@/shared/lib/grafana-explore.ts";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { useSlug } from "../model/use-service-search.ts";
-import { useServiceSeries } from "../model/use-service-series.ts";
+import { type ServiceSeriesName, useServiceSeries } from "../model/use-service-series.ts";
 
 const charts = [
   {
     title: "Requests",
-    name: "requestsPerSecond",
+    series: ["requestsPerSecond"],
     format: (v: number) => `${formatNumber(v)} req/s`,
   },
-  { title: "Errors", name: "errorRatio", format: formatRatio },
+  { title: "Errors", series: ["errorRatio"], format: formatRatio },
   {
-    title: "Latency p95",
-    name: "latencyP95Seconds",
-    format: (v: number) => `${formatNumber(v * 1000)} ms`,
+    title: "Latency",
+    series: ["latencyAvgSeconds", "latencyP99Seconds"],
+    format: formatLatency,
   },
-] as const;
+] as const satisfies readonly {
+  title: string;
+  series: readonly ServiceSeriesName[];
+  format: (value: number) => string;
+}[];
 
 type Chart = (typeof charts)[number];
 
@@ -31,8 +35,8 @@ const chartSkeleton = (
   </CardContent>
 );
 
-function ServiceChart({ title, name, format }: Chart) {
-  const series = useServiceSeries(name);
+function ServiceChart({ title, series: names, format }: Chart) {
+  const series = useServiceSeries(names);
 
   return (
     <QueryCard
@@ -60,7 +64,7 @@ export function ServiceCharts() {
   return (
     <div className="stagger grid gap-3 lg:grid-cols-3">
       {charts.map((chart) => (
-        <ServiceChart key={chart.name} {...chart} />
+        <ServiceChart key={chart.title} {...chart} />
       ))}
     </div>
   );

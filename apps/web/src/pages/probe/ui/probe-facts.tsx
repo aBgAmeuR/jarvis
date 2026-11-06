@@ -10,8 +10,9 @@ import {
 import { Link as RouterLink } from "@tanstack/react-router";
 
 import { GuestLink } from "@/entities/guest/ui/guest-link.tsx";
-import { formatAvailability, formatLatency } from "@/entities/probe/model/format.ts";
+import { formatAvailability } from "@/entities/probe/model/format.ts";
 import { polling } from "@/shared/config/polling.ts";
+import { formatLatency } from "@/shared/lib/format.ts";
 import { QueryCard } from "@/shared/ui/query-card.tsx";
 
 import { useProbeId } from "../model/use-probe-search.ts";

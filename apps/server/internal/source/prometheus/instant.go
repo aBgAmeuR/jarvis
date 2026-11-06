@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
+	"time"
 
 	"jarvis/server/internal/platform/httpclient"
 )
@@ -26,8 +28,16 @@ type entry struct {
 }
 
 func (c *Client) queryVector(ctx context.Context, expr string) ([]entry, error) {
+	return c.queryVectorAt(ctx, expr, time.Time{})
+}
+
+func (c *Client) queryVectorAt(ctx context.Context, expr string, at time.Time) ([]entry, error) {
+	params := url.Values{"query": {expr}}
+	if !at.IsZero() {
+		params.Set("time", strconv.FormatInt(at.Unix(), 10))
+	}
 	var body vectorResponse
-	if err := c.fetcher.GetJSON(ctx, "/api/v1/query?"+url.Values{"query": {expr}}.Encode(), &body); err != nil {
+	if err := c.fetcher.GetJSON(ctx, "/api/v1/query?"+params.Encode(), &body); err != nil {
 		return nil, err
 	}
 	if body.Status != "success" || body.Data.ResultType != "vector" {

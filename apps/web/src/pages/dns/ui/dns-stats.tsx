@@ -1,9 +1,8 @@
 import { useGetDns } from "@jarvis/api-client";
 import { Skeleton, StatTile } from "@jarvis/ui";
 
-import { formatLatency } from "@/entities/probe/model/format.ts";
 import { polling } from "@/shared/config/polling.ts";
-import { formatInteger, formatPerSecond, formatRatio } from "@/shared/lib/format.ts";
+import { formatInteger, formatPerSecond, formatRatio, formatLatency } from "@/shared/lib/format.ts";
 import { QueryView } from "@/shared/ui/query-view.tsx";
 
 const gridClass = "stagger grid grid-cols-2 gap-3 md:grid-cols-5";
