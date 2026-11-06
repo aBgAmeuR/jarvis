@@ -12,8 +12,8 @@ type DNS struct {
 type DNSSeries string
 
 const (
-	DNSQueriesPerSecond DNSSeries = "queriesPerSecond"
-	DNSBlockedPerSecond DNSSeries = "blockedPerSecond"
+	DNSQueriesPerSecond   DNSSeries = "queriesPerSecond"
+	DNSBlockedPerSecond   DNSSeries = "blockedPerSecond"
 	DNSUpstreamLatency    DNSSeries = "upstreamLatencySeconds"
 	DNSUpstreamLatencyP99 DNSSeries = "upstreamLatencyP99Seconds"
 )

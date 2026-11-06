@@ -22,7 +22,7 @@ type Series struct {
 	Query      string
 	Timestamps []time.Time
 	Values     []float64
-	Summary *Summary
+	Summary    *Summary
 }
 
 type Summary struct {

@@ -9,9 +9,9 @@ import (
 )
 
 type query struct {
-	name string
-	unit domain.Unit
-	expr string
+	name    string
+	unit    domain.Unit
+	expr    string
 	samples string
 }
 
